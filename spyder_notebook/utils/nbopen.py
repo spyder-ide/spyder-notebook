@@ -54,8 +54,9 @@ def nbopen(filename):
             nbdir = os.path.dirname(filename)
 
         print("Starting new server")
-        command = 'jupyter notebook --no-browser'
-        proc = subprocess.Popen(command.split(), cwd=nbdir)
+        command = ['jupyter', 'notebook', '--no-browser',
+                   '--notebook-dir={}'.format(nbdir)]
+        proc = subprocess.Popen(command)
         atexit.register(proc.terminate)
 
         # Wait ~7.5 secs for the server to be up
