@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+#
+# Copyright (c) Spyder Project Contributors
+# Licensed under the terms of the MIT License
 
 """
 Qt widgets for the notebook

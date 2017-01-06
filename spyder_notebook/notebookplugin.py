@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright © 2014 The Spyder development team
+# Copyright (c) Spyder Project Contributors
 # Licensed under the terms of the MIT License
-# (see spyderlib/__init__.py for details)
 
 """
 Jupyter Notebook plugin
