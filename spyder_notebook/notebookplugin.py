@@ -173,17 +173,17 @@ class NotebookPlugin(SpyderPluginWidget):
         """Create a new notebook or load a pre-existing one"""
         # Generate the notebook name (in case of a new one)
         if not name:
-            nb_name = 'Untitled' + str(self.untitled_num) + '.ipynb'
+            nb_name = 'untitled' + str(self.untitled_num) + '.ipynb'
             name = osp.join(NOTEBOOK_TMPDIR, nb_name)
-            nb = nbformat.v4.new_notebook()
-            nbformat.write(nb, nb_name)
+            nb_contents = nbformat.v4.new_notebook()
+            nbformat.write(nb_contents, name)
 
         client = NotebookClient(self, name)
         self.add_tab(client)
 
         # Open the notebook with nbopen and get the url we need to render
         try:
-            url = nbopen(nb_name)
+            url = nbopen(name)
         except (subprocess.CalledProcessError, NBServerError):
             QMessageBox.critical(
                 self,
