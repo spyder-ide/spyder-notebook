@@ -117,7 +117,6 @@ class NotebookPlugin(SpyderPluginWidget):
             nb.setFocus()
         else:
             nb = None
-        self.update_plugin_title.emit()
 
     def get_plugin_actions(self):
         """Return a list of actions related to plugin"""
@@ -213,8 +212,6 @@ class NotebookPlugin(SpyderPluginWidget):
         self.tabwidget.removeTab(self.tabwidget.indexOf(client))
         self.clients.remove(client)
 
-        self.update_plugin_title.emit()
-
     #------ Public API (for tabs) ---------------------------------------------
     def add_tab(self, widget):
         """Add tab"""
@@ -234,4 +231,3 @@ class NotebookPlugin(SpyderPluginWidget):
         """
         client = self.clients.pop(index_from)
         self.clients.insert(index_to, client)
-        self.update_plugin_title.emit()
