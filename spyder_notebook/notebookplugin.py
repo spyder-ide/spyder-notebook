@@ -86,7 +86,7 @@ class NotebookPlugin(SpyderPluginWidget):
     #------ SpyderPluginWidget API --------------------------------------------
     def get_plugin_title(self):
         """Return widget title"""
-        title = _('Notebook')
+        title = _('Jupyter Notebook')
         return title
 
     def get_plugin_icon(self):
