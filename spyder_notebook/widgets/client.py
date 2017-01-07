@@ -107,8 +107,8 @@ class NotebookClient(QWidget):
     """
     Notebook client for Spyder.
 
-    This is a widget composed of an NotebookWidget with find dialog to
-    render notebooks
+    This is a widget composed of a NotebookWidget and a find dialog to
+    render notebooks.
     """
     def __init__(self, plugin, name, connection_file=None,
                  kernel_widget_id=None):
