@@ -196,23 +196,23 @@ class NotebookPlugin(SpyderPluginWidget):
         self.untitled_num += 1
         client.set_url(url)
 
-    def close_client(self, index=None, notebook=None):
+    def close_client(self, index=None, client=None):
         """Close client tab from index or widget (or close current tab)"""
         if not self.tabwidget.count():
             return
-        if notebook is not None:
-            index = self.tabwidget.indexOf(notebook)
-        if index is None and notebook is None:
+        if client is not None:
+            index = self.tabwidget.indexOf(client)
+        if index is None and client is None:
             index = self.tabwidget.currentIndex()
         if index is not None:
-            notebook = self.tabwidget.widget(index)
+            client = self.tabwidget.widget(index)
 
         # TODO: Eliminate the notebook from disk if it's an Untitled one
-        notebook.close()
+        client.close()
 
         # Note: notebook index may have changed after closing related widgets
-        self.tabwidget.removeTab(self.tabwidget.indexOf(notebook))
-        self.clients.remove(notebook)
+        self.tabwidget.removeTab(self.tabwidget.indexOf(client))
+        self.clients.remove(client)
 
         self.update_plugin_title.emit()
 
