@@ -182,7 +182,7 @@ class NotebookPlugin(SpyderPluginWidget):
 
         # Open the notebook with nbopen and get the url we need to render
         try:
-            url = nbopen(name)
+            server_info = nbopen(name)
         except (subprocess.CalledProcessError, NBServerError):
             QMessageBox.critical(
                 self,
@@ -194,7 +194,9 @@ class NotebookPlugin(SpyderPluginWidget):
             return
 
         self.untitled_num += 1
-        client.set_url(url)
+
+        client.register(server_info)
+        client.load_notebook()
 
     def close_client(self, index=None, client=None):
         """Close client tab from index or widget (or close current tab)"""

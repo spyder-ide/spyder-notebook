@@ -12,7 +12,6 @@ import subprocess
 import time
 
 from notebook import notebookapp
-from notebook.utils import url_path_join, url_escape
 from spyder.config.base import get_home_dir
 
 
@@ -30,23 +29,19 @@ def find_best_server(filename):
         return None
 
 
-def get_url(filename, server_inf):
-    """Get url given by a notebook server to filename."""
-    path = os.path.relpath(filename, start=server_inf['notebook_dir'])
-    url = url_path_join(server_inf['url'], 'notebooks', url_escape(path))
-    return url
-
-
 def nbopen(filename):
-    """Open a notebook using the best available server."""
+    """
+    Open a notebook using the best available server.
+
+    Returns information about the selected server.
+    """
     filename = os.path.abspath(filename)
     home_dir = get_home_dir()
-    server_inf = find_best_server(filename)
+    server_info = find_best_server(filename)
 
-    if server_inf is not None:
-        print("Using existing server at", server_inf['notebook_dir'])
-        url = get_url(filename, server_inf)
-        return url
+    if server_info is not None:
+        print("Using existing server at", server_info['notebook_dir'])
+        return server_info
     else:
         if filename.startswith(home_dir):
             nbdir = home_dir
@@ -61,14 +56,13 @@ def nbopen(filename):
 
         # Wait ~7.5 secs for the server to be up
         for _x in range(30):
-            server_inf = find_best_server(filename)
-            if server_inf is not None:
+            server_info = find_best_server(filename)
+            if server_info is not None:
                 break
             else:
                 time.sleep(0.25)
 
-        if server_inf is None:
+        if server_info is None:
             raise NBServerError()
 
-        url = get_url(filename, server_inf)
-        return url
+        return server_info

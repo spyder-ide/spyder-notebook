@@ -15,11 +15,16 @@ import os.path as osp
 from string import Template
 import sys
 
+# Qt imports
 from qtpy.QtCore import QUrl
 from qtpy.QtWebEngineWidgets import (QWebEnginePage, QWebEngineSettings,
                                      WEBENGINE)
 from qtpy.QtWidgets import QMenu, QVBoxLayout, QWidget
 
+# Notebook imports
+from notebook.utils import url_path_join, url_escape
+
+# Spyder imports
 from spyder.config.base import _, get_image_path, get_module_source_path
 from spyder.py3compat import is_text_string
 from spyder.utils.qthelpers import add_actions
@@ -109,6 +114,10 @@ class NotebookClient(QWidget):
                  kernel_widget_id=None):
         super(NotebookClient, self).__init__(plugin)
 
+        self.file_url = None
+        self.server_url = None
+        self.path = None
+
         self.client_type = 'notebook'
         self.connection_file = connection_file
         self.name = name
@@ -126,9 +135,19 @@ class NotebookClient(QWidget):
         layout.addWidget(self.find_widget)
         self.setLayout(layout)
 
-    def set_url(self, url):
-        """Set current URL"""
-        self.go_to(url)
+    def register(self, server_info):
+        """Register attributes that can be computed with the server info."""
+        # Path relative to the server directory
+        self.path = os.path.relpath(self.name,
+                                    start=server_info['notebook_dir'])
+
+        # Full url used to render the notebook as a web page
+        self.file_url = url_path_join(server_info['url'],
+                                      'notebooks',
+                                      url_escape(self.path))
+
+        # Server url to send requests to
+        self.server_url = server_info['url']
 
     def go_to(self, url_or_text):
         """Go to page *address*"""
@@ -137,6 +156,9 @@ class NotebookClient(QWidget):
         else:
             url = url_or_text
         self.notebookwidget.load(url)
+
+    def load_notebook(self):
+        self.go_to(self.file_url)
 
     def get_name(self):
         return self.name
