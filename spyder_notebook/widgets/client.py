@@ -110,17 +110,14 @@ class NotebookClient(QWidget):
     This is a widget composed of a NotebookWidget and a find dialog to
     render notebooks.
     """
-    def __init__(self, plugin, name, connection_file=None,
-                 kernel_widget_id=None):
+    def __init__(self, plugin, name):
         super(NotebookClient, self).__init__(plugin)
+
+        self.name = name
 
         self.file_url = None
         self.server_url = None
         self.path = None
-
-        self.client_type = 'notebook'
-        self.connection_file = connection_file
-        self.name = name
 
         self.notebookwidget = NotebookWidget(self)
         self.notebookwidget.show_loading_page()
