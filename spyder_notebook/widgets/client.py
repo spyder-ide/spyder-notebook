@@ -3,12 +3,7 @@
 # Copyright (c) Spyder Project Contributors
 # Licensed under the terms of the MIT License
 
-"""
-Qt widgets for the notebook
-
-Copyright (C) The Spyder Project Contributors
-Distributed under the terms of the MIT License
-"""
+"""Qt widgets for the notebook."""
 
 import os
 import os.path as osp
