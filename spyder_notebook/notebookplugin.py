@@ -57,6 +57,7 @@ class NotebookPlugin(SpyderPluginWidget):
         self.initialize_plugin()
 
         layout = QVBoxLayout()
+
         new_notebook_btn = create_toolbutton(self,
                                              icon=ima.icon('project_expanded'),
                                              tip=_('Open a new notebook'),
@@ -64,6 +65,7 @@ class NotebookPlugin(SpyderPluginWidget):
         corner_widgets = {Qt.TopRightCorner: [new_notebook_btn]}
         self.tabwidget = Tabs(self, actions=self.menu_actions,
                               corner_widgets=corner_widgets)
+
         if hasattr(self.tabwidget, 'setDocumentMode') \
            and not sys.platform == 'darwin':
             # Don't set document mode to true on OSX because it generates
