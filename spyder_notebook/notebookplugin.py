@@ -79,9 +79,9 @@ class NotebookPlugin(SpyderPluginWidget):
 
     def update_font(self):
         """Update font from Preferences"""
-        font = self.get_plugin_font()
-        for client in self.clients:
-            client.set_font(font)
+        # For now we're passing. We need to create an nbextension for
+        # this.
+        pass
 
     #------ SpyderPluginWidget API --------------------------------------------
     def get_plugin_title(self):
