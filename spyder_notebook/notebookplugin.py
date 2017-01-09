@@ -23,7 +23,7 @@ import nbformat
 # Spyder imports
 from spyder.config.base import _
 from spyder.utils import icon_manager as ima
-from spyder.utils.qthelpers import create_action
+from spyder.utils.qthelpers import create_action, create_toolbutton
 from spyder.widgets.tabs import Tabs
 from spyder.plugins import SpyderPluginWidget
 from spyder.py3compat import to_text_string
@@ -57,7 +57,13 @@ class NotebookPlugin(SpyderPluginWidget):
         self.initialize_plugin()
 
         layout = QVBoxLayout()
-        self.tabwidget = Tabs(self, self.menu_actions)
+        new_notebook_btn = create_toolbutton(self,
+                                             icon=ima.icon('project_expanded'),
+                                             tip=_('Open a new notebook'),
+                                             triggered=self.create_new_client)
+        corner_widgets = {Qt.TopRightCorner: [new_notebook_btn]}
+        self.tabwidget = Tabs(self, actions=self.menu_actions,
+                              corner_widgets=corner_widgets)
         if hasattr(self.tabwidget, 'setDocumentMode') \
            and not sys.platform == 'darwin':
             # Don't set document mode to true on OSX because it generates
