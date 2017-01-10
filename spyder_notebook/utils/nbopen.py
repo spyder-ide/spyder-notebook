@@ -54,8 +54,8 @@ def nbopen(filename):
         proc = subprocess.Popen(command)
         atexit.register(proc.terminate)
 
-        # Wait ~7.5 secs for the server to be up
-        for _x in range(30):
+        # Wait ~10 secs for the server to be up
+        for _x in range(40):
             server_info = find_best_server(filename)
             if server_info is not None:
                 break
