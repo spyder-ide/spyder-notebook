@@ -233,6 +233,7 @@ class NotebookPlugin(SpyderPluginWidget):
         self.clients.remove(client)
 
     def save_as(self):
+        """Save notebook as..."""
         current_client = self.get_current_client()
         original_name = current_client.get_short_name()
         original_path = current_client.get_name()
