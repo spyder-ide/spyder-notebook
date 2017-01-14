@@ -161,6 +161,10 @@ class NotebookClient(QWidget):
         sname = osp.basename(self.name)
         return sname
 
+    def save(self):
+        """Save current notebook."""
+        self.notebookwidget.click('#save-notbook button')
+
 
 #-----------------------------------------------------------------------------
 # Tests
