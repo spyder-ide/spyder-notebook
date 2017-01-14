@@ -136,7 +136,7 @@ class NotebookClient(QWidget):
         # Full url used to render the notebook as a web page
         self.file_url = url_path_join(server_info['url'],
                                       'notebooks',
-                                      url_escape(self.path))
+                                      url_escape(self.path.replace('\\','/')))
 
         # Server url to send requests to
         self.server_url = server_info['url']
