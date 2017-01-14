@@ -24,8 +24,10 @@ from spyder.config.base import _, get_image_path, get_module_source_path
 from spyder.py3compat import is_text_string
 from spyder.utils.qthelpers import add_actions
 from spyder.utils import sourcecode
-from spyder.widgets.browser import WebView
 from spyder.widgets.findreplace import FindReplace
+
+# Local imports
+from ..widgets.dom import DOMWidget
 
 
 #-----------------------------------------------------------------------------
@@ -45,7 +47,7 @@ KERNEL_ERROR = open(osp.join(TEMPLATES_PATH, 'kernel_error.html')).read()
 #-----------------------------------------------------------------------------
 # Widgets
 #-----------------------------------------------------------------------------
-class NotebookWidget(WebView):
+class NotebookWidget(DOMWidget):
     """WebView widget for notebooks."""
 
     def contextMenuEvent(self, event):
