@@ -25,8 +25,6 @@ from spyder.config.base import _
 from spyder.utils import icon_manager as ima
 from spyder.utils.qthelpers import (create_action, create_toolbutton,
                                     add_actions)
-from spyder.config.utils import (get_filter, get_edit_filetypes,
-                                 get_edit_filters)
 from spyder.widgets.tabs import Tabs
 from spyder.plugins import SpyderPluginWidget
 
@@ -36,6 +34,8 @@ from .widgets.client import NotebookClient
 
 
 NOTEBOOK_TMPDIR = tempfile.gettempdir()
+FILTER_TITLE = _("Jupyter notebooks")
+FILES_FILTER = "{} (*.ipynb)".format(FILTER_TITLE)
 
 
 class NotebookPlugin(SpyderPluginWidget):
@@ -237,9 +237,7 @@ class NotebookPlugin(SpyderPluginWidget):
         original_path = current_client.get_name()
         original_name = osp.basename(original_path)
         filename, _selfilter = getsavefilename(self, _("Save notebook"),
-                                       original_name, get_edit_filters(),
-                                       get_filter(get_edit_filetypes(),
-                                           osp.splitext(original_name)[1]))
+                                       original_name, FILES_FILTER)
         if filename:
             nb_contents = nbformat.read(original_path, as_version=4)
             nbformat.write(nb_contents, filename)
