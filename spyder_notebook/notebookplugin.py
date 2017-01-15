@@ -12,10 +12,10 @@ import os.path as osp
 import subprocess
 import sys
 import tempfile
-
 # Qt imports
-from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout
+from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
 from qtpy.QtCore import Qt, Signal
+from qtpy.compat import getsavefilename
 
 # Third-party imports
 import nbformat
@@ -23,7 +23,10 @@ import nbformat
 # Spyder imports
 from spyder.config.base import _
 from spyder.utils import icon_manager as ima
-from spyder.utils.qthelpers import create_action, create_toolbutton
+from spyder.utils.qthelpers import (create_action, create_toolbutton,
+                                    add_actions)
+from spyder.config.utils import (get_filter, get_edit_filetypes,
+                                 get_edit_filters)
 from spyder.widgets.tabs import Tabs
 from spyder.plugins import SpyderPluginWidget
 
@@ -61,8 +64,14 @@ class NotebookPlugin(SpyderPluginWidget):
                                              icon=ima.icon('project_expanded'),
                                              tip=_('Open a new notebook'),
                                              triggered=self.create_new_client)
-        corner_widgets = {Qt.TopRightCorner: [new_notebook_btn]}
-        self.tabwidget = Tabs(self, actions=self.menu_actions,
+        menu_btn = create_toolbutton(self, icon=ima.icon('tooloptions'),
+                                     tip=_('Options'))
+        self.menu = QMenu(self)
+        menu_btn.setMenu(self.menu)
+        menu_btn.setPopupMode(menu_btn.InstantPopup)
+        add_actions(self.menu, self.menu_actions)
+        corner_widgets = {Qt.TopRightCorner: [new_notebook_btn, menu_btn]}
+        self.tabwidget = Tabs(self, menu=self.menu, actions=self.menu_actions,
                               corner_widgets=corner_widgets)
 
         if hasattr(self.tabwidget, 'setDocumentMode') \
@@ -129,11 +138,14 @@ class NotebookPlugin(SpyderPluginWidget):
         """Return a list of actions related to plugin"""
         create_nb_action = create_action(self,
                                          _("Open a new notebook"),
-                                         None,
+                                         icon=ima.icon('filenew'),
                                          triggered=self.create_new_client)
-
+        save_as_action = create_action(self,
+                                       _("Save as..."),
+                                       icon=ima.icon('filesaveas'),
+                                       triggered=self.save_as)
         # Plugin actions
-        self.menu_actions = [create_nb_action]
+        self.menu_actions = [create_nb_action, save_as_action]
         return self.menu_actions
 
     def register_plugin(self):
@@ -179,6 +191,7 @@ class NotebookPlugin(SpyderPluginWidget):
             name = osp.join(NOTEBOOK_TMPDIR, nb_name)
             nb_contents = nbformat.v4.new_notebook()
             nbformat.write(nb_contents, name)
+            self.untitled_num += 1
 
         client = NotebookClient(self, name)
         self.add_tab(client)
@@ -195,8 +208,6 @@ class NotebookPlugin(SpyderPluginWidget):
                   "system terminal with the command 'jupyter notebook' to "
                   "check for errors."))
             return
-
-        self.untitled_num += 1
 
         client.register(server_info)
         client.load_notebook()
@@ -218,6 +229,22 @@ class NotebookPlugin(SpyderPluginWidget):
         # Note: notebook index may have changed after closing related widgets
         self.tabwidget.removeTab(self.tabwidget.indexOf(client))
         self.clients.remove(client)
+
+    def save_as(self):
+        """Save notebook as..."""
+        current_client = self.get_current_client()
+        current_client.save()
+        original_path = current_client.get_name()
+        original_name = osp.basename(original_path)
+        filename, _selfilter = getsavefilename(self, _("Save notebook"),
+                                       original_name, get_edit_filters(),
+                                       get_filter(get_edit_filetypes(),
+                                           osp.splitext(original_name)[1]))
+        if filename:
+            nb_contents = nbformat.read(original_path, as_version=4)
+            nbformat.write(nb_contents, filename)
+            self.close_client()
+            self.create_new_client(name=filename)
 
     #------ Public API (for tabs) ---------------------------------------------
     def add_tab(self, widget):
