@@ -8,6 +8,7 @@ Jupyter Notebook plugin
 """
 
 # Stdlib imports
+import os
 import os.path as osp
 import subprocess
 import sys
@@ -229,28 +230,7 @@ class NotebookPlugin(SpyderPluginWidget):
         if index is not None:
             client = self.tabwidget.widget(index)
 
-        session_url = url_path_join(client.server_url, 'api/sessions')
-        session_req = requests.get(session_url).content.decode()
-        content = json.loads(session_req)
-        kernel_id = None
-        for notebook in content:
-            if notebook['notebook']['path'] == client.path.replace('\\','/'):
-                kernel_id = notebook['kernel']['id']
-                break
-        if kernel_id:
-            delete_url = url_path_join(client.server_url,
-                                       'api/kernels/',
-                                       kernel_id)
-            delete_req = requests.delete(delete_url)
-            if delete_req.status_code != 204:
-                QMessageBox.critical(
-                self,
-                _("Server error"),
-                _("The Jupyter Notebook server failed "
-                  "to shutdown the kernel. "
-                  "If you want to shutdown it you would "
-                  "have to do it manually."
-                  "<br><br>Status code {}").format(delete_req.status_code))
+        self.shutdown_kernel(client)
 
         # TODO: Eliminate the notebook from disk if it's an Untitled one
         client.close()
@@ -258,6 +238,35 @@ class NotebookPlugin(SpyderPluginWidget):
         # Note: notebook index may have changed after closing related widgets
         self.tabwidget.removeTab(self.tabwidget.indexOf(client))
         self.clients.remove(client)
+
+    def shutdown_kernel(self, client):
+        """Shutdown the kernel of the given client."""
+        sessions_url = url_path_join(client.server_url, 'api/sessions')
+        sessions_req = requests.get(sessions_url).content.decode()
+        sessions = json.loads(sessions_req)
+        kernel_id = None
+        if os.name == 'nt':
+            path = client.path.replace('\\', '/')
+        else:
+            path = client.path
+        for session in sessions:
+            if session['notebook']['path'] == path:
+                kernel_id = session['kernel']['id']
+                break
+        if kernel_id:
+            delete_url = url_path_join(client.server_url,
+                                       'api/kernels/',
+                                       kernel_id)
+            delete_req = requests.delete(delete_url)
+            if delete_req.status_code != 204:
+                QMessageBox.warning(
+                self,
+                _("Server error"),
+                _("The Jupyter Notebook server failed "
+                  "to shutdown the kernel. "
+                  "If you want to shutdown it you would "
+                  "have to do it manually."
+                  "<br><br>Status code {}").format(delete_req.status_code))
 
     def save_as(self):
         """Save notebook as..."""
