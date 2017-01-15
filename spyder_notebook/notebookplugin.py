@@ -30,7 +30,6 @@ from spyder.config.utils import (get_filter, get_edit_filetypes,
                                  get_edit_filters)
 from spyder.widgets.tabs import Tabs
 from spyder.plugins import SpyderPluginWidget
-from spyder.py3compat import to_text_string
 
 # Local imports
 from .utils.nbopen import nbopen, NBServerError
@@ -159,7 +158,7 @@ class NotebookPlugin(SpyderPluginWidget):
     #------ Public API (for clients) ------------------------------------------
     def get_clients(self):
         """Return notebooks list"""
-        return [cl for cl in self.clients if isinstance(nb, NotebookClient)]
+        return [cl for cl in self.clients if isinstance(cl, NotebookClient)]
 
     def get_focus_client(self):
         """Return current notebook with focus, if any"""
