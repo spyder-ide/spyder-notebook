@@ -158,7 +158,10 @@ class NotebookClient(QWidget):
         return self.name
 
     def get_short_name(self):
+        """Get a short name for the notebook."""
         sname = osp.basename(self.name)
+        if len(sname) > 15:
+            sname = sname[:15]
         return sname
 
     def save(self):
