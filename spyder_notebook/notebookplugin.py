@@ -12,13 +12,19 @@ import os.path as osp
 import subprocess
 import sys
 import tempfile
+import json
+
 # Qt imports
 from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
 from qtpy.QtCore import Qt, Signal
 from qtpy.compat import getsavefilename
 
+# Notebook imports
+from notebook.utils import url_path_join
+
 # Third-party imports
 import nbformat
+import requests
 
 # Spyder imports
 from spyder.config.base import _
@@ -222,6 +228,29 @@ class NotebookPlugin(SpyderPluginWidget):
             index = self.tabwidget.currentIndex()
         if index is not None:
             client = self.tabwidget.widget(index)
+
+        session_url = url_path_join(client.server_url, 'api/sessions')
+        session_req = requests.get(session_url).content.decode()
+        content = json.loads(session_req)
+        kernel_id = None
+        for notebook in content:
+            if notebook['notebook']['path'] == client.path.replace('\\','/'):
+                kernel_id = notebook['kernel']['id']
+                break
+        if kernel_id:
+            delete_url = url_path_join(client.server_url,
+                                       'api/kernels/',
+                                       kernel_id)
+            delete_req = requests.delete(delete_url)
+            if delete_req.status_code != 204:
+                QMessageBox.critical(
+                self,
+                _("Server error"),
+                _("The Jupyter Notebook server failed "
+                  "to shutdown the kernel. "
+                  "If you want to shutdown it you would "
+                  "have to do it manually."
+                  "<br><br>Status code {}").format(delete_req.status_code))
 
         # TODO: Eliminate the notebook from disk if it's an Untitled one
         client.close()
