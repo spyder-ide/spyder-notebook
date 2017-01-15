@@ -12,7 +12,6 @@ import os.path as osp
 import subprocess
 import sys
 import tempfile
-
 # Qt imports
 from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
 from qtpy.QtCore import Qt, Signal
@@ -234,14 +233,15 @@ class NotebookPlugin(SpyderPluginWidget):
     def save_as(self):
         """Save notebook as..."""
         current_client = self.get_current_client()
-        original_name = current_client.get_short_name()
+        current_client.save()
         original_path = current_client.get_name()
-        nb_contents = nbformat.read(original_path, as_version=4)
+        original_name = osp.basename(original_path)
         filename, _selfilter = getsavefilename(self, _("Save notebook"),
                                        original_name, get_edit_filters(),
                                        get_filter(get_edit_filetypes(),
                                            osp.splitext(original_name)[1]))
         if filename:
+            nb_contents = nbformat.read(original_path, as_version=4)
             nbformat.write(nb_contents, filename)
             self.close_client()
             self.create_new_client(name=filename)
