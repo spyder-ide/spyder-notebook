@@ -7,6 +7,7 @@
 
 import os
 import os.path as osp
+import json
 from string import Template
 import sys
 
@@ -14,10 +15,13 @@ import sys
 from qtpy.QtCore import QUrl
 from qtpy.QtWebEngineWidgets import (QWebEnginePage, QWebEngineSettings,
                                      WEBENGINE)
-from qtpy.QtWidgets import QMenu, QVBoxLayout, QWidget
+from qtpy.QtWidgets import QMenu, QVBoxLayout, QWidget, QMessageBox
 
 # Notebook imports
 from notebook.utils import url_path_join, url_escape
+
+# Third-party imports
+import requests
 
 # Spyder imports
 from spyder.config.base import _, get_image_path, get_module_source_path
@@ -168,6 +172,34 @@ class NotebookClient(QWidget):
         """Save current notebook."""
         self.notebookwidget.click('#save-notbook button')
 
+    def shutdown_kernel(self):
+        """Shutdown the kernel of the client."""
+        sessions_url = url_path_join(self.server_url, 'api/sessions')
+        sessions_req = requests.get(sessions_url).content.decode()
+        sessions = json.loads(sessions_req)
+        kernel_id = None
+        if os.name == 'nt':
+            path = self.path.replace('\\', '/')
+        else:
+            path = self.path
+        for session in sessions:
+            if session['notebook']['path'] == path:
+                kernel_id = session['kernel']['id']
+                break
+        if kernel_id:
+            delete_url = url_path_join(self.server_url,
+                                       'api/kernels/',
+                                       kernel_id)
+            delete_req = requests.delete(delete_url)
+            if delete_req.status_code != 204:
+                QMessageBox.warning(
+                self,
+                _("Server error"),
+                _("The Jupyter Notebook server "
+                  "failed to shutdown the kernel "
+                  "associated with this notebook. "
+                  "If you want to shut it down, "
+                  "you'll have to close Spyder."))
 
 #-----------------------------------------------------------------------------
 # Tests

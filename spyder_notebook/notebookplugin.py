@@ -12,6 +12,7 @@ import os.path as osp
 import subprocess
 import sys
 import tempfile
+
 # Qt imports
 from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
 from qtpy.QtCore import Qt, Signal
@@ -224,6 +225,7 @@ class NotebookPlugin(SpyderPluginWidget):
             client = self.tabwidget.widget(index)
 
         # TODO: Eliminate the notebook from disk if it's an Untitled one
+        client.shutdown_kernel()
         client.close()
 
         # Note: notebook index may have changed after closing related widgets
