@@ -1,0 +1,45 @@
+# https://circleci.com/gh/spyder-ide/spyder-notebook/
+
+machine:
+  environment:
+    # Python versions to tests (Maximum of 4 different versions)
+    PY_VERSIONS:        "3.5 3.4 2.7"
+
+    # Conda variables and aliases for commands
+    CMD_TEST_CIOCHECK:  /home/ubuntu/miniconda/envs/test/bin/ciocheck
+    CMD_TEST_COVERALLS: /home/ubuntu/miniconda/envs/test/bin/coveralls
+    CMD_TEST_PIP:       /home/ubuntu/miniconda/envs/test/bin/pip
+    CMD_TEST_PYTHON:    /home/ubuntu/miniconda/envs/test/bin/python
+    MINICONDA:          /home/ubuntu/miniconda
+    PATH:               /home/ubuntu/miniconda/bin:$PATH
+
+dependencies:
+  override:
+    # Conda install
+    - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    - bash Miniconda3-latest-Linux-x86_64.sh -b -p $MINICONDA
+    - conda config --set always_yes True
+
+    # Environment for tests
+    - export PY_VERSIONS=($PY_VERSIONS) &&
+      export PYTHON_VERSION=${PY_VERSIONS[$CIRCLE_NODE_INDEX]} && 
+      echo -e "PYTHON = $PYTHON_VERSION \n============" &&
+      conda create -n test python=$PYTHON_VERSION -q; 
+    #- conda install -n test --file requirements.txt -q
+    - "$CMD_TEST_PIP install coveralls"
+
+    # Install python module
+    #- $CMD_TEST_PYTHON setup.py develop > /dev/null;
+
+    # Environment for lint checks
+    - conda install -n test ciocheck -c spyder-ide -q --no-update-deps
+
+test:
+  override:
+    # Check Python style
+    - $CMD_TEST_CIOCHECK spyder_notebook -dt: # note the colon
+        parallel: true
+
+    # Run Python tests
+    - $CMD_TEST_CIOCHECK spyder_notebook -dl -df: # note the colon
+        parallel: true
