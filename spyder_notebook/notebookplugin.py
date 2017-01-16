@@ -13,7 +13,6 @@ import subprocess
 import sys
 import tempfile
 
-
 # Qt imports
 from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
 from qtpy.QtCore import Qt, Signal
