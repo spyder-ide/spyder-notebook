@@ -6,7 +6,8 @@
 branch = origin/master
 diff_mode = commited
 file_mode = all
-check = pep8
+check = pep8,isort
+enforce = isort
 
 # Python (pyformat)
 add_copyright = true
@@ -53,11 +54,12 @@ max-complexity = 64
 [isort]
 from_first = true
 import_heading_stdlib = Standard library imports
-import_heading_firstparty = Local imports
 import_heading_thirdparty = Third party imports
+import_heading_firstparty = Local imports
+import_heading_localfolder = Local relative imports
 indent = '    '
 known_first_party = spyder_notebook
-known_third_party = qtpy, spyder
+known_third_party = qtpy,spyder,notebook,nbformat
 known_standard_library = mimetypes
 line_length = 79
 sections = FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER
