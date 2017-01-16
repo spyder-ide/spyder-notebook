@@ -1,16 +1,20 @@
-# -*- coding: utf-8 -*
-#
+# -*- coding: utf-8 -*-
+# -----------------------------------------------------------------------------
 # Copyright (c) 2014, Thomas Kluyver and contributors to the nbopen
 # project: https://github.com/takluyver/nbopen
 # All rights reserved.
 #
 # Licensed under the terms of BSD 3-clause license
+# -----------------------------------------------------------------------------
+"""Handle opening of notebooks to avoid multiple server instances."""
 
+# Standard library imports
 import atexit
 import os.path
 import subprocess
 import time
 
+# Third party imports
 from notebook import notebookapp
 from spyder.config.base import get_home_dir
 

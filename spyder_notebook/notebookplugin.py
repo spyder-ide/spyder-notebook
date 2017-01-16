@@ -1,37 +1,33 @@
 # -*- coding: utf-8 -*-
-#
+# -----------------------------------------------------------------------------
 # Copyright (c) Spyder Project Contributors
+#
 # Licensed under the terms of the MIT License
+# (see LICENSE.txt for details)
+# -----------------------------------------------------------------------------
+"""Jupyter Notebook plugin."""
 
-"""
-Jupyter Notebook plugin
-"""
-
-# Stdlib imports
+# Standard library imports
 import os.path as osp
 import subprocess
 import sys
 import tempfile
-# Qt imports
-from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
-from qtpy.QtCore import Qt, Signal
-from qtpy.compat import getsavefilename
 
-# Third-party imports
+# Third party imports
+from qtpy.compat import getsavefilename
+from qtpy.QtCore import Qt, Signal
+from qtpy.QtWidgets import QApplication, QMenu, QMessageBox, QVBoxLayout
+from spyder.config.base import _
+from spyder.plugins import SpyderPluginWidget
+from spyder.utils import icon_manager as ima
+from spyder.utils.qthelpers import (add_actions, create_action,
+                                    create_toolbutton)
+from spyder.widgets.tabs import Tabs
 import nbformat
 
-# Spyder imports
-from spyder.config.base import _
-from spyder.utils import icon_manager as ima
-from spyder.utils.qthelpers import (create_action, create_toolbutton,
-                                    add_actions)
-from spyder.widgets.tabs import Tabs
-from spyder.plugins import SpyderPluginWidget
-
-# Local imports
-from .utils.nbopen import nbopen, NBServerError
+# Local relative imports
+from .utils.nbopen import NBServerError, nbopen
 from .widgets.client import NotebookClient
-
 
 NOTEBOOK_TMPDIR = tempfile.gettempdir()
 FILTER_TITLE = _("Jupyter notebooks")

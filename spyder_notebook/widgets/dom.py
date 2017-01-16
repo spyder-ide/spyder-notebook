@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
-#
+# -----------------------------------------------------------------------------
 # Copyright (c) Spyder Project Contributors
+#
 # Licensed under the terms of the MIT License
-
+# (see LICENSE.txt for details)
+# -----------------------------------------------------------------------------
 """
-Widget to do DOM manipulations using Javascript
+Widget to do DOM manipulations using Javascript.
 
 Some code here comes from the Ghost.py project:
 https://github.com/jeanphix/Ghost.py
 """
 
+# Third party imports
 from qtpy.QtWebEngineWidgets import WEBENGINE
 from spyder.widgets.browser import WebView
 

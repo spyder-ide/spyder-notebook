@@ -3,11 +3,11 @@
 # Copyright (c) Spyder Project Contributors
 #
 # Licensed under the terms of the MIT License
+# (see LICENSE.txt for details)
 # -----------------------------------------------------------------------------
-
 """Spyder Notebook plugin."""
 
-# Local imports
+# Local relative imports
 from .notebookplugin import NotebookPlugin as PLUGIN_CLASS
 
 VERSION_INFO = (0, 1, 0, 'dev0')

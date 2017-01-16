@@ -1,34 +1,32 @@
 # -*- coding: utf-8 -*-
-#
+# -----------------------------------------------------------------------------
 # Copyright (c) Spyder Project Contributors
+#
 # Licensed under the terms of the MIT License
-
+# (see LICENSE.txt for details)
+# -----------------------------------------------------------------------------
 """Qt widgets for the notebook."""
 
+# Standard library imports
+from string import Template
 import os
 import os.path as osp
-from string import Template
 import sys
 
-# Qt imports
+# Third party imports
+from notebook.utils import url_escape, url_path_join
 from qtpy.QtCore import QUrl
-from qtpy.QtWebEngineWidgets import (QWebEnginePage, QWebEngineSettings,
-                                     WEBENGINE)
+from qtpy.QtWebEngineWidgets import (WEBENGINE, QWebEnginePage,
+                                     QWebEngineSettings)
 from qtpy.QtWidgets import QMenu, QVBoxLayout, QWidget
-
-# Notebook imports
-from notebook.utils import url_path_join, url_escape
-
-# Spyder imports
 from spyder.config.base import _, get_image_path, get_module_source_path
 from spyder.py3compat import is_text_string
-from spyder.utils.qthelpers import add_actions
 from spyder.utils import sourcecode
+from spyder.utils.qthelpers import add_actions
 from spyder.widgets.findreplace import FindReplace
 
-# Local imports
+# Local relative imports
 from ..widgets.dom import DOMWidget
-
 
 #-----------------------------------------------------------------------------
 # Templates
