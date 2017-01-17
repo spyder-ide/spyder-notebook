@@ -18,10 +18,7 @@ class DOMWidget(WebView):
 
     def __init__(self, parent):
         super(DOMWidget, self).__init__(parent)
-        if WEBENGINE:
-            self.page = self.page()
-        else:
-            self.page = self.page().mainFrame()
+        self.page = self.page()
 
     def evaluate(self, script):
         """Evaluates script in page frame.
@@ -30,7 +27,7 @@ class DOMWidget(WebView):
         if WEBENGINE:
             return self.page.runJavaScript("%s" % script)
         else:
-            return self.page.evaluateJavaScript("%s" % script)
+            return self.page.mainFrame().evaluateJavaScript("%s" % script)
 
     def click(self, selector, btn=0):
         """Click the targeted element.
