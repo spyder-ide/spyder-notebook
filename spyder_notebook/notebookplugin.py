@@ -16,7 +16,7 @@ import tempfile
 # Qt imports
 from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
 from qtpy.QtCore import Qt, Signal
-from qtpy.compat import getsavefilename
+from qtpy.compat import getsavefilename, getopenfilenames
 
 # Third-party imports
 import nbformat
@@ -145,8 +145,12 @@ class NotebookPlugin(SpyderPluginWidget):
                                        _("Save as..."),
                                        icon=ima.icon('filesaveas'),
                                        triggered=self.save_as)
+        open_action = create_action(self,
+                                    _("Open..."),
+                                    icon=ima.icon('fileopen'),
+                                    triggered=self.open_notebook)
         # Plugin actions
-        self.menu_actions = [create_nb_action, save_as_action]
+        self.menu_actions = [create_nb_action, save_as_action, open_action]
         return self.menu_actions
 
     def register_plugin(self):
@@ -245,6 +249,14 @@ class NotebookPlugin(SpyderPluginWidget):
             nbformat.write(nb_contents, filename)
             self.close_client()
             self.create_new_client(name=filename)
+
+    def open_notebook(self):
+        """Open a notebook from file."""
+        filenames, _selfilter = getopenfilenames(self, _("Open notebook"),
+                                                 '', FILES_FILTER)
+        if filenames:
+            for filename in filenames:
+                self.create_new_client(name=filename)
 
     #------ Public API (for tabs) ---------------------------------------------
     def add_tab(self, widget):
