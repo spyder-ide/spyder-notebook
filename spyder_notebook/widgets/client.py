@@ -64,7 +64,7 @@ class NotebookWidget(DOMWidget):
                                     self.pageAction(QWebEnginePage.Copy), None,
                                     self.zoom_in_action, self.zoom_out_action]
         if not WEBENGINE:
-            settings = self.page.settings()
+            settings = self.page().settings()
             settings.setAttribute(QWebEngineSettings.DeveloperExtrasEnabled, True)
             actions += [None, self.pageAction(QWebEnginePage.InspectElement)]
         add_actions(menu, actions)
