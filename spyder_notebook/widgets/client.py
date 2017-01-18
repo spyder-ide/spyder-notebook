@@ -58,9 +58,11 @@ class NotebookWidget(DOMWidget):
         """Don't show some actions which have no meaning for the IPython
         notebook."""
         menu = QMenu(self)
-        actions = [self.pageAction(QWebEnginePage.SelectAll),
-                   self.pageAction(QWebEnginePage.Copy), None,
-                   self.zoom_in_action, self.zoom_out_action]
+        plugin_actions = self.parent().plugin_actions
+        actions = plugin_actions + [None,
+                                    self.pageAction(QWebEnginePage.SelectAll),
+                                    self.pageAction(QWebEnginePage.Copy), None,
+                                    self.zoom_in_action, self.zoom_out_action]
         if not WEBENGINE:
             settings = self.page().settings()
             settings.setAttribute(QWebEngineSettings.DeveloperExtrasEnabled, True)
@@ -120,6 +122,7 @@ class NotebookClient(QWidget):
         self.server_url = None
         self.path = None
 
+        self.plugin_actions = plugin.get_plugin_actions()
         self.notebookwidget = NotebookWidget(self)
         self.notebookwidget.show_loading_page()
 
