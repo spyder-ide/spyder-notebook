@@ -150,7 +150,7 @@ class NotebookPlugin(SpyderPluginWidget):
                                     icon=ima.icon('fileopen'),
                                     triggered=self.open_notebook)
         # Plugin actions
-        self.menu_actions = [create_nb_action, save_as_action, open_action]
+        self.menu_actions = [create_nb_action, open_action, save_as_action]
         return self.menu_actions
 
     def register_plugin(self):
