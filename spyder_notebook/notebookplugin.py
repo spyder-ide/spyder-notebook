@@ -138,7 +138,7 @@ class NotebookPlugin(SpyderPluginWidget):
     def get_plugin_actions(self):
         """Return a list of actions related to plugin"""
         create_nb_action = create_action(self,
-                                         _("Open a new notebook"),
+                                         _("New notebook"),
                                          icon=ima.icon('filenew'),
                                          triggered=self.create_new_client)
         save_as_action = create_action(self,
