@@ -7,19 +7,19 @@
 
 """
 Spyder-notebook
-======
+===============
 
-Jupyter notebook integration with Spyder
+Jupyter notebook integration with Spyder.
 """
 
 # Third party imports
 from setuptools import find_packages, setup
 from spyder_notebook import __version__
 
-REQUIREMENTS = ['spyder', 'notebook']
+REQUIREMENTS = ['spyder', 'jupyter', 'notebook']
 
 setup(
-        name='spyder-notebooks',
+        name='spyder-notebook',
         version=__version__,
         keywords=["github changelog milestone"],
         url='https://github.com/spyder-ide/spyder-notebook',
@@ -32,10 +32,10 @@ setup(
         packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
         install_requires=REQUIREMENTS,
         classifiers=[
-                     'Development Status :: 5 - Production/Stable',
+                     'Development Status :: 4 - Beta',
                      'Intended Audience :: Developers',
                      'License :: OSI Approved :: MIT License',
                      'Operating System :: OS Independent',
                      'Programming Language :: Python 2.7',
-                     'Programming Language :: Python 3.5'
+                     'Programming Language :: Python 3'
                      ])
