@@ -16,12 +16,12 @@ Jupyter notebook integration with Spyder.
 from setuptools import find_packages, setup
 from spyder_notebook import __version__
 
-REQUIREMENTS = ['spyder', 'jupyter', 'notebook']
+REQUIREMENTS = ['spyder', 'notebook']
 
 setup(
         name='spyder-notebook',
         version=__version__,
-        keywords=["github changelog milestone"],
+        keywords=["spyder", "jupyter", "notebook"],
         url='https://github.com/spyder-ide/spyder-notebook',
         license='MIT',
         author='Spyder Development Team',
