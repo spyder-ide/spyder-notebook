@@ -6,8 +6,8 @@
 
 
 """
-Spyder-notebook
-===============
+Spyder notebook plugin
+======================
 
 Jupyter notebook integration with Spyder.
 """
