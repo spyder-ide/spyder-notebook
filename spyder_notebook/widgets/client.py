@@ -135,6 +135,11 @@ class NotebookClient(QWidget):
         layout.addWidget(self.find_widget)
         self.setLayout(layout)
 
+    def add_token(self, url):
+        """Add notebook token to a given url."""
+        token_url = url + '?token={}'.format(self.token)
+        return token_url
+
     def register(self, server_info):
         """Register attributes that can be computed with the server info."""
         # Path relative to the server directory
@@ -149,15 +154,13 @@ class NotebookClient(QWidget):
         self.server_url = server_info['url']
 
         # Server token
-        self.token = server_info.get('token', '')
+        self.token = server_info['token']
 
-        # Full url used to render the notebook as a web page
-        file_arg = url_path_join('/notebooks', url_escape(self.path))
-        file_arg = file_arg.replace('/', r'%2F')
+        url = url_path_join(self.server_url, 'notebooks',
+                            url_escape(self.path))
 
-        self.file_url = url_path_join(self.server_url,
-                                   'login?token={}&next={}'.format(self.token,
-                                                                   file_arg))
+        # Set file url to load this notebook
+        self.file_url = self.add_token(url)
 
     def go_to(self, url_or_text):
         """Go to page *address*"""
@@ -186,22 +189,26 @@ class NotebookClient(QWidget):
 
     def shutdown_kernel(self):
         """Shutdown the kernel of the client."""
-        sessions_url = url_path_join(self.server_url, 'api/sessions')
+        sessions_url = self.add_token(url_path_join(self.server_url,
+                                                    'api/sessions'))
         sessions_req = requests.get(sessions_url).content.decode()
         sessions = json.loads(sessions_req)
         kernel_id = None
+
         if os.name == 'nt':
             path = self.path.replace('\\', '/')
         else:
             path = self.path
+
         for session in sessions:
             if session['notebook']['path'] == path:
                 kernel_id = session['kernel']['id']
                 break
+
         if kernel_id:
-            delete_url = url_path_join(self.server_url,
-                                       'api/kernels/',
-                                       kernel_id)
+            delete_url = self.add_token(url_path_join(self.server_url,
+                                                      'api/kernels/',
+                                                      kernel_id))
             delete_req = requests.delete(delete_url)
             if delete_req.status_code != 204:
                 QMessageBox.warning(
