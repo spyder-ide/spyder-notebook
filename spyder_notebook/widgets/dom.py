@@ -55,3 +55,11 @@ class DOMWidget(WebView):
         script = 'document.querySelector("%s").setAttribute("value", "%s")'
         script = script % (selector, value)
         self.evaluate(script)
+
+    def set_class_value(self, selector, classname):
+        """Sets the class of element matched by the given selector."""
+        return self.evaluate("""
+            (function () {
+            var element = document.querySelector(%s);
+            element.className = %s;
+            })();""" % (repr(selector), repr(classname)))

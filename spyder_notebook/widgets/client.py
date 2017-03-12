@@ -105,7 +105,6 @@ class NotebookWidget(DOMWidget):
         self.setHtml(page)
 
 
-
 class NotebookClient(QWidget):
     """
     Notebook client for Spyder.
@@ -124,6 +123,7 @@ class NotebookClient(QWidget):
 
         self.plugin_actions = plugin.get_plugin_actions()
         self.notebookwidget = NotebookWidget(self)
+        self.notebookwidget.selectionChanged.connect(self.hide_header)
         self.notebookwidget.show_loading_page()
 
         self.find_widget = FindReplace(self)
@@ -160,6 +160,10 @@ class NotebookClient(QWidget):
 
     def load_notebook(self):
         self.go_to(self.file_url)
+
+    def hide_header(self):
+        """Hide the header of the notebook."""
+        self.notebookwidget.set_class_value("#header-container", "hidden")
 
     def get_name(self):
         return self.name
