@@ -105,7 +105,6 @@ class NotebookWidget(DOMWidget):
         self.setHtml(page)
 
 
-
 class NotebookClient(QWidget):
     """
     Notebook client for Spyder.
@@ -124,7 +123,7 @@ class NotebookClient(QWidget):
 
         self.plugin_actions = plugin.get_plugin_actions()
         self.notebookwidget = NotebookWidget(self)
-        self.notebookwidget.show_loading_page()
+        self.notebookwidget.show_blank()
 
         self.find_widget = FindReplace(self)
         self.find_widget.set_editor(self.notebookwidget)
@@ -142,13 +141,23 @@ class NotebookClient(QWidget):
         self.path = os.path.relpath(self.name,
                                     start=server_info['notebook_dir'])
 
-        # Full url used to render the notebook as a web page
-        self.file_url = url_path_join(server_info['url'],
-                                      'notebooks',
-                                      url_escape(self.path.replace('\\','/')))
+        # Replace backslashes on Windows
+        if os.name == 'nt':
+            self.path = self.path.replace('\\','/')
 
         # Server url to send requests to
         self.server_url = server_info['url']
+
+        # Server token
+        self.token = server_info.get('token', '')
+
+        # Full url used to render the notebook as a web page
+        file_arg = url_path_join('/notebooks', url_escape(self.path))
+        file_arg = file_arg.replace('/', r'%2F')
+
+        self.file_url = url_path_join(self.server_url,
+                                   'login?token={}&next={}'.format(self.token,
+                                                                   file_arg))
 
     def go_to(self, url_or_text):
         """Go to page *address*"""
