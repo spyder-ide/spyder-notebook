@@ -27,6 +27,7 @@ from spyder.utils import icon_manager as ima
 from spyder.utils.qthelpers import (create_action, create_toolbutton,
                                     add_actions)
 from spyder.widgets.tabs import Tabs
+from spyder.widgets.fileswitcher import FileSwitcher
 from spyder.plugins import SpyderPluginWidget
 
 # Local imports
@@ -48,6 +49,7 @@ class NotebookPlugin(SpyderPluginWidget):
     def __init__(self, parent):
         SpyderPluginWidget.__init__(self, parent)
 
+        self.fileswitcher_dlg = None
         self.tabwidget = None
         self.menu_actions = None
 
@@ -61,6 +63,10 @@ class NotebookPlugin(SpyderPluginWidget):
 
         layout = QVBoxLayout()
 
+        filelist_btn = create_toolbutton(self, icon=ima.icon('filelist'),
+                                              tip=_("File list management"),
+                                              triggered=self.open_fileswitcher_dlg)
+
         new_notebook_btn = create_toolbutton(self,
                                              icon=ima.icon('project_expanded'),
                                              tip=_('Open a new notebook'),
@@ -71,7 +77,8 @@ class NotebookPlugin(SpyderPluginWidget):
         menu_btn.setMenu(self.menu)
         menu_btn.setPopupMode(menu_btn.InstantPopup)
         add_actions(self.menu, self.menu_actions)
-        corner_widgets = {Qt.TopRightCorner: [new_notebook_btn, menu_btn]}
+        corner_widgets = {Qt.TopRightCorner: [filelist_btn,
+                                              new_notebook_btn, menu_btn]}
         self.tabwidget = Tabs(self, menu=self.menu, actions=self.menu_actions,
                               corner_widgets=corner_widgets)
 
@@ -277,3 +284,23 @@ class NotebookPlugin(SpyderPluginWidget):
         """
         client = self.clients.pop(index_from)
         self.clients.insert(index_to, client)
+    
+    def set_stack_index(self, index):
+        """Set the index of the current notebook."""
+        self.tabwidget.setCurrentIndex(index)
+        
+    def open_fileswitcher_dlg(self):
+        """Open notebook list management dialog box."""
+        if not self.tabwidget.count():
+            return
+        if self.fileswitcher_dlg is not None and \
+          self.fileswitcher_dlg.is_visible:
+            self.fileswitcher_dlg.hide()
+            self.fileswitcher_dlg.is_visible = False
+            return
+        self.fileswitcher_dlg = FileSwitcher(self, self.tabwidget, self.clients)
+        self.fileswitcher_dlg.sig_goto_file.connect(self.set_stack_index)
+        self.fileswitcher_dlg.sig_close_file.connect(self.close_client)
+        self.fileswitcher_dlg.show()
+        self.fileswitcher_dlg.is_visible = True
+

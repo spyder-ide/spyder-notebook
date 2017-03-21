@@ -116,7 +116,7 @@ class NotebookClient(QWidget):
     def __init__(self, plugin, name):
         super(NotebookClient, self).__init__(plugin)
 
-        self.name = name
+        self.filename = name
 
         self.file_url = None
         self.server_url = None
@@ -139,7 +139,7 @@ class NotebookClient(QWidget):
     def register(self, server_info):
         """Register attributes that can be computed with the server info."""
         # Path relative to the server directory
-        self.path = os.path.relpath(self.name,
+        self.path = os.path.relpath(self.filename,
                                     start=server_info['notebook_dir'])
 
         # Full url used to render the notebook as a web page
@@ -162,11 +162,11 @@ class NotebookClient(QWidget):
         self.go_to(self.file_url)
 
     def get_name(self):
-        return self.name
+        return self.filename
 
     def get_short_name(self):
         """Get a short name for the notebook."""
-        sname = osp.basename(self.name)
+        sname = osp.basename(self.filename)
         if len(sname) > 15:
             sname = sname[:15]
         return sname
