@@ -16,26 +16,24 @@ Jupyter notebook integration with Spyder.
 from setuptools import find_packages, setup
 from spyder_notebook import __version__
 
-REQUIREMENTS = ['spyder>=3', 'notebook']
+REQUIREMENTS = ['spyder>=3', 'notebook>=4.3']
 
 setup(
-        name='spyder-notebook',
-        version=__version__,
-        keywords='spyder jupyter notebook',
-        url='https://github.com/spyder-ide/spyder-notebook',
-        license='MIT',
-        author='Spyder Development Team',
-        description='Jupyter notebook integration with Spyder',
-        long_description="This is a initial implementation of "
-                         "the notebook running inside Spyder "
-                         "as a plugin.",
-        packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
-        install_requires=REQUIREMENTS,
-        classifiers=[
-                     'Development Status :: 4 - Beta',
-                     'Intended Audience :: Developers',
-                     'License :: OSI Approved :: MIT License',
-                     'Operating System :: OS Independent',
-                     'Programming Language :: Python 2.7',
-                     'Programming Language :: Python 3'
-                     ])
+    name='spyder-notebook',
+    version=__version__,
+    keywords='spyder jupyter notebook',
+    url='https://github.com/spyder-ide/spyder-notebook',
+    license='MIT',
+    author='Spyder Development Team',
+    description='Jupyter notebook integration with Spyder',
+    long_description="This package allows the Jupyter notebook "
+                     "to run inside Spyder as a plugin.",
+    packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
+    install_requires=REQUIREMENTS,
+    classifiers=['Development Status :: 4 - Beta',
+                 'Intended Audience :: Developers',
+                 'License :: OSI Approved :: MIT License',
+                 'Operating System :: OS Independent',
+                 'Programming Language :: Python 2.7',
+                 'Programming Language :: Python 3']
+)

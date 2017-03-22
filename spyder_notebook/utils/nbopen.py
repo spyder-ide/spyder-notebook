@@ -50,7 +50,8 @@ def nbopen(filename):
 
         print("Starting new server")
         command = ['jupyter', 'notebook', '--no-browser',
-                   '--notebook-dir={}'.format(nbdir)]
+                   '--notebook-dir={}'.format(nbdir),
+                   '--NotebookApp.password=']
         proc = subprocess.Popen(command)
         atexit.register(proc.terminate)
 
