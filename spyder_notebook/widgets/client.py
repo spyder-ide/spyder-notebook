@@ -115,6 +115,8 @@ class NotebookClient(QWidget):
     def __init__(self, plugin, name):
         super(NotebookClient, self).__init__(plugin)
 
+        if os.name == 'nt':
+            name = name.replace('/','\\')
         self.filename = name
 
         self.file_url = None
