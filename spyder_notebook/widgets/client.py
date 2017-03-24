@@ -105,7 +105,6 @@ class NotebookWidget(DOMWidget):
         self.setHtml(page)
 
 
-
 class NotebookClient(QWidget):
     """
     Notebook client for Spyder.
@@ -124,7 +123,7 @@ class NotebookClient(QWidget):
 
         self.plugin_actions = plugin.get_plugin_actions()
         self.notebookwidget = NotebookWidget(self)
-        self.notebookwidget.show_loading_page()
+        self.notebookwidget.show_blank()
 
         self.find_widget = FindReplace(self)
         self.find_widget.set_editor(self.notebookwidget)
@@ -136,19 +135,32 @@ class NotebookClient(QWidget):
         layout.addWidget(self.find_widget)
         self.setLayout(layout)
 
+    def add_token(self, url):
+        """Add notebook token to a given url."""
+        token_url = url + '?token={}'.format(self.token)
+        return token_url
+
     def register(self, server_info):
         """Register attributes that can be computed with the server info."""
         # Path relative to the server directory
         self.path = os.path.relpath(self.filename,
                                     start=server_info['notebook_dir'])
 
-        # Full url used to render the notebook as a web page
-        self.file_url = url_path_join(server_info['url'],
-                                      'notebooks',
-                                      url_escape(self.path.replace('\\','/')))
+        # Replace backslashes on Windows
+        if os.name == 'nt':
+            self.path = self.path.replace('\\','/')
 
         # Server url to send requests to
         self.server_url = server_info['url']
+
+        # Server token
+        self.token = server_info['token']
+
+        url = url_path_join(self.server_url, 'notebooks',
+                            url_escape(self.path))
+
+        # Set file url to load this notebook
+        self.file_url = self.add_token(url)
 
     def go_to(self, url_or_text):
         """Go to page *address*"""
@@ -177,22 +189,26 @@ class NotebookClient(QWidget):
 
     def shutdown_kernel(self):
         """Shutdown the kernel of the client."""
-        sessions_url = url_path_join(self.server_url, 'api/sessions')
+        sessions_url = self.add_token(url_path_join(self.server_url,
+                                                    'api/sessions'))
         sessions_req = requests.get(sessions_url).content.decode()
         sessions = json.loads(sessions_req)
         kernel_id = None
+
         if os.name == 'nt':
             path = self.path.replace('\\', '/')
         else:
             path = self.path
+
         for session in sessions:
             if session['notebook']['path'] == path:
                 kernel_id = session['kernel']['id']
                 break
+
         if kernel_id:
-            delete_url = url_path_join(self.server_url,
-                                       'api/kernels/',
-                                       kernel_id)
+            delete_url = self.add_token(url_path_join(self.server_url,
+                                                      'api/kernels/',
+                                                      kernel_id))
             delete_req = requests.delete(delete_url)
             if delete_req.status_code != 204:
                 QMessageBox.warning(
