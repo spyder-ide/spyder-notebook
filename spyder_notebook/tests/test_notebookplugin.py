@@ -37,10 +37,11 @@ def test_notebookplugin_create_new_client(qtbot):
 def test_notebookplugin_DOM(qtbot):
     """The notebook actually charges."""
     notebook = setup_notebookplugin(qtbot)
+    notebook.show()
     client = notebook.get_current_client()
     widget = client.notebookwidget
     qtbot.waitUntil(lambda: 'ipython_notebook' in widget.dom.toHtml(), timeout=5000)
-    assert widget.dom.findFirstElement('ipython_notebook').toHtml() == 'a'
+    assert 'ipython_notebook' in widget.dom.toHtml()
 
 
 if __name__ == "__main__":

@@ -26,14 +26,16 @@ dependencies:
       echo -e "PYTHON = $PYTHON_VERSION \n============" &&
       conda create -n test python=$PYTHON_VERSION -q; 
     #- conda install -n test --file requirements.txt -q
-    - "$CMD_TEST_PIP install coveralls"
+    - "$CMD_TEST_PIP install coveralls pytest-qt"
 
     # Install python module
     #- $CMD_TEST_PYTHON setup.py develop > /dev/null;
 
     # Environment for lint checks
     - conda install -n test ciocheck -c spyder-ide -q --no-update-deps
-
+    
+    # Notebook dependencies
+    - conda install -n test qt=5.* pyqt=5.* qtpy notebook spyder -q --no-update-deps
 test:
   override:
     # Check Python style
@@ -42,4 +44,7 @@ test:
 
     # Run Python tests
     - $CMD_TEST_CIOCHECK spyder_notebook -dl -df: # note the colon
+        parallel: true
+
+    - $CMD_TEST_PYTHON runtests.py: # note the colon
         parallel: true
