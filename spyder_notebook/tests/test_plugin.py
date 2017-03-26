@@ -34,13 +34,15 @@ def setup_notebook(qtbot):
 
 
 def test_new_notebook(qtbot):
-    """Create a new client."""
+    """Test that a new client is really a notebook."""
     # Create notebook
     notebook = setup_notebook(qtbot)
 
     # Wait for prompt
     nbwidget = notebook.get_current_nbwidget()
     qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
+
+    # Assert that we have one notebook
     assert len(notebook.clients) == 1
 
 
