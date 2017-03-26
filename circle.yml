@@ -38,5 +38,5 @@ test:
     #- export PATH="$HOME/miniconda/bin:$PATH" && source activate test && ciocheck spyder: # note the colon
     #    parallel: true
     # Tests
-    - export PATH && source activate test && $CMD_TEST_PYTHON runtests.py: # note the colon
+    - export PATH="$HOME/miniconda/bin:$PATH" && source activate test && python runtests.py: # note the colon
         parallel: true
