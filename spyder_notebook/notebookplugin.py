@@ -88,7 +88,7 @@ class NotebookPlugin(SpyderPluginWidget):
         layout.addWidget(self.tabwidget)
         self.setLayout(layout)
 
-    #------ SpyderPluginMixin API ---------------------------------------------
+    # ------ SpyderPluginMixin API --------------------------------------------
     def on_first_registration(self):
         """Action to be performed on first plugin registration."""
         self.main.tabify_plugins(self.main.editor, self)
@@ -99,7 +99,7 @@ class NotebookPlugin(SpyderPluginWidget):
         # this.
         pass
 
-    #------ SpyderPluginWidget API --------------------------------------------
+    # ------ SpyderPluginWidget API -------------------------------------------
     def get_plugin_title(self):
         """Return widget title."""
         title = _('Jupyter Notebook')
@@ -155,7 +155,7 @@ class NotebookPlugin(SpyderPluginWidget):
         self.main.add_dockwidget(self)
         self.create_new_client(give_focus=False)
 
-    #------ Public API (for clients) ------------------------------------------
+    # ------ Public API (for clients) -----------------------------------------
     def get_clients(self):
         """Return notebooks list."""
         return [cl for cl in self.clients if isinstance(cl, NotebookClient)]
@@ -246,7 +246,7 @@ class NotebookPlugin(SpyderPluginWidget):
         original_path = current_client.get_name()
         original_name = osp.basename(original_path)
         filename, _selfilter = getsavefilename(self, _("Save notebook"),
-                                       original_name, FILES_FILTER)
+                                               original_name, FILES_FILTER)
         if filename:
             nb_contents = nbformat.read(original_path, as_version=4)
             nbformat.write(nb_contents, filename)
@@ -261,7 +261,7 @@ class NotebookPlugin(SpyderPluginWidget):
             for filename in filenames:
                 self.create_new_client(name=filename)
 
-    #------ Public API (for tabs) ---------------------------------------------
+    # ------ Public API (for tabs) --------------------------------------------
     def add_tab(self, widget):
         """Add tab."""
         self.clients.append(widget)

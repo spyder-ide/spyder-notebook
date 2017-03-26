@@ -23,7 +23,7 @@ class NBServerError(Exception):
 
 def find_best_server(filename):
     """Find the best server to open a notebook with."""
-    servers = [si for si in notebookapp.list_running_servers() \
+    servers = [si for si in notebookapp.list_running_servers()
                if filename.startswith(si['notebook_dir'])]
     try:
         return max(servers, key=lambda si: len(si['notebook_dir']))

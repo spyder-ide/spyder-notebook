@@ -34,9 +34,9 @@ from spyder.widgets.findreplace import FindReplace
 from ..widgets.dom import DOMWidget
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Templates
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Using the same css file from the Help plugin for now. Maybe
 # later it'll be a good idea to create a new one.
 UTILS_PATH = get_module_source_path('spyder', 'utils')
@@ -48,9 +48,9 @@ LOADING = open(osp.join(TEMPLATES_PATH, 'loading.html')).read()
 KERNEL_ERROR = open(osp.join(TEMPLATES_PATH, 'kernel_error.html')).read()
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Widgets
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 class NotebookWidget(DOMWidget):
     """WebView widget for notebooks."""
 
@@ -64,7 +64,8 @@ class NotebookWidget(DOMWidget):
                                     self.zoom_in_action, self.zoom_out_action]
         if not WEBENGINE:
             settings = self.page().settings()
-            settings.setAttribute(QWebEngineSettings.DeveloperExtrasEnabled, True)
+            settings.setAttribute(QWebEngineSettings.DeveloperExtrasEnabled,
+                                  True)
             actions += [None, self.pageAction(QWebEnginePage.InspectElement)]
         add_actions(menu, actions)
         menu.popup(event.globalPos())
@@ -149,7 +150,7 @@ class NotebookClient(QWidget):
 
         # Replace backslashes on Windows
         if os.name == 'nt':
-            self.path = self.path.replace('\\','/')
+            self.path = self.path.replace('\\', '/')
 
         # Server url to send requests to
         self.server_url = server_info['url']
@@ -215,17 +216,18 @@ class NotebookClient(QWidget):
             delete_req = requests.delete(delete_url)
             if delete_req.status_code != 204:
                 QMessageBox.warning(
-                self,
-                _("Server error"),
-                _("The Jupyter Notebook server "
-                  "failed to shutdown the kernel "
-                  "associated with this notebook. "
-                  "If you want to shut it down, "
-                  "you'll have to close Spyder."))
+                    self,
+                    _("Server error"),
+                    _("The Jupyter Notebook server "
+                    "failed to shutdown the kernel "
+                    "associated with this notebook. "
+                    "If you want to shut it down, "
+                    "you'll have to close Spyder."))
 
-#-----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 # Tests
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 def main():
     """Simple test."""
     from spyder.utils.qthelpers import qapplication
