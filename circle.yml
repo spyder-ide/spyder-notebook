@@ -37,8 +37,8 @@ dependencies:
 test:
   override:
     # Style checks
-    #- export PATH="$HOME/miniconda/bin:$PATH" && source activate test && ciocheck spyder: # note the colon
-    #    parallel: true
+    - export PATH="$HOME/miniconda/bin:$PATH" && source activate test && ciocheck spyder_notebook: # note the colon
+        parallel: true
     # Tests
     - export PATH="$HOME/miniconda/bin:$PATH" && source activate test && python runtests.py: # note the colon
         parallel: true

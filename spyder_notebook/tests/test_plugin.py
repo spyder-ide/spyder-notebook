@@ -20,7 +20,7 @@ NOTEBOOK_UP = 5000
 
 
 def prompt_present(nbwidget):
-    """Check if the an prompt is present in the notebook."""
+    """Check if an In prompt is present in the notebook."""
     if WEBENGINE:
         def callback(data):
             global html

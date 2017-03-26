@@ -6,7 +6,8 @@
 branch = origin/master
 diff_mode = commited
 file_mode = all
-check = pep8
+check = pydocstyle
+enforce = pydocstyle
 
 # Python (pyformat)
 add_copyright = true
@@ -18,8 +19,8 @@ add_init = true
 # http://pep8.readthedocs.io/en/latest/intro.html#configuration
 # -----------------------------------------------------------------------------
 [pep8]
-exclude = */tests/*,*/external/*
-ignore = E126,
+exclude = */tests/*
+ignore = E126, E402,
 max-line-length = 79
 
 # -----------------------------------------------------------------------------
@@ -27,7 +28,7 @@ max-line-length = 79
 # http://www.pydocstyle.org/en/latest/usage.html#example
 # -----------------------------------------------------------------------------
 [pydocstyle]
-add-ignore = D203
+add-ignore = D203, D400
 inherit = false
 
 # -----------------------------------------------------------------------------
@@ -35,8 +36,8 @@ inherit = false
 # http://flake8.readthedocs.io/en/latest/config.html
 # -----------------------------------------------------------------------------
 [flake8]
-exclude = */tests/*,
-ignore = E126,
+exclude = */tests/*
+ignore = E126, E402,
 max-line-length = 79
 max-complexity = 64
 
@@ -76,33 +77,6 @@ spaces_before_comment = 2
 # http://pep8.readthedocs.io/en/latest/intro.html#configuration
 # -----------------------------------------------------------------------------
 [autopep8]
-exclude =
-    */tests/*
+exclude = */tests/*
 ignore = E126,
 max-line-length = 79
-
-# -----------------------------------------------------------------------------
-# Coverage
-# http://coverage.readthedocs.io/en/latest/config.html
-# -----------------------------------------------------------------------------
-[coverage:run]
-omit =
-    */tests/*
-    */build/*
-
-[coverage:report]
-fail_under = 0
-show_missing = true
-skip_covered = true
-exclude_lines =
-    pragma: no cover
-    def test():
-    if __name__ == .__main__.:
-
-# -----------------------------------------------------------------------------
-# pytest
-# http://doc.pytest.org/en/latest/usage.html
-# -----------------------------------------------------------------------------
-[pytest]
-addopts = -rfew --durations=10
-python_functions = test_*
