@@ -219,10 +219,10 @@ class NotebookClient(QWidget):
                     self,
                     _("Server error"),
                     _("The Jupyter Notebook server "
-                    "failed to shutdown the kernel "
-                    "associated with this notebook. "
-                    "If you want to shut it down, "
-                    "you'll have to close Spyder."))
+                      "failed to shutdown the kernel "
+                      "associated with this notebook. "
+                      "If you want to shut it down, "
+                      "you'll have to close Spyder."))
 
 
 # -----------------------------------------------------------------------------
