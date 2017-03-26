@@ -10,6 +10,7 @@ Tests for notebookplugin.py
 
 # Test library imports
 import pytest
+from qtpy.QtWebEngineWidgets import WEBENGINE
 
 # Local imports
 from spyder_notebook.notebookplugin import NotebookPlugin
@@ -20,7 +21,17 @@ NOTEBOOK_UP = 5000
 
 def prompt_present(nbwidget):
     """Check if the an prompt is present in the notebook."""
-    return 'In&nbsp;[&nbsp;]:' in nbwidget.dom.toHtml()
+    if WEBENGINE:
+        def callback(data):
+            global html
+            html = data
+        nbwidget.dom.toHtml(callback)
+        try:
+            return 'In&nbsp;[&nbsp;]:' in html
+        except NameError:
+            return False
+    else:
+        return 'In&nbsp;[&nbsp;]:' in nbwidget.dom.toHtml()
 
 
 @pytest.fixture
