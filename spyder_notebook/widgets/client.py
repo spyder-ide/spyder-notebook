@@ -55,8 +55,7 @@ class NotebookWidget(DOMWidget):
     """WebView widget for notebooks."""
 
     def contextMenuEvent(self, event):
-        """Don't show some actions which have no meaning for the IPython
-        notebook."""
+        """Don't show some actions which have no meaning for the notebook."""
         menu = QMenu(self)
         plugin_actions = self.parent().plugin_actions
         actions = plugin_actions + [None,
@@ -93,7 +92,7 @@ class NotebookWidget(DOMWidget):
         self.setHtml(page)
 
     def show_loading_page(self):
-        """Show a loading animation while the kernel is starting"""
+        """Show a loading animation while the kernel is starting."""
         loading_template = Template(LOADING)
         loading_img = get_image_path('loading_sprites.png')
         if os.name == 'nt':
@@ -112,7 +111,9 @@ class NotebookClient(QWidget):
     This is a widget composed of a NotebookWidget and a find dialog to
     render notebooks.
     """
+
     def __init__(self, plugin, name):
+        """Constructor."""
         super(NotebookClient, self).__init__(plugin)
 
         self.name = name
@@ -163,7 +164,7 @@ class NotebookClient(QWidget):
         self.file_url = self.add_token(url)
 
     def go_to(self, url_or_text):
-        """Go to page *address*"""
+        """Go to page utl."""
         if is_text_string(url_or_text):
             url = QUrl(url_or_text)
         else:
@@ -171,9 +172,11 @@ class NotebookClient(QWidget):
         self.notebookwidget.load(url)
 
     def load_notebook(self):
+        """Load the associated notebook."""
         self.go_to(self.file_url)
 
     def get_name(self):
+        """Get notebook's name."""
         return self.name
 
     def get_short_name(self):
@@ -224,12 +227,14 @@ class NotebookClient(QWidget):
 # Tests
 #-----------------------------------------------------------------------------
 def main():
+    """Simple test."""
     from spyder.utils.qthelpers import qapplication
     app = qapplication()
     widget = NotebookClient(plugin=None, name='')
     widget.show()
     widget.set_url('http://google.com')
     sys.exit(app.exec_())
+
 
 if __name__ == '__main__':
     main()

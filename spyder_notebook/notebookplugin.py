@@ -3,9 +3,7 @@
 # Copyright (c) Spyder Project Contributors
 # Licensed under the terms of the MIT License
 
-"""
-Jupyter Notebook plugin
-"""
+"""Jupyter Notebook plugin."""
 
 # Stdlib imports
 import os.path as osp
@@ -46,6 +44,7 @@ class NotebookPlugin(SpyderPluginWidget):
     focus_changed = Signal()
 
     def __init__(self, parent):
+        """Constructor."""
         SpyderPluginWidget.__init__(self, parent)
 
         self.tabwidget = None
@@ -91,42 +90,39 @@ class NotebookPlugin(SpyderPluginWidget):
 
     #------ SpyderPluginMixin API ---------------------------------------------
     def on_first_registration(self):
-        """Action to be performed on first plugin registration"""
+        """Action to be performed on first plugin registration."""
         self.main.tabify_plugins(self.main.editor, self)
 
     def update_font(self):
-        """Update font from Preferences"""
+        """Update font from Preferences."""
         # For now we're passing. We need to create an nbextension for
         # this.
         pass
 
     #------ SpyderPluginWidget API --------------------------------------------
     def get_plugin_title(self):
-        """Return widget title"""
+        """Return widget title."""
         title = _('Jupyter Notebook')
         return title
 
     def get_plugin_icon(self):
-        """Return widget icon"""
+        """Return widget icon."""
         return ima.icon('ipython_console')
 
     def get_focus_widget(self):
-        """
-        Return the widget to give focus to when
-        this plugin's dockwidget is raised on top-level
-        """
+        """Return the widget to give focus to."""
         client = self.tabwidget.currentWidget()
         if client is not None:
             return client.notebookwidget
 
     def closing_plugin(self, cancelable=False):
-        """Perform actions before parent main window is closed"""
+        """Perform actions before parent main window is closed."""
         for cl in self.clients:
             cl.close()
         return True
 
     def refresh_plugin(self):
-        """Refresh tabwidget"""
+        """Refresh tabwidget."""
         nb = None
         if self.tabwidget.count():
             client = self.tabwidget.currentWidget()
@@ -136,7 +132,7 @@ class NotebookPlugin(SpyderPluginWidget):
             nb = None
 
     def get_plugin_actions(self):
-        """Return a list of actions related to plugin"""
+        """Return a list of actions related to plugin."""
         create_nb_action = create_action(self,
                                          _("New notebook"),
                                          icon=ima.icon('filenew'),
@@ -154,25 +150,25 @@ class NotebookPlugin(SpyderPluginWidget):
         return self.menu_actions
 
     def register_plugin(self):
-        """Register plugin in Spyder's main window"""
+        """Register plugin in Spyder's main window."""
         self.focus_changed.connect(self.main.plugin_focus_changed)
         self.main.add_dockwidget(self)
         self.create_new_client(give_focus=False)
 
     #------ Public API (for clients) ------------------------------------------
     def get_clients(self):
-        """Return notebooks list"""
+        """Return notebooks list."""
         return [cl for cl in self.clients if isinstance(cl, NotebookClient)]
 
     def get_focus_client(self):
-        """Return current notebook with focus, if any"""
+        """Return current notebook with focus, if any."""
         widget = QApplication.focusWidget()
         for client in self.get_clients():
             if widget is client or widget is client.notebookwidget:
                 return client
 
     def get_current_client(self):
-        """Return the currently selected notebook"""
+        """Return the currently selected notebook."""
         try:
             client = self.tabwidget.currentWidget()
         except AttributeError:
@@ -181,12 +177,13 @@ class NotebookPlugin(SpyderPluginWidget):
             return client
 
     def get_current_nbwidget(self):
-        """Return the notebookwidget of the current client"""
+        """Return the notebookwidget of the current client."""
         client = self.get_current_client()
         if client is not None:
             return client.notebookwidget
 
     def get_current_client_name(self, short=False):
+        """Get the current client name."""
         client = self.get_current_client()
         if client:
             if short:
@@ -195,7 +192,7 @@ class NotebookPlugin(SpyderPluginWidget):
                 return client.get_name()
 
     def create_new_client(self, name=None, give_focus=True):
-        """Create a new notebook or load a pre-existing one"""
+        """Create a new notebook or load a pre-existing one."""
         # Generate the notebook name (in case of a new one)
         if not name:
             nb_name = 'untitled' + str(self.untitled_num) + '.ipynb'
@@ -224,7 +221,7 @@ class NotebookPlugin(SpyderPluginWidget):
         client.load_notebook()
 
     def close_client(self, index=None, client=None):
-        """Close client tab from index or widget (or close current tab)"""
+        """Close client tab from index or widget (or close current tab)."""
         if not self.tabwidget.count():
             return
         if client is not None:
@@ -243,7 +240,7 @@ class NotebookPlugin(SpyderPluginWidget):
         self.clients.remove(client)
 
     def save_as(self):
-        """Save notebook as..."""
+        """Save notebook as."""
         current_client = self.get_current_client()
         current_client.save()
         original_path = current_client.get_name()
@@ -266,7 +263,7 @@ class NotebookPlugin(SpyderPluginWidget):
 
     #------ Public API (for tabs) ---------------------------------------------
     def add_tab(self, widget):
-        """Add tab"""
+        """Add tab."""
         self.clients.append(widget)
         index = self.tabwidget.addTab(widget, widget.get_short_name())
         self.tabwidget.setCurrentIndex(index)
@@ -278,8 +275,6 @@ class NotebookPlugin(SpyderPluginWidget):
         widget.notebookwidget.setFocus()
 
     def move_tab(self, index_from, index_to):
-        """
-        Move tab (tabs themselves have already been moved by the tabwidget)
-        """
+        """Move tab."""
         client = self.clients.pop(index_from)
         self.clients.insert(index_to, client)

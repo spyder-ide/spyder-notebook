@@ -4,9 +4,7 @@
 # Licensed under the terms of the MIT License
 #
 
-"""
-Tests for notebookplugin.py
-"""
+"""Tests for the plugin."""
 
 # Test library imports
 import pytest

@@ -6,6 +6,8 @@
 #
 # Licensed under the terms of BSD 3-clause license
 
+"""Open notebooks using the best available server."""
+
 import atexit
 import os.path
 import subprocess
