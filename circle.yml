@@ -5,8 +5,8 @@ machine:
     # Python versions to tests (Maximum of 4 different versions)
     PY_VERSIONS: "2.7 3.5 3.6"
     # For Coveralls
-    # COVERALLS_REPO_TOKEN: yt7YToGxRtnAcM6kSULoiCmOPetq10TaU
-    # Environment variable used by astropy helpers
+    COVERALLS_REPO_TOKEN: Kr503QwklmJYKXYRXLywrtw8zbX7K8SKx
+    # Environment variables used by astropy helpers
     TRAVIS_OS_NAME: "linux"
     CONDA_DEPENDENCIES_FLAGS: "--quiet"
     CONDA_DEPENDENCIES: "spyder notebook pytest pytest-cov"
@@ -39,4 +39,7 @@ test:
     #    parallel: true
     # Tests
     - export PATH="$HOME/miniconda/bin:$PATH" && source activate test && python runtests.py: # note the colon
+        parallel: true
+    # Coveralls
+    - export PATH="$HOME/miniconda/bin:$PATH" && source activate test && coveralls: # note the colon
         parallel: true
