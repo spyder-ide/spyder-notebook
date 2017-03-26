@@ -3,13 +3,14 @@
 machine:
   environment:
     # Python versions to tests (Maximum of 4 different versions)
-    PY_VERSIONS: "2.7 3.5 3.6"
+    # The last container is used to test with pyqt5 wheels
+    PY_VERSIONS: "2.7 3.6 3.5"
     # For Coveralls
     COVERALLS_REPO_TOKEN: Kr503QwklmJYKXYRXLywrtw8zbX7K8SKx
     # Environment variables used by astropy helpers
     TRAVIS_OS_NAME: "linux"
     CONDA_DEPENDENCIES_FLAGS: "--quiet"
-    CONDA_DEPENDENCIES: "spyder notebook pytest pytest-cov"
+    CONDA_DEPENDENCIES: "pytest pytest-cov"
     PIP_DEPENDENCIES: "coveralls pytest-qt pytest-xvfb"
 
 dependencies:
@@ -27,6 +28,7 @@ dependencies:
       export PATH="$HOME/miniconda/bin:$PATH" &&
       source activate test &&
       conda install -q ciocheck -c spyder-ide --no-update-deps &&
+      if [ "$CIRCLE_NODE_INDEX" = "2" ]; then pip install -q pyqt5 spyder notebook; else conda install -q spyder notebook; fi &&
       python setup.py install > /dev/null;
     - DISPLAY=:99 /usr/bin/matchbox-window-manager:
         background: true
