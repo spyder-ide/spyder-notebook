@@ -180,6 +180,12 @@ class NotebookPlugin(SpyderPluginWidget):
         if client is not None:
             return client
 
+    def get_current_nbwidget(self):
+        """Return the notebookwidget of the current client"""
+        client = self.get_current_client()
+        if client is not None:
+            return client.notebookwidget
+
     def get_current_client_name(self, short=False):
         client = self.get_current_client()
         if client:

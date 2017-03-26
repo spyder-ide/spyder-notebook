@@ -14,34 +14,34 @@ import pytest
 # Local imports
 from spyder_notebook.notebookplugin import NotebookPlugin
 
+
+NOTEBOOK_UP = 5000
+
+
+def prompt_present(nbwidget):
+    """Check if the an prompt is present in the notebook."""
+    return 'In&nbsp;[&nbsp;]:' in nbwidget.dom.toHtml()
+
+
 @pytest.fixture
-def setup_notebookplugin(qtbot):
-    """Set up the notebookplugin."""
+def setup_notebook(qtbot):
+    """Set up the Notebook plugin."""
     notebook = NotebookPlugin(None)
-    notebook.create_new_client()
     qtbot.addWidget(notebook)
+    notebook.create_new_client()
+    notebook.show()
     return notebook
 
-def test_notebookplugin(qtbot):
-    """Run the notebookplugin."""
-    notebook = setup_notebookplugin(qtbot)
-    assert notebook
-    assert len(notebook.clients) == 1
 
-def test_notebookplugin_create_new_client(qtbot):
+def test_new_notebook(qtbot):
     """Create a new client."""
-    notebook = setup_notebookplugin(qtbot)
-    notebook.create_new_client()
-    assert len(notebook.clients) == 2
+    # Create notebook
+    notebook = setup_notebook(qtbot)
 
-def test_notebookplugin_DOM(qtbot):
-    """The notebook actually charges."""
-    notebook = setup_notebookplugin(qtbot)
-    notebook.show()
-    client = notebook.get_current_client()
-    widget = client.notebookwidget
-    qtbot.waitUntil(lambda: 'ipython_notebook' in widget.dom.toHtml(), timeout=5000)
-    assert 'ipython_notebook' in widget.dom.toHtml()
+    # Wait for prompt
+    nbwidget = notebook.get_current_nbwidget()
+    qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
+    assert len(notebook.clients) == 1
 
 
 if __name__ == "__main__":
