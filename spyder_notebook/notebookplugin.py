@@ -3,7 +3,7 @@
 # Copyright (c) Spyder Project Contributors
 # Licensed under the terms of the MIT License
 
-"""Jupyter Notebook plugin."""
+"""Notebook plugin."""
 
 # Stdlib imports
 import os.path as osp
@@ -102,7 +102,7 @@ class NotebookPlugin(SpyderPluginWidget):
     # ------ SpyderPluginWidget API -------------------------------------------
     def get_plugin_title(self):
         """Return widget title."""
-        title = _('Jupyter Notebook')
+        title = _('Notebook')
         return title
 
     def get_plugin_icon(self):
