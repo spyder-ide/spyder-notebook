@@ -9,6 +9,7 @@
 # Test library imports
 import pytest
 from qtpy.QtWebEngineWidgets import WEBENGINE
+from qtpy.QtCore import Qt
 
 # Local imports
 from spyder_notebook.notebookplugin import NotebookPlugin
@@ -53,6 +54,39 @@ def test_new_notebook(qtbot):
 
     # Assert that we have one notebook
     assert len(notebook.clients) == 1
+
+
+def test_fileswitcher(qtbot):
+    """Test the fileswithcher."""
+    # Create notebook
+    notebook = setup_notebook(qtbot)
+    # Create new notebook
+    notebook.create_new_client()
+    
+    # Wait for prompt
+    nbwidget = notebook.get_current_nbwidget()
+    qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
+
+    # Assert that we have two notebooks
+    assert len(notebook.clients) == 2
+    
+    # Fileswitcher of the notebook
+    notebook.open_fileswitcher_dlg()
+    fileswitcher = notebook.fileswitcher_dlg
+    
+    # Search for the first untitled0 notebook
+    fileswitcher.edit.setText("0")
+    qtbot.keyClick(fileswitcher, Qt.Key_Enter)
+    
+    # Assert that we are at the first notebook
+    assert notebook.tabwidget.currentIndex() == 0
+    
+    # Search for the untitled1 notebook
+    fileswitcher.edit.setText("1")
+    qtbot.keyClick(fileswitcher, Qt.Key_Enter)
+    
+    # Assert that we are at the first notebook
+    assert notebook.tabwidget.currentIndex() == 1
 
 
 if __name__ == "__main__":

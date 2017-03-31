@@ -113,13 +113,13 @@ class NotebookClient(QWidget):
     render notebooks.
     """
 
-    def __init__(self, plugin, name):
+    def __init__(self, plugin, filename):
         """Constructor."""
         super(NotebookClient, self).__init__(plugin)
 
         if os.name == 'nt':
-            name = name.replace('/','\\')
-        self.filename = name
+            filename = filename.replace('/', '\\')
+        self.filename = filename
 
         self.file_url = None
         self.server_url = None
@@ -178,8 +178,8 @@ class NotebookClient(QWidget):
         """Load the associated notebook."""
         self.go_to(self.file_url)
 
-    def get_name(self):
-        """Get notebook's name."""
+    def get_filename(self):
+        """Get notebook's filename."""
         return self.filename
 
     def get_short_name(self):
