@@ -48,7 +48,7 @@ class DOMWidget(WebView):
                     false, false, false, false, {1}, element);
                 return element.dispatchEvent(evt);
             }})();
-        """.format(selector, str(btn)))
+        """.format(repr(selector), str(btn)))
 
     def set_input_value(self, selector, value):
         """Sets the value of the input matched by given selector."""
@@ -62,4 +62,4 @@ class DOMWidget(WebView):
             (function () {{
             var element = document.querySelector({0});
             element.className = {1};
-            }})();""".format(selector, classname))
+            }})();""".format(repr(selector), repr(classname)))

@@ -176,7 +176,7 @@ class NotebookClient(QWidget):
 
     def hide_header(self):
         """Hide the header of the notebook."""
-        self.notebookwidget.set_class_value("'#header-container'", "'hidden'")
+        self.notebookwidget.set_class_value("#header-container", "hidden")
 
     def get_name(self):
         return self.name
@@ -190,7 +190,7 @@ class NotebookClient(QWidget):
 
     def save(self):
         """Save current notebook."""
-        self.notebookwidget.click("'#save-notbook button'")
+        self.notebookwidget.click("#save-notbook button")
 
     def shutdown_kernel(self):
         """Shutdown the kernel of the client."""
