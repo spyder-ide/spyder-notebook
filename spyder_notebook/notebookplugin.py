@@ -239,24 +239,27 @@ class NotebookPlugin(SpyderPluginWidget):
         self.tabwidget.removeTab(self.tabwidget.indexOf(client))
         self.clients.remove(client)
 
-    def save_as(self):
+    def save_as(self, filename=None):
         """Save notebook as."""
         current_client = self.get_current_client()
         current_client.save()
         original_path = current_client.get_name()
         original_name = osp.basename(original_path)
-        filename, _selfilter = getsavefilename(self, _("Save notebook"),
-                                               original_name, FILES_FILTER)
+        if not filename:
+            filename, _selfilter = getsavefilename(self, _("Save notebook"),
+                                                   original_name, FILES_FILTER)
         if filename:
             nb_contents = nbformat.read(original_path, as_version=4)
             nbformat.write(nb_contents, filename)
             self.close_client()
             self.create_new_client(name=filename)
 
-    def open_notebook(self):
+    def open_notebook(self, filenames=None):
         """Open a notebook from file."""
-        filenames, _selfilter = getopenfilenames(self, _("Open notebook"),
-                                                 '', FILES_FILTER)
+        if not filenames:
+            filenames, _selfilter = getopenfilenames(self, _("Open notebook"),
+                                                     '', FILES_FILTER)
+        print(filenames)
         if filenames:
             for filename in filenames:
                 self.create_new_client(name=filename)
