@@ -296,7 +296,7 @@ class NotebookPlugin(SpyderPluginWidget):
         if not self.tabwidget.count():
             return
         if self.fileswitcher_dlg is not None and \
-            self.fileswitcher_dlg.is_visible:
+           self.fileswitcher_dlg.is_visible:
             self.fileswitcher_dlg.hide()
             self.fileswitcher_dlg.is_visible = False
             return
