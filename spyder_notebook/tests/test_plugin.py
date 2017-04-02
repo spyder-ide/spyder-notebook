@@ -86,7 +86,7 @@ def get_kernel_id(client):
             return (kernel_id, sessions_url)
 
 def is_kernel_up(kernel_id, sessions_url):
-    """Determines if the kernel with the id is up."""
+    """Determine if the kernel with the id is up."""
     sessions_req = requests.get(sessions_url).content.decode()
     sessions = json.loads(sessions_req)
 
