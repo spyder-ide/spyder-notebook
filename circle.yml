@@ -28,7 +28,7 @@ dependencies:
       export PATH="$HOME/miniconda/bin:$PATH" &&
       source activate test &&
       conda install -q ciocheck -c spyder-ide --no-update-deps &&
-      if [ "$CIRCLE_NODE_INDEX" = "2" ]; then pip install -q pyqt5 spyder notebook=4.3; else conda install -q spyder notebook=4.3; fi &&
+      if [ "$CIRCLE_NODE_INDEX" = "2" ]; then pip install -q pyqt5 spyder notebook==4.3; else conda install -q spyder notebook=4.3; fi &&
       python setup.py install > /dev/null;
     - DISPLAY=:99 /usr/bin/matchbox-window-manager:
         background: true
