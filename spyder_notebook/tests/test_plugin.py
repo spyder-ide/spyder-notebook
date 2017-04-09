@@ -129,8 +129,8 @@ def test_open_notebook(qtbot):
     """Test that a notebook can be opened from a non-ascii directory."""
     # Move the test file to non-ascii directory
     test_notebook = osp.join(LOCATION, 'test.ipynb')
-    test_notebook_non_ascii = osp.join(LOCATION, 'äöüß', 'test.ipynb')
-    os.mkdir(os.path.join(LOCATION, 'äöüß'))
+    test_notebook_non_ascii = osp.join(LOCATION, u'äöüß', 'test.ipynb')
+    os.mkdir(os.path.join(LOCATION, u'äöüß'))
     os.rename(test_notebook, test_notebook_non_ascii)
 
     # Create notebook
