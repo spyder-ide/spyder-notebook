@@ -76,7 +76,7 @@ def get_kernel_id(client):
     sessions = json.loads(sessions_req)
 
     if os.name == 'nt':
-            path = client.path.replace('\\', '/')
+        path = client.path.replace('\\', '/')
     else:
         path = client.path
 
