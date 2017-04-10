@@ -44,14 +44,19 @@ def prompt_present(nbwidget):
     else:
         return 'In&nbsp;[&nbsp;]:' in nbwidget.dom.toHtml()
 
-def get_innerHTML(nbwidget, className):
-    """Get the innerHTML of the first element with the given className in the notebook."""
-    return nbwidget.evaluate("""
-            (function () {{
-                var element = document.getElementsByClassName({0})[0];
-                return element.innerHTML;
-            }})();
-            """.format(repr(className)))
+def text_present(nbwidget, text="Test"):
+    """Check if a text is present in the notebook."""
+    if WEBENGINE:
+        def callback(data):
+            global html
+            html = data
+        nbwidget.dom.toHtml(callback)
+        try:
+            return text in html
+        except NameError:
+            return False
+    else:
+        return text in nbwidget.dom.toHtml()
 
 def manage_save_dialog(qtbot, fname, directory=LOCATION):
     """
@@ -146,8 +151,8 @@ def test_open_notebook(qtbot):
 
     # Assert that the In prompt has "Test" in it
     # and the client has the correct name
-    qtbot.waitUntil(lambda: get_innerHTML(nbwidget, "CodeMirror-line") is not None, timeout=NOTEBOOK_UP)
-    assert "Test" in get_innerHTML(nbwidget, "CodeMirror-line")
+    qtbot.waitUntil(lambda: text_present(nbwidget), timeout=NOTEBOOK_UP)
+    assert text_present(nbwidget)
     assert notebook.get_current_client().get_short_name() == "test.ipynb"
 
 def test_save_notebook(qtbot):
@@ -182,7 +187,8 @@ def test_save_notebook(qtbot):
 
     # Assert that the In prompt has "test" in it
     # and the client has the correct name
-    assert "test" in get_innerHTML(nbwidget, "CodeMirror-line")
+    qtbot.waitUntil(lambda: text_present(nbwidget, text="test"), timeout=NOTEBOOK_UP)
+    assert text_present(nbwidget, text="test")
     assert notebook.get_current_client().get_short_name() == "save.ipynb"
 
 def test_new_notebook(qtbot):
