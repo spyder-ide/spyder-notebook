@@ -16,7 +16,7 @@ import pytest
 import requests
 from qtpy.QtWebEngineWidgets import WEBENGINE
 from qtpy.QtCore import Qt, QTimer
-from qtpy.QtWidgets import QFileDialog, QApplication
+from qtpy.QtWidgets import QFileDialog, QApplication, QLineEdit
 
 # Notebook imports
 from notebook.utils import url_path_join
@@ -53,7 +53,7 @@ def get_innerHTML(nbwidget, className):
             }})();
             """.format(repr(className)))
 
-def manage_save_dialog(qtbot, directory=LOCATION):
+def manage_save_dialog(qtbot, fname, directory=LOCATION):
     """
     Manage the QFileDialog when saving.
 
@@ -66,7 +66,9 @@ def manage_save_dialog(qtbot, directory=LOCATION):
         if isinstance(w, QFileDialog):
             if directory is not None:
                 w.setDirectory(directory)
-            w.accept()
+            input_field = w.findChildren(QLineEdit)[0]
+            input_field.setText(fname)
+            qtbot.keyClick(w, Qt.Key_Enter)
 
 def get_kernel_id(client):
     """Get the kernel id for a client and the sessions url."""
@@ -117,6 +119,7 @@ def test_shutdown_notebook_kernel(qtbot):
     qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
 
     # Get kernel id for the client
+    qtbot.waitUntil(lambda: get_kernel_id(notebook.get_current_client()) is not None, timeout=NOTEBOOK_UP)
     kernel_id, sessions_url = get_kernel_id(notebook.get_current_client())
 
     # Close the current client
@@ -169,7 +172,7 @@ def test_save_notebook(qtbot):
 
     # Save the notebook
     name = 'save.ipynb'
-    QTimer.singleShot(1000, lambda: manage_save_dialog(qtbot))
+    QTimer.singleShot(1000, lambda: manage_save_dialog(qtbot, fname=name))
     notebook.save_as(name=name)
 
     # Wait for prompt
