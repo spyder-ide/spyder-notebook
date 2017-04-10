@@ -146,6 +146,7 @@ def test_open_notebook(qtbot):
 
     # Assert that the In prompt has "Test" in it
     # and the client has the correct name
+    qtbot.waitUntil(lambda: get_innerHTML(nbwidget, "CodeMirror-line") is not None, timeout=NOTEBOOK_UP)
     assert "Test" in get_innerHTML(nbwidget, "CodeMirror-line")
     assert notebook.get_current_client().get_short_name() == "test.ipynb"
 
