@@ -38,11 +38,11 @@ def prompt_present(nbwidget):
             html = data
         nbwidget.dom.toHtml(callback)
         try:
-            return 'In&nbsp;[&nbsp;]:' in html
+            return '&nbsp;[&nbsp;]:' in html
         except NameError:
             return False
     else:
-        return 'In&nbsp;[&nbsp;]:' in nbwidget.dom.toHtml()
+        return '&nbsp;[&nbsp;]:' in nbwidget.dom.toHtml()
 
 def text_present(nbwidget, text="Test"):
     """Check if a text is present in the notebook."""
