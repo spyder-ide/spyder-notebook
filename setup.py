@@ -12,15 +12,34 @@ Spyder notebook plugin
 Jupyter notebook integration with Spyder.
 """
 
+# Standard library imports
+import ast
+import os
+
 # Third party imports
 from setuptools import find_packages, setup
-from spyder_notebook import __version__
+
+HERE = os.path.abspath(os.path.dirname(__file__))
+
+
+def get_version(module='spyder_notebook'):
+    """Get version."""
+    with open(os.path.join(HERE, module, '_version.py'), 'r') as f:
+        data = f.read()
+    lines = data.split('\n')
+    for line in lines:
+        if line.startswith('VERSION_INFO'):
+            version_tuple = ast.literal_eval(line.split('=')[-1].strip())
+            version = '.'.join(map(str, version_tuple))
+            break
+    return version
+
 
 REQUIREMENTS = ['spyder>=3', 'notebook>=4.3']
 
 setup(
     name='spyder-notebook',
-    version=__version__,
+    version=get_version(),
     keywords='spyder jupyter notebook',
     url='https://github.com/spyder-ide/spyder-notebook',
     license='MIT',
