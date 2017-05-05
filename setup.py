@@ -16,7 +16,7 @@ Jupyter notebook integration with Spyder.
 from setuptools import find_packages, setup
 from spyder_notebook import __version__
 
-REQUIREMENTS = ['spyder>=3', 'notebook>=4.3']
+REQUIREMENTS = ['spyder>=3.1.4', 'notebook>=4.3']
 
 setup(
     name='spyder-notebook',
