@@ -3,9 +3,7 @@
 # Copyright (c) Spyder Project Contributors
 # Licensed under the terms of the MIT License
 
-"""
-Jupyter Notebook plugin
-"""
+"""Notebook plugin."""
 
 # Stdlib imports
 import os.path as osp
@@ -27,6 +25,7 @@ from spyder.utils import icon_manager as ima
 from spyder.utils.qthelpers import (create_action, create_toolbutton,
                                     add_actions)
 from spyder.widgets.tabs import Tabs
+from spyder.widgets.fileswitcher import FileSwitcher
 from spyder.plugins import SpyderPluginWidget
 
 # Local imports
@@ -46,8 +45,10 @@ class NotebookPlugin(SpyderPluginWidget):
     focus_changed = Signal()
 
     def __init__(self, parent):
+        """Constructor."""
         SpyderPluginWidget.__init__(self, parent)
 
+        self.fileswitcher_dlg = None
         self.tabwidget = None
         self.menu_actions = None
 
@@ -61,6 +62,11 @@ class NotebookPlugin(SpyderPluginWidget):
 
         layout = QVBoxLayout()
 
+        filelist_btn = create_toolbutton(self,
+                                         icon=ima.icon('filelist'),
+                                         tip=_("File list management"),
+                                         triggered=self.open_fileswitcher_dlg)
+
         new_notebook_btn = create_toolbutton(self,
                                              icon=ima.icon('project_expanded'),
                                              tip=_('Open a new notebook'),
@@ -71,7 +77,8 @@ class NotebookPlugin(SpyderPluginWidget):
         menu_btn.setMenu(self.menu)
         menu_btn.setPopupMode(menu_btn.InstantPopup)
         add_actions(self.menu, self.menu_actions)
-        corner_widgets = {Qt.TopRightCorner: [new_notebook_btn, menu_btn]}
+        corner_widgets = {Qt.TopRightCorner: [filelist_btn,
+                                              new_notebook_btn, menu_btn]}
         self.tabwidget = Tabs(self, menu=self.menu, actions=self.menu_actions,
                               corner_widgets=corner_widgets)
 
@@ -89,44 +96,41 @@ class NotebookPlugin(SpyderPluginWidget):
         layout.addWidget(self.tabwidget)
         self.setLayout(layout)
 
-    #------ SpyderPluginMixin API ---------------------------------------------
+    # ------ SpyderPluginMixin API --------------------------------------------
     def on_first_registration(self):
-        """Action to be performed on first plugin registration"""
+        """Action to be performed on first plugin registration."""
         self.main.tabify_plugins(self.main.editor, self)
 
     def update_font(self):
-        """Update font from Preferences"""
+        """Update font from Preferences."""
         # For now we're passing. We need to create an nbextension for
         # this.
         pass
 
-    #------ SpyderPluginWidget API --------------------------------------------
+    # ------ SpyderPluginWidget API -------------------------------------------
     def get_plugin_title(self):
-        """Return widget title"""
-        title = _('Jupyter Notebook')
+        """Return widget title."""
+        title = _('Notebook')
         return title
 
     def get_plugin_icon(self):
-        """Return widget icon"""
+        """Return widget icon."""
         return ima.icon('ipython_console')
 
     def get_focus_widget(self):
-        """
-        Return the widget to give focus to when
-        this plugin's dockwidget is raised on top-level
-        """
+        """Return the widget to give focus to."""
         client = self.tabwidget.currentWidget()
         if client is not None:
             return client.notebookwidget
 
     def closing_plugin(self, cancelable=False):
-        """Perform actions before parent main window is closed"""
+        """Perform actions before parent main window is closed."""
         for cl in self.clients:
             cl.close()
         return True
 
     def refresh_plugin(self):
-        """Refresh tabwidget"""
+        """Refresh tabwidget."""
         nb = None
         if self.tabwidget.count():
             client = self.tabwidget.currentWidget()
@@ -136,7 +140,7 @@ class NotebookPlugin(SpyderPluginWidget):
             nb = None
 
     def get_plugin_actions(self):
-        """Return a list of actions related to plugin"""
+        """Return a list of actions related to plugin."""
         create_nb_action = create_action(self,
                                          _("New notebook"),
                                          icon=ima.icon('filenew'),
@@ -154,25 +158,25 @@ class NotebookPlugin(SpyderPluginWidget):
         return self.menu_actions
 
     def register_plugin(self):
-        """Register plugin in Spyder's main window"""
+        """Register plugin in Spyder's main window."""
         self.focus_changed.connect(self.main.plugin_focus_changed)
         self.main.add_dockwidget(self)
         self.create_new_client(give_focus=False)
 
-    #------ Public API (for clients) ------------------------------------------
+    # ------ Public API (for clients) -----------------------------------------
     def get_clients(self):
-        """Return notebooks list"""
+        """Return notebooks list."""
         return [cl for cl in self.clients if isinstance(cl, NotebookClient)]
 
     def get_focus_client(self):
-        """Return current notebook with focus, if any"""
+        """Return current notebook with focus, if any."""
         widget = QApplication.focusWidget()
         for client in self.get_clients():
             if widget is client or widget is client.notebookwidget:
                 return client
 
     def get_current_client(self):
-        """Return the currently selected notebook"""
+        """Return the currently selected notebook."""
         try:
             client = self.tabwidget.currentWidget()
         except AttributeError:
@@ -180,30 +184,37 @@ class NotebookPlugin(SpyderPluginWidget):
         if client is not None:
             return client
 
+    def get_current_nbwidget(self):
+        """Return the notebookwidget of the current client."""
+        client = self.get_current_client()
+        if client is not None:
+            return client.notebookwidget
+
     def get_current_client_name(self, short=False):
+        """Get the current client name."""
         client = self.get_current_client()
         if client:
             if short:
                 return client.get_short_name()
             else:
-                return client.get_name()
+                return client.get_filename()
 
-    def create_new_client(self, name=None, give_focus=True):
-        """Create a new notebook or load a pre-existing one"""
+    def create_new_client(self, filename=None, give_focus=True):
+        """Create a new notebook or load a pre-existing one."""
         # Generate the notebook name (in case of a new one)
-        if not name:
+        if not filename:
             nb_name = 'untitled' + str(self.untitled_num) + '.ipynb'
-            name = osp.join(NOTEBOOK_TMPDIR, nb_name)
+            filename = osp.join(NOTEBOOK_TMPDIR, nb_name)
             nb_contents = nbformat.v4.new_notebook()
-            nbformat.write(nb_contents, name)
+            nbformat.write(nb_contents, filename)
             self.untitled_num += 1
 
-        client = NotebookClient(self, name)
+        client = NotebookClient(self, filename)
         self.add_tab(client)
 
         # Open the notebook with nbopen and get the url we need to render
         try:
-            server_info = nbopen(name)
+            server_info = nbopen(filename)
         except (subprocess.CalledProcessError, NBServerError):
             QMessageBox.critical(
                 self,
@@ -218,7 +229,7 @@ class NotebookPlugin(SpyderPluginWidget):
         client.load_notebook()
 
     def close_client(self, index=None, client=None):
-        """Close client tab from index or widget (or close current tab)"""
+        """Close client tab from index or widget (or close current tab)."""
         if not self.tabwidget.count():
             return
         if client is not None:
@@ -236,35 +247,40 @@ class NotebookPlugin(SpyderPluginWidget):
         self.tabwidget.removeTab(self.tabwidget.indexOf(client))
         self.clients.remove(client)
 
-    def save_as(self):
-        """Save notebook as..."""
+    def save_as(self, name=None):
+        """Save notebook as."""
         current_client = self.get_current_client()
         current_client.save()
-        original_path = current_client.get_name()
-        original_name = osp.basename(original_path)
+        original_path = current_client.get_filename()
+        if not name:
+            original_name = osp.basename(original_path)
+        else:
+            original_name = name
         filename, _selfilter = getsavefilename(self, _("Save notebook"),
-                                       original_name, FILES_FILTER)
+                                               original_name, FILES_FILTER)
         if filename:
             nb_contents = nbformat.read(original_path, as_version=4)
             nbformat.write(nb_contents, filename)
             self.close_client()
-            self.create_new_client(name=filename)
+            self.create_new_client(filename=filename)
 
-    def open_notebook(self):
+    def open_notebook(self, filenames=None):
         """Open a notebook from file."""
-        filenames, _selfilter = getopenfilenames(self, _("Open notebook"),
-                                                 '', FILES_FILTER)
+        if not filenames:
+            filenames, _selfilter = getopenfilenames(self, _("Open notebook"),
+                                                     '', FILES_FILTER)
+        print(filenames)
         if filenames:
             for filename in filenames:
-                self.create_new_client(name=filename)
+                self.create_new_client(filename=filename)
 
-    #------ Public API (for tabs) ---------------------------------------------
+    # ------ Public API (for tabs) --------------------------------------------
     def add_tab(self, widget):
-        """Add tab"""
+        """Add tab."""
         self.clients.append(widget)
         index = self.tabwidget.addTab(widget, widget.get_short_name())
         self.tabwidget.setCurrentIndex(index)
-        self.tabwidget.setTabToolTip(index, widget.get_name())
+        self.tabwidget.setTabToolTip(index, widget.get_filename())
         if self.dockwidget and not self.ismaximized:
             self.dockwidget.setVisible(True)
             self.dockwidget.raise_()
@@ -272,8 +288,26 @@ class NotebookPlugin(SpyderPluginWidget):
         widget.notebookwidget.setFocus()
 
     def move_tab(self, index_from, index_to):
-        """
-        Move tab (tabs themselves have already been moved by the tabwidget)
-        """
+        """Move tab."""
         client = self.clients.pop(index_from)
         self.clients.insert(index_to, client)
+
+    def set_stack_index(self, index):
+        """Set the index of the current notebook."""
+        self.tabwidget.setCurrentIndex(index)
+
+    def open_fileswitcher_dlg(self):
+        """Open notebook list management dialog box."""
+        if not self.tabwidget.count():
+            return
+        if self.fileswitcher_dlg is not None and \
+           self.fileswitcher_dlg.is_visible:
+            self.fileswitcher_dlg.hide()
+            self.fileswitcher_dlg.is_visible = False
+            return
+        self.fileswitcher_dlg = FileSwitcher(self, self.tabwidget,
+                                             self.clients)
+        self.fileswitcher_dlg.sig_goto_file.connect(self.set_stack_index)
+        self.fileswitcher_dlg.sig_close_file.connect(self.close_client)
+        self.fileswitcher_dlg.show()
+        self.fileswitcher_dlg.is_visible = True

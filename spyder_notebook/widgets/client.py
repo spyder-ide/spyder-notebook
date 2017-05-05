@@ -34,9 +34,9 @@ from spyder.widgets.findreplace import FindReplace
 from ..widgets.dom import DOMWidget
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Templates
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Using the same css file from the Help plugin for now. Maybe
 # later it'll be a good idea to create a new one.
 UTILS_PATH = get_module_source_path('spyder', 'utils')
@@ -48,15 +48,14 @@ LOADING = open(osp.join(TEMPLATES_PATH, 'loading.html')).read()
 KERNEL_ERROR = open(osp.join(TEMPLATES_PATH, 'kernel_error.html')).read()
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Widgets
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 class NotebookWidget(DOMWidget):
     """WebView widget for notebooks."""
 
     def contextMenuEvent(self, event):
-        """Don't show some actions which have no meaning for the IPython
-        notebook."""
+        """Don't show some actions which have no meaning for the notebook."""
         menu = QMenu(self)
         plugin_actions = self.parent().plugin_actions
         actions = plugin_actions + [None,
@@ -65,7 +64,8 @@ class NotebookWidget(DOMWidget):
                                     self.zoom_in_action, self.zoom_out_action]
         if not WEBENGINE:
             settings = self.page().settings()
-            settings.setAttribute(QWebEngineSettings.DeveloperExtrasEnabled, True)
+            settings.setAttribute(QWebEngineSettings.DeveloperExtrasEnabled,
+                                  True)
             actions += [None, self.pageAction(QWebEnginePage.InspectElement)]
         add_actions(menu, actions)
         menu.popup(event.globalPos())
@@ -93,7 +93,7 @@ class NotebookWidget(DOMWidget):
         self.setHtml(page)
 
     def show_loading_page(self):
-        """Show a loading animation while the kernel is starting"""
+        """Show a loading animation while the kernel is starting."""
         loading_template = Template(LOADING)
         loading_img = get_image_path('loading_sprites.png')
         if os.name == 'nt':
@@ -112,10 +112,14 @@ class NotebookClient(QWidget):
     This is a widget composed of a NotebookWidget and a find dialog to
     render notebooks.
     """
-    def __init__(self, plugin, name):
+
+    def __init__(self, plugin, filename):
+        """Constructor."""
         super(NotebookClient, self).__init__(plugin)
 
-        self.name = name
+        if os.name == 'nt':
+            filename = filename.replace('/', '\\')
+        self.filename = filename
 
         self.file_url = None
         self.server_url = None
@@ -144,12 +148,12 @@ class NotebookClient(QWidget):
     def register(self, server_info):
         """Register attributes that can be computed with the server info."""
         # Path relative to the server directory
-        self.path = os.path.relpath(self.name,
+        self.path = os.path.relpath(self.filename,
                                     start=server_info['notebook_dir'])
 
         # Replace backslashes on Windows
         if os.name == 'nt':
-            self.path = self.path.replace('\\','/')
+            self.path = self.path.replace('\\', '/')
 
         # Server url to send requests to
         self.server_url = server_info['url']
@@ -164,7 +168,7 @@ class NotebookClient(QWidget):
         self.file_url = self.add_token(url)
 
     def go_to(self, url_or_text):
-        """Go to page *address*"""
+        """Go to page utl."""
         if is_text_string(url_or_text):
             url = QUrl(url_or_text)
         else:
@@ -172,18 +176,20 @@ class NotebookClient(QWidget):
         self.notebookwidget.load(url)
 
     def load_notebook(self):
+        """Load the associated notebook."""
         self.go_to(self.file_url)
 
     def hide_header(self):
         """Hide the header of the notebook."""
         self.notebookwidget.set_class_value("#header-container", "hidden")
 
-    def get_name(self):
-        return self.name
+    def get_filename(self):
+        """Get notebook's filename."""
+        return self.filename
 
     def get_short_name(self):
         """Get a short name for the notebook."""
-        sname = osp.basename(self.name)
+        sname = osp.basename(self.filename)
         if len(sname) > 15:
             sname = sname[:15]
         return sname
@@ -217,24 +223,27 @@ class NotebookClient(QWidget):
             delete_req = requests.delete(delete_url)
             if delete_req.status_code != 204:
                 QMessageBox.warning(
-                self,
-                _("Server error"),
-                _("The Jupyter Notebook server "
-                  "failed to shutdown the kernel "
-                  "associated with this notebook. "
-                  "If you want to shut it down, "
-                  "you'll have to close Spyder."))
+                    self,
+                    _("Server error"),
+                    _("The Jupyter Notebook server "
+                      "failed to shutdown the kernel "
+                      "associated with this notebook. "
+                      "If you want to shut it down, "
+                      "you'll have to close Spyder."))
 
-#-----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 # Tests
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 def main():
+    """Simple test."""
     from spyder.utils.qthelpers import qapplication
     app = qapplication()
     widget = NotebookClient(plugin=None, name='')
     widget.show()
     widget.set_url('http://google.com')
     sys.exit(app.exec_())
+
 
 if __name__ == '__main__':
     main()

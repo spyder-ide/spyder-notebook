@@ -4,7 +4,7 @@
 # Licensed under the terms of the MIT License
 
 """
-Widget to do DOM manipulations using Javascript
+Widget to do DOM manipulations using Javascript.
 
 Some code here comes from the Ghost.py project:
 https://github.com/jeanphix/Ghost.py
@@ -15,8 +15,10 @@ from spyder.widgets.browser import WebView
 
 
 class DOMWidget(WebView):
+    """Widget to do DOM manipulations using Javascript."""
 
     def __init__(self, parent):
+        """Constructor."""
         super(DOMWidget, self).__init__(parent)
         if WEBENGINE:
             self.dom = self.page()
@@ -24,7 +26,9 @@ class DOMWidget(WebView):
             self.dom = self.page().mainFrame()
 
     def evaluate(self, script):
-        """Evaluates script in page frame.
+        """
+        Evaluate script in page frame.
+
         :param script: The script to evaluate.
         """
         if WEBENGINE:
@@ -33,7 +37,9 @@ class DOMWidget(WebView):
             return self.dom.evaluateJavaScript("{}".format(script))
 
     def click(self, selector, btn=0):
-        """Click the targeted element.
+        """
+        Click the targeted element.
+
         :param selector: A CSS3 selector to targeted element.
         :param btn: The number of mouse button.
             0 - left button,
@@ -51,7 +57,7 @@ class DOMWidget(WebView):
         """.format(repr(selector), repr(btn)))
 
     def set_input_value(self, selector, value):
-        """Sets the value of the input matched by given selector."""
+        """Set the value of the input matched by given selector."""
         script = 'document.querySelector("%s").setAttribute("value", "%s")'
         script = script % (selector, value)
         self.evaluate(script)
