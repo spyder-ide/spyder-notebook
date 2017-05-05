@@ -3,7 +3,7 @@
 # Copyright (c) Spyder Project Contributors
 # Licensed under the terms of the MIT License
 
-"""Jupyter Notebook plugin."""
+"""Notebook plugin."""
 
 # Stdlib imports
 import os.path as osp
@@ -110,7 +110,7 @@ class NotebookPlugin(SpyderPluginWidget):
     # ------ SpyderPluginWidget API -------------------------------------------
     def get_plugin_title(self):
         """Return widget title."""
-        title = _('Jupyter Notebook')
+        title = _('Notebook')
         return title
 
     def get_plugin_icon(self):
@@ -247,12 +247,15 @@ class NotebookPlugin(SpyderPluginWidget):
         self.tabwidget.removeTab(self.tabwidget.indexOf(client))
         self.clients.remove(client)
 
-    def save_as(self):
+    def save_as(self, name=None):
         """Save notebook as."""
         current_client = self.get_current_client()
         current_client.save()
         original_path = current_client.get_filename()
-        original_name = osp.basename(original_path)
+        if not name:
+            original_name = osp.basename(original_path)
+        else:
+            original_name = name
         filename, _selfilter = getsavefilename(self, _("Save notebook"),
                                                original_name, FILES_FILTER)
         if filename:
@@ -261,10 +264,12 @@ class NotebookPlugin(SpyderPluginWidget):
             self.close_client()
             self.create_new_client(filename=filename)
 
-    def open_notebook(self):
+    def open_notebook(self, filenames=None):
         """Open a notebook from file."""
-        filenames, _selfilter = getopenfilenames(self, _("Open notebook"),
-                                                 '', FILES_FILTER)
+        if not filenames:
+            filenames, _selfilter = getopenfilenames(self, _("Open notebook"),
+                                                     '', FILES_FILTER)
+        print(filenames)
         if filenames:
             for filename in filenames:
                 self.create_new_client(filename=filename)
