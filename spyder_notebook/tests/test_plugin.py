@@ -129,6 +129,10 @@ def test_hide_header(qtbot):
     # Create notebook
     notebook = setup_notebook(qtbot)
 
+     # Wait for prompt
+    nbwidget = notebook.get_current_nbwidget()
+    qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
+
     # Wait for hide header
     nbwidget = notebook.get_current_nbwidget()
     qtbot.waitUntil(lambda: hidden_class_header(nbwidget), timeout=NOTEBOOK_UP)
