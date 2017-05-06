@@ -63,7 +63,7 @@ class DOMWidget(WebView):
         self.evaluate(script)
 
     def set_class_value(self, selector, classname):
-        """Sets the class of element matched by the given selector."""
+        """Set the class of element matched by the given selector."""
         return self.evaluate("""
             (function () {{
             var element = document.querySelector({0});

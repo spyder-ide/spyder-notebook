@@ -105,6 +105,16 @@ def is_kernel_up(kernel_id, sessions_url):
 
     return kernel
 
+def hidden_class_header(nbwidget):
+    """Determine if 'hidden' class of the header is present."""
+    element_class = nbwidget.evaluate("""
+            (function () {
+                var element_class = document.querySelector('#header-container').className;
+                return element_class;
+            })();
+        """)
+    return element_class == "hidden"
+
 @pytest.fixture
 def setup_notebook(qtbot):
     """Set up the Notebook plugin."""
@@ -113,6 +123,18 @@ def setup_notebook(qtbot):
     notebook.create_new_client()
     notebook.show()
     return notebook
+
+def test_hide_header(qtbot):
+    """Test that the kernel header is hidden."""
+    # Create notebook
+    notebook = setup_notebook(qtbot)
+
+    # Wait for hide header
+    nbwidget = notebook.get_current_nbwidget()
+    qtbot.waitUntil(lambda: hidden_class_header(nbwidget), timeout=NOTEBOOK_UP)
+
+    # Assert that the header is hidden
+    assert hidden_class_header(nbwidget)
 
 def test_shutdown_notebook_kernel(qtbot):
     """Test that the kernel is shutdown from the server when closing a notebook."""
@@ -202,7 +224,6 @@ def test_new_notebook(qtbot):
 
     # Assert that we have one notebook
     assert len(notebook.clients) == 1
-
 
 def test_fileswitcher(qtbot):
     """Test the fileswithcher."""
