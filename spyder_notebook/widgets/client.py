@@ -127,7 +127,10 @@ class NotebookClient(QWidget):
 
         self.plugin_actions = plugin.get_plugin_actions()
         self.notebookwidget = NotebookWidget(self)
-        self.notebookwidget.selectionChanged.connect(self.hide_header)
+        if WEBENGINE:
+            self.notebookwidget.loadFinished.connect(self.hide_header)
+        else:
+            self.notebookwidget.selectionChanged.connect(self.hide_header)
         self.notebookwidget.show_blank()
 
         self.find_widget = FindReplace(self)

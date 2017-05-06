@@ -106,16 +106,6 @@ def is_kernel_up(kernel_id, sessions_url):
 
     return kernel
 
-def hidden_class_header(nbwidget):
-    """Determine if 'hidden' class of the header is present."""
-    element_class = nbwidget.evaluate("""
-            (function () {
-                var element_class = document.querySelector('#header-container').className;
-                return element_class;
-            })();
-        """)
-    return element_class == "hidden"
-
 @pytest.fixture
 def setup_notebook(qtbot):
     """Set up the Notebook plugin."""
@@ -136,11 +126,12 @@ def test_hide_header(qtbot):
     qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
 
     # Wait for hide header
-    nbwidget = notebook.get_current_nbwidget()
-    qtbot.waitUntil(lambda: hidden_class_header(nbwidget), timeout=NOTEBOOK_UP)
+    qtbot.waitUntil(lambda: text_present(nbwidget,
+                                         'id="header-container" class="hidden"'),
+                    timeout=NOTEBOOK_UP)
 
     # Assert that the header is hidden
-    assert hidden_class_header(nbwidget)
+    assert text_present(nbwidget, 'id="header-container" class="hidden"')
 
 @flaky(max_runs=3)
 def test_shutdown_notebook_kernel(qtbot):
