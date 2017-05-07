@@ -11,7 +11,7 @@ machine:
     TRAVIS_OS_NAME: "linux"
     CONDA_DEPENDENCIES_FLAGS: "--quiet"
     CONDA_DEPENDENCIES: "pytest pytest-cov"
-    PIP_DEPENDENCIES: "coveralls pytest-qt pytest-xvfb"
+    PIP_DEPENDENCIES: "coveralls pytest-qt pytest-xvfb flaky"
 
 dependencies:
   pre:

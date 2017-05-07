@@ -12,6 +12,7 @@ import os.path as osp
 import json
 
 # Third-party library imports
+from flaky import flaky
 import pytest
 import requests
 from qtpy.QtWebEngineWidgets import WEBENGINE
@@ -114,6 +115,25 @@ def setup_notebook(qtbot):
     notebook.show()
     return notebook
 
+@flaky(max_runs=3)
+def test_hide_header(qtbot):
+    """Test that the kernel header is hidden."""
+    # Create notebook
+    notebook = setup_notebook(qtbot)
+
+     # Wait for prompt
+    nbwidget = notebook.get_current_nbwidget()
+    qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
+
+    # Wait for hide header
+    qtbot.waitUntil(lambda: text_present(nbwidget,
+                                         'id="header-container" class="hidden"'),
+                    timeout=NOTEBOOK_UP)
+
+    # Assert that the header is hidden
+    assert text_present(nbwidget, 'id="header-container" class="hidden"')
+
+@flaky(max_runs=3)
 def test_shutdown_notebook_kernel(qtbot):
     """Test that the kernel is shutdown from the server when closing a notebook."""
     # Create notebook
@@ -133,6 +153,7 @@ def test_shutdown_notebook_kernel(qtbot):
     # Assert that the kernel is down for the closed client
     assert not is_kernel_up(kernel_id, sessions_url)
 
+@flaky(max_runs=3)
 def test_open_notebook(qtbot):
     """Test that a notebook can be opened from a non-ascii directory."""
     # Move the test file to non-ascii directory
@@ -155,6 +176,7 @@ def test_open_notebook(qtbot):
     assert text_present(nbwidget)
     assert notebook.get_current_client().get_short_name() == "test.ipynb"
 
+@flaky(max_runs=3)
 def test_save_notebook(qtbot):
     """Test that a notebook can be saved."""
     # Create notebook
@@ -191,6 +213,7 @@ def test_save_notebook(qtbot):
     assert text_present(nbwidget, text="test")
     assert notebook.get_current_client().get_short_name() == "save.ipynb"
 
+@flaky(max_runs=3)
 def test_new_notebook(qtbot):
     """Test that a new client is really a notebook."""
     # Create notebook
@@ -203,7 +226,7 @@ def test_new_notebook(qtbot):
     # Assert that we have one notebook
     assert len(notebook.clients) == 1
 
-
+@flaky(max_runs=3)
 def test_fileswitcher(qtbot):
     """Test the fileswithcher."""
     # Create notebook

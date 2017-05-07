@@ -47,17 +47,25 @@ class DOMWidget(WebView):
             2 - right button
         """
         return self.evaluate("""
-            (function () {
-                var element = document.querySelector(%s);
+            (function () {{
+                var element = document.querySelector({0});
                 var evt = document.createEvent("MouseEvents");
                 evt.initMouseEvent("click", true, true, window, 1, 1, 1, 1, 1,
-                    false, false, false, false, %s, element);
+                    false, false, false, false, {1}, element);
                 return element.dispatchEvent(evt);
-            })();
-        """ % (repr(selector), str(btn)))
+            }})();
+        """.format(repr(selector), repr(btn)))
 
     def set_input_value(self, selector, value):
         """Set the value of the input matched by given selector."""
         script = 'document.querySelector("%s").setAttribute("value", "%s")'
         script = script % (selector, value)
         self.evaluate(script)
+
+    def set_class_value(self, selector, classname):
+        """Set the class of element matched by the given selector."""
+        return self.evaluate("""
+            (function () {{
+            var element = document.querySelector({0});
+            element.className = {1};
+            }})();""".format(repr(selector), repr(classname)))

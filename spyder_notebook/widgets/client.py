@@ -127,6 +127,10 @@ class NotebookClient(QWidget):
 
         self.plugin_actions = plugin.get_plugin_actions()
         self.notebookwidget = NotebookWidget(self)
+        if WEBENGINE:
+            self.notebookwidget.loadFinished.connect(self.hide_header)
+        else:
+            self.notebookwidget.selectionChanged.connect(self.hide_header)
         self.notebookwidget.show_blank()
 
         self.find_widget = FindReplace(self)
@@ -178,6 +182,10 @@ class NotebookClient(QWidget):
         """Load the associated notebook."""
         self.go_to(self.file_url)
 
+    def hide_header(self):
+        """Hide the header of the notebook."""
+        self.notebookwidget.set_class_value("#header-container", "hidden")
+
     def get_filename(self):
         """Get notebook's filename."""
         return self.filename
@@ -191,7 +199,7 @@ class NotebookClient(QWidget):
 
     def save(self):
         """Save current notebook."""
-        self.notebookwidget.click('#save-notbook button')
+        self.notebookwidget.click("#save-notbook button")
 
     def shutdown_kernel(self):
         """Shutdown the kernel of the client."""
