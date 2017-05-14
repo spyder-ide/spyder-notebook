@@ -55,9 +55,9 @@ def nbopen(filename):
                    '--notebook-dir={}'.format(nbdir),
                    '--NotebookApp.password=']
         if os.name == 'nt':
-            creation_flag = 0x08000000 # CREATE_NO_WINDOW
+            creation_flag = 0x08000000  # CREATE_NO_WINDOW
         else:
-            creation_flag = 0 # Default value
+            creation_flag = 0  # Default value
         proc = subprocess.Popen(command, creationflags=creation_flag)
         atexit.register(proc.terminate)
 
