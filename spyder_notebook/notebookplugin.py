@@ -9,7 +9,6 @@
 import os.path as osp
 import subprocess
 import sys
-import tempfile
 
 # Qt imports
 from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
@@ -22,6 +21,7 @@ import nbformat
 # Spyder imports
 from spyder.config.base import _
 from spyder.utils import icon_manager as ima
+from spyder.utils.programs import (TEMPDIR)
 from spyder.utils.qthelpers import (create_action, create_toolbutton,
                                     add_actions)
 from spyder.widgets.tabs import Tabs
@@ -33,7 +33,6 @@ from .utils.nbopen import nbopen, NBServerError
 from .widgets.client import NotebookClient
 
 
-NOTEBOOK_TMPDIR = tempfile.gettempdir()
 FILTER_TITLE = _("Jupyter notebooks")
 FILES_FILTER = "{} (*.ipynb)".format(FILTER_TITLE)
 
@@ -204,7 +203,7 @@ class NotebookPlugin(SpyderPluginWidget):
         # Generate the notebook name (in case of a new one)
         if not filename:
             nb_name = 'untitled' + str(self.untitled_num) + '.ipynb'
-            filename = osp.join(NOTEBOOK_TMPDIR, nb_name)
+            filename = osp.join(TEMPDIR, nb_name)
             nb_contents = nbformat.v4.new_notebook()
             nbformat.write(nb_contents, filename)
             self.untitled_num += 1
