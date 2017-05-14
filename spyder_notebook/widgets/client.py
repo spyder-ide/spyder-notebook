@@ -131,6 +131,7 @@ class NotebookClient(QWidget):
             self.notebookwidget.loadFinished.connect(self.hide_header)
         else:
             self.notebookwidget.selectionChanged.connect(self.hide_header)
+        self.notebookwidget.urlChanged.connect(self.hide_header)
         self.notebookwidget.show_blank()
 
         self.find_widget = FindReplace(self)
