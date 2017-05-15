@@ -13,7 +13,7 @@ import sys
 
 # Qt imports
 from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
-from qtpy.QtCore import Qt, Signal
+from qtpy.QtCore import Qt, QEventLoop, QTimer, Signal, Slot
 from qtpy.compat import getsavefilename, getopenfilenames
 
 # Third-party imports
@@ -244,18 +244,15 @@ class NotebookPlugin(SpyderPluginWidget):
 
         if not saving:
             client.save()
-            save_msg = QMessageBox(self)
-            save_msg.setWindowTitle(self.get_plugin_title())
-            save_msg.setText(_("Autosaving the notebook before closing..."))
-            save_msg.setStandardButtons(QMessageBox.Ok)
-            save_msg.button(QMessageBox.Ok).animateClick(1000)
-            save_msg.exec_()
+            wait_save = QEventLoop()
+            QTimer.singleShot(1000, wait_save.quit)
+            wait_save.exec_()
             path = client.get_filename()
             fname = osp.basename(path)
             nb_contents = nbformat.read(path, as_version=4)
 
             if ('untitled' in fname and len(nb_contents['cells']) > 0 and
-                len(nb_contents['cells'][0]['source']) > 0):
+                    len(nb_contents['cells'][0]['source']) > 0):
                 buttons = QMessageBox.Yes | QMessageBox.No
                 answer = QMessageBox.question(self, self.get_plugin_title(),
                                               _("<b>{0}</b> has been modified."
