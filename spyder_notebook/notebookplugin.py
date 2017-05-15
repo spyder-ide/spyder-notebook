@@ -245,22 +245,22 @@ class NotebookPlugin(SpyderPluginWidget):
         if not saving:
             client.save()
             save_msg = QMessageBox(self)
-            save_msg.setWindowTitle(self.get_plugin_title());
+            save_msg.setWindowTitle(self.get_plugin_title())
             save_msg.setText(_("Autosaving the notebook before closing..."))
             save_msg.setStandardButtons(QMessageBox.Ok)
             save_msg.button(QMessageBox.Ok).animateClick(1000)
-            save_msg.exec()
+            save_msg.exec_()
             path = client.get_filename()
             fname = osp.basename(path)
             nb_contents = nbformat.read(path, as_version=4)
 
-            if ('untitled' in fname and len(nb_contents['cells']) > 0
-                and len(nb_contents['cells'][0]['source']) > 0):
+            if ('untitled' in fname and len(nb_contents['cells']) > 0 and
+                len(nb_contents['cells'][0]['source']) > 0):
                 buttons = QMessageBox.Yes | QMessageBox.No
                 answer = QMessageBox.question(self, self.get_plugin_title(),
                                               _("<b>{0}</b> has been modified."
-                                              "<br>Do you want to save changes?"
-                                              .format(fname)),
+                                                "<br>Do you want to "
+                                                "save changes?".format(fname)),
                                               buttons)
                 if answer == QMessageBox.Yes:
                     self.save_as(closing=True)
