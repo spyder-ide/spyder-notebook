@@ -231,7 +231,7 @@ class NotebookPlugin(SpyderPluginWidget):
         client.register(server_info)
         client.load_notebook()
 
-    def close_client(self, index=None, client=None, saving=False):
+    def close_client(self, index=None, client=None, save=False):
         """Close client tab from index or widget (or close current tab)."""
         if not self.tabwidget.count():
             return
@@ -242,7 +242,7 @@ class NotebookPlugin(SpyderPluginWidget):
         if index is not None:
             client = self.tabwidget.widget(index)
 
-        if not saving:
+        if not save:
             client.save()
             wait_save = QEventLoop()
             QTimer.singleShot(1000, wait_save.quit)
@@ -260,7 +260,7 @@ class NotebookPlugin(SpyderPluginWidget):
                                                 "save changes?".format(fname)),
                                               buttons)
                 if answer == QMessageBox.Yes:
-                    self.save_as(closing=True)
+                    self.save_as(close=True)
 
         client.shutdown_kernel()
         client.close()
@@ -269,7 +269,7 @@ class NotebookPlugin(SpyderPluginWidget):
         self.tabwidget.removeTab(self.tabwidget.indexOf(client))
         self.clients.remove(client)
 
-    def save_as(self, name=None, closing=False):
+    def save_as(self, name=None, close=False):
         """Save notebook as."""
         current_client = self.get_current_client()
         current_client.save()
@@ -283,8 +283,8 @@ class NotebookPlugin(SpyderPluginWidget):
         if filename:
             nb_contents = nbformat.read(original_path, as_version=4)
             nbformat.write(nb_contents, filename)
-            if not closing:
-                self.close_client(saving=True)
+            if not close:
+                self.close_client(save=True)
             self.create_new_client(filename=filename)
 
     def open_notebook(self, filenames=None):
