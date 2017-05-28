@@ -12,7 +12,8 @@ from string import Template
 import sys
 
 # Qt imports
-from qtpy.QtCore import QUrl
+from qtpy.QtCore import QUrl, Qt
+from qtpy.QtGui import QFontMetrics, QFont
 from qtpy.QtWebEngineWidgets import (QWebEnginePage, QWebEngineSettings,
                                      WEBENGINE)
 from qtpy.QtWidgets import QMenu, QVBoxLayout, QWidget, QMessageBox
@@ -193,9 +194,10 @@ class NotebookClient(QWidget):
 
     def get_short_name(self):
         """Get a short name for the notebook."""
-        sname = osp.basename(self.filename)
-        if len(sname) > 15:
-            sname = sname[:15]
+        sname = osp.splitext(osp.basename(self.filename))[0]
+        if len(sname) > 20:
+            fm = QFontMetrics(QFont())
+            sname = fm.elidedText(sname, Qt.ElideMiddle, 110)
         return sname
 
     def save(self):
