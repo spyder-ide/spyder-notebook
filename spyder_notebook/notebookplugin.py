@@ -190,8 +190,7 @@ class NotebookPlugin(SpyderPluginWidget):
                                   icon=ima.icon('filenew'),
                                   triggered=lambda v,
                                   path=notebook:
-                                      self.create_new_client(filename=path)
-                                 )
+                                      self.create_new_client(filename=path))
                 self.recent_notebooks_actions.append(action)
             self.recent_notebooks_actions += \
                 [None, self.clear_recent_notebooks_action]
