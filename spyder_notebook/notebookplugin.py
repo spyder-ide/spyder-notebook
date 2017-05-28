@@ -24,7 +24,7 @@ from spyder.config.base import _
 from spyder.utils import icon_manager as ima
 from spyder.utils.programs import TEMPDIR
 from spyder.utils.qthelpers import (create_action, create_toolbutton,
-                                    add_actions,  MENU_SEPARATOR)
+                                    add_actions, MENU_SEPARATOR)
 from spyder.widgets.tabs import Tabs
 from spyder.widgets.fileswitcher import FileSwitcher
 from spyder.plugins import SpyderPluginWidget
@@ -185,23 +185,24 @@ class NotebookPlugin(SpyderPluginWidget):
             for notebook in self.recent_notebooks:
                 name = notebook
                 action = \
-                create_action(self,
-                              name,
-                              icon = ima.icon('filenew'),
-                              triggered=lambda v,
-                              path=notebook:
-                                  self.create_new_client(filename=path)
-                                  )
+                    create_action(self,
+                                  name,
+                                  icon=ima.icon('filenew'),
+                                  triggered=lambda v,
+                                  path=notebook:
+                                      self.create_new_client(filename=path)
+                                 )
                 self.recent_notebooks_actions.append(action)
-            self.recent_notebooks_actions += [None,
-                                             self.clear_recent_notebooks_action]
+            self.recent_notebooks_actions += \
+                [None, self.clear_recent_notebooks_action]
         else:
-            self.recent_notebooks_actions = [self.clear_recent_notebooks_action]
+            self.recent_notebooks_actions = \
+                [self.clear_recent_notebooks_action]
         add_actions(self.recent_notebook_menu, self.recent_notebooks_actions)
         self.update_notebook_actions()
 
     def update_notebook_actions(self):
-        """Update actions of the recent notebooks menu"""
+        """Update actions of the recent notebooks menu."""
         if self.recent_notebooks:
             self.clear_recent_notebooks_action.setEnabled(True)
         else:
@@ -209,16 +210,16 @@ class NotebookPlugin(SpyderPluginWidget):
 
     def add_to_recent(self, notebook):
         """
-        Add an entry to recent notebooks
+        Add an entry to recent notebooks.
 
-        We only maintain the list of the 20 most recent notebooks
+        We only maintain the list of the 20 most recent notebooks.
         """
         if notebook not in self.recent_notebooks:
             self.recent_notebooks.insert(0, notebook)
             self.recent_notebooks = self.recent_notebooks[:20]
 
     def clear_recent_notebooks(self):
-        """Clear the list of recent notebooks"""
+        """Clear the list of recent notebooks."""
         self.recent_notebooks = []
         self.setup_menu_actions()
 
