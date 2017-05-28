@@ -174,7 +174,7 @@ def test_open_notebook(qtbot):
     # and the client has the correct name
     qtbot.waitUntil(lambda: text_present(nbwidget), timeout=NOTEBOOK_UP)
     assert text_present(nbwidget)
-    assert notebook.get_current_client().get_short_name() == "test.ipynb"
+    assert notebook.get_current_client().get_short_name() == "test"
 
 @flaky(max_runs=3)
 def test_save_notebook(qtbot):
@@ -211,7 +211,7 @@ def test_save_notebook(qtbot):
     # and the client has the correct name
     qtbot.waitUntil(lambda: text_present(nbwidget, text="test"), timeout=NOTEBOOK_UP)
     assert text_present(nbwidget, text="test")
-    assert notebook.get_current_client().get_short_name() == "save.ipynb"
+    assert notebook.get_current_client().get_short_name() == "save"
 
 @flaky(max_runs=3)
 def test_new_notebook(qtbot):
@@ -251,14 +251,14 @@ def test_fileswitcher(qtbot):
     
     # Assert that we are at the first notebook
     assert notebook.tabwidget.currentIndex() == 0
-    assert notebook.get_current_client().get_short_name() == 'untitled0.ipynb'
+    assert notebook.get_current_client().get_short_name() == 'untitled0'
 
     # Search for the untitled1 notebook
     fileswitcher.edit.setText("1")
 
     # Assert that we are at the first notebook
     assert notebook.tabwidget.currentIndex() == 1
-    assert notebook.get_current_client().get_short_name() == 'untitled1.ipynb'
+    assert notebook.get_current_client().get_short_name() == 'untitled1'
 
     # Assert that the fileswitcher dialog hides
     qtbot.keyPress(fileswitcher.edit, Qt.Key_Enter)

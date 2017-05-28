@@ -197,7 +197,7 @@ class NotebookClient(QWidget):
         sname = osp.splitext(osp.basename(self.filename))[0]
         if len(sname) > 20:
             fm = QFontMetrics(QFont())
-            sname = fm.elidedText(sname, Qt.ElideMiddle, 110)
+            sname = fm.elidedText(sname, Qt.ElideRight, 110)
         return sname
 
     def save(self):
