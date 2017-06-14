@@ -13,7 +13,7 @@ import sys
 
 # Qt imports
 from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
-from qtpy.QtCore import Qt, Signal
+from qtpy.QtCore import Qt, QEventLoop, QTimer, Signal, Slot
 from qtpy.compat import getsavefilename, getopenfilenames
 
 # Third-party imports
@@ -231,7 +231,7 @@ class NotebookPlugin(SpyderPluginWidget):
         client.register(server_info)
         client.load_notebook()
 
-    def close_client(self, index=None, client=None):
+    def close_client(self, index=None, client=None, save=False):
         """Close client tab from index or widget (or close current tab)."""
         if not self.tabwidget.count():
             return
@@ -242,7 +242,26 @@ class NotebookPlugin(SpyderPluginWidget):
         if index is not None:
             client = self.tabwidget.widget(index)
 
-        # TODO: Eliminate the notebook from disk if it's an Untitled one
+        if not save:
+            client.save()
+            wait_save = QEventLoop()
+            QTimer.singleShot(1000, wait_save.quit)
+            wait_save.exec_()
+            path = client.get_filename()
+            fname = osp.basename(path)
+            nb_contents = nbformat.read(path, as_version=4)
+
+            if ('untitled' in fname and len(nb_contents['cells']) > 0 and
+                    len(nb_contents['cells'][0]['source']) > 0):
+                buttons = QMessageBox.Yes | QMessageBox.No
+                answer = QMessageBox.question(self, self.get_plugin_title(),
+                                              _("<b>{0}</b> has been modified."
+                                                "<br>Do you want to "
+                                                "save changes?".format(fname)),
+                                              buttons)
+                if answer == QMessageBox.Yes:
+                    self.save_as(close=True)
+
         client.shutdown_kernel()
         client.close()
 
@@ -250,7 +269,7 @@ class NotebookPlugin(SpyderPluginWidget):
         self.tabwidget.removeTab(self.tabwidget.indexOf(client))
         self.clients.remove(client)
 
-    def save_as(self, name=None):
+    def save_as(self, name=None, close=False):
         """Save notebook as."""
         current_client = self.get_current_client()
         current_client.save()
@@ -264,7 +283,8 @@ class NotebookPlugin(SpyderPluginWidget):
         if filename:
             nb_contents = nbformat.read(original_path, as_version=4)
             nbformat.write(nb_contents, filename)
-            self.close_client()
+            if not close:
+                self.close_client(save=True)
             self.create_new_client(filename=filename)
 
     def open_notebook(self, filenames=None):
