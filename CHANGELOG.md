@@ -1,7 +1,12 @@
-## Version 0.1 (2017/05/14)
+## Version 0.1 (2017/06/14)
 
 ### Issues Closed
 
+* [Issue 67](https://github.com/spyder-ide/spyder-notebook/issues/67) - Add an "Open recent" menu
+* [Issue 66](https://github.com/spyder-ide/spyder-notebook/issues/66) - Add ellipsis to shortened notebook names
+* [Issue 64](https://github.com/spyder-ide/spyder-notebook/issues/64) - Ask users if they want to save untitled notebooks before closing them
+* [Issue 61](https://github.com/spyder-ide/spyder-notebook/issues/61) - Hide server cmd.exe windows on Windows
+* [Issue 60](https://github.com/spyder-ide/spyder-notebook/issues/60) - Create untitled notebooks under Spyder's TEMPDIR/notebooks
 * [Issue 58](https://github.com/spyder-ide/spyder-notebook/issues/58) - Header not hiding when using the "Save as..." function
 * [Issue 54](https://github.com/spyder-ide/spyder-notebook/issues/54) - Installation is failing if jupyter notebook isn't already installed
 * [Issue 52](https://github.com/spyder-ide/spyder-notebook/issues/52) - Add Jupyter Trove classifier
@@ -23,10 +28,15 @@
 * [Issue 5](https://github.com/spyder-ide/spyder-notebook/issues/5) - Shutdown kernel when closing a notebook
 * [Issue 1](https://github.com/spyder-ide/spyder-notebook/issues/1) - Spelling Error in readme.md
 
-In this release 20 issues were closed.
+In this release 25 issues were closed.
 
 ### Pull Requests Merged
 
+* [PR 71](https://github.com/spyder-ide/spyder-notebook/pull/71) - PR: Add "Recent notebooks" menu entry
+* [PR 70](https://github.com/spyder-ide/spyder-notebook/pull/70) - PR: Add ellipsis to shorten notebook names
+* [PR 65](https://github.com/spyder-ide/spyder-notebook/pull/65) - PR: Add save question for modified untitled notebooks before closing them
+* [PR 63](https://github.com/spyder-ide/spyder-notebook/pull/63) - PR: Add flag to not show cmd.exe windows on Windows
+* [PR 62](https://github.com/spyder-ide/spyder-notebook/pull/62) - PR: Set a new tempdir for untitled notebooks
 * [PR 59](https://github.com/spyder-ide/spyder-notebook/pull/59) - PR: Hide header after using Save as...
 * [PR 55](https://github.com/spyder-ide/spyder-notebook/pull/55) - PR: Move version out of init file.
 * [PR 53](https://github.com/spyder-ide/spyder-notebook/pull/53) - PR: Add Jupyter Trove classifier
@@ -54,4 +64,4 @@ In this release 20 issues were closed.
 * [PR 4](https://github.com/spyder-ide/spyder-notebook/pull/4) - Initial implementation
 * [PR 2](https://github.com/spyder-ide/spyder-notebook/pull/2) - Spelling Error Fix
 
-In this release 26 pull requests were closed.
+In this release 31 pull requests were closed.
