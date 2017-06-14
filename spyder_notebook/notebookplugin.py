@@ -67,7 +67,6 @@ class NotebookPlugin(SpyderPluginWidget):
                                          icon=ima.icon('filelist'),
                                          tip=_("File list management"),
                                          triggered=self.open_fileswitcher_dlg)
-
         new_notebook_btn = create_toolbutton(self,
                                              icon=ima.icon('project_expanded'),
                                              tip=_('Open a new notebook'),
@@ -163,6 +162,7 @@ class NotebookPlugin(SpyderPluginWidget):
         self.focus_changed.connect(self.main.plugin_focus_changed)
         self.main.add_dockwidget(self)
         self.create_new_client(give_focus=False)
+        self.main.add_to_fileswitcher(self.tabwidget, self.clients, self)
 
     # ------ Public API (for clients) -----------------------------------------
     def get_clients(self):
