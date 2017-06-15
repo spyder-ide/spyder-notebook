@@ -19,14 +19,14 @@ Spyder as a plugin.*
 ## Installation
 To install this plugin, you can use either ``pip`` or ``conda`` package managers, as follows:
 
+Using conda (recommended way!):
+```
+conda install spyder-notebook -c spyder-ide
+```
+
 Using pip:
 ```
 pip install spyder-notebook
-```
-
-Using conda:
-```
-conda install spyder-notebook
 ```
 
 ## Dependencies
