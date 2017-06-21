@@ -13,7 +13,7 @@ import sys
 
 # Qt imports
 from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
-from qtpy.QtCore import Qt, Signal
+from qtpy.QtCore import Qt, QEventLoop, QTimer, Signal, Slot
 from qtpy.compat import getsavefilename, getopenfilenames
 
 # Third-party imports
@@ -24,7 +24,7 @@ from spyder.config.base import _
 from spyder.utils import icon_manager as ima
 from spyder.utils.programs import TEMPDIR
 from spyder.utils.qthelpers import (create_action, create_toolbutton,
-                                    add_actions)
+                                    add_actions, MENU_SEPARATOR)
 from spyder.widgets.tabs import Tabs
 from spyder.widgets.fileswitcher import FileSwitcher
 from spyder.plugins import SpyderPluginWidget
@@ -57,6 +57,8 @@ class NotebookPlugin(SpyderPluginWidget):
 
         self.clients = []
         self.untitled_num = 0
+        self.recent_notebooks = self.get_option('recent_notebooks', default=[])
+        self.recent_notebook_menu = QMenu(_("Open recent"), self)
 
         # Initialize plugin
         self.initialize_plugin()
@@ -73,6 +75,7 @@ class NotebookPlugin(SpyderPluginWidget):
                                              triggered=self.create_new_client)
         menu_btn = create_toolbutton(self, icon=ima.icon('tooloptions'),
                                      tip=_('Options'))
+
         self.menu = QMenu(self)
         menu_btn.setMenu(self.menu)
         menu_btn.setPopupMode(menu_btn.InstantPopup)
@@ -127,6 +130,7 @@ class NotebookPlugin(SpyderPluginWidget):
         """Perform actions before parent main window is closed."""
         for cl in self.clients:
             cl.close()
+        self.set_option('recent_notebooks', self.recent_notebooks)
         return True
 
     def refresh_plugin(self):
@@ -153,8 +157,15 @@ class NotebookPlugin(SpyderPluginWidget):
                                     _("Open..."),
                                     icon=ima.icon('fileopen'),
                                     triggered=self.open_notebook)
+        self.clear_recent_notebooks_action =\
+            create_action(self, _("Clear this list"),
+                          triggered=self.clear_recent_notebooks)
         # Plugin actions
-        self.menu_actions = [create_nb_action, open_action, save_as_action]
+        self.menu_actions = [create_nb_action, open_action,
+                             self.recent_notebook_menu, MENU_SEPARATOR,
+                             save_as_action]
+        self.setup_menu_actions()
+
         return self.menu_actions
 
     def register_plugin(self):
@@ -164,8 +175,54 @@ class NotebookPlugin(SpyderPluginWidget):
         self.create_new_client(give_focus=False)
         self.main.add_to_fileswitcher(self, self.tabwidget, self.clients,
                                       ima.icon('FileIcon'))
+        self.recent_notebook_menu.aboutToShow.connect(self.setup_menu_actions)
 
     # ------ Public API (for clients) -----------------------------------------
+    def setup_menu_actions(self):
+        """Setup and update the menu actions."""
+        self.recent_notebook_menu.clear()
+        self.recent_notebooks_actions = []
+        if self.recent_notebooks:
+            for notebook in self.recent_notebooks:
+                name = notebook
+                action = \
+                    create_action(self,
+                                  name,
+                                  icon=ima.icon('filenew'),
+                                  triggered=lambda v,
+                                  path=notebook:
+                                      self.create_new_client(filename=path))
+                self.recent_notebooks_actions.append(action)
+            self.recent_notebooks_actions += \
+                [None, self.clear_recent_notebooks_action]
+        else:
+            self.recent_notebooks_actions = \
+                [self.clear_recent_notebooks_action]
+        add_actions(self.recent_notebook_menu, self.recent_notebooks_actions)
+        self.update_notebook_actions()
+
+    def update_notebook_actions(self):
+        """Update actions of the recent notebooks menu."""
+        if self.recent_notebooks:
+            self.clear_recent_notebooks_action.setEnabled(True)
+        else:
+            self.clear_recent_notebooks_action.setEnabled(False)
+
+    def add_to_recent(self, notebook):
+        """
+        Add an entry to recent notebooks.
+
+        We only maintain the list of the 20 most recent notebooks.
+        """
+        if notebook not in self.recent_notebooks:
+            self.recent_notebooks.insert(0, notebook)
+            self.recent_notebooks = self.recent_notebooks[:20]
+
+    def clear_recent_notebooks(self):
+        """Clear the list of recent notebooks."""
+        self.recent_notebooks = []
+        self.setup_menu_actions()
+
     def get_clients(self):
         """Return notebooks list."""
         return [cl for cl in self.clients if isinstance(cl, NotebookClient)]
@@ -213,9 +270,6 @@ class NotebookPlugin(SpyderPluginWidget):
             nbformat.write(nb_contents, filename)
             self.untitled_num += 1
 
-        client = NotebookClient(self, filename)
-        self.add_tab(client)
-
         # Open the notebook with nbopen and get the url we need to render
         try:
             server_info = nbopen(filename)
@@ -229,10 +283,15 @@ class NotebookPlugin(SpyderPluginWidget):
                   "check for errors."))
             return
 
+        client = NotebookClient(self, filename)
+        self.add_tab(client)
+        if NOTEBOOK_TMPDIR not in filename:
+            self.add_to_recent(filename)
+            self.setup_menu_actions()
         client.register(server_info)
         client.load_notebook()
 
-    def close_client(self, index=None, client=None):
+    def close_client(self, index=None, client=None, save=False):
         """Close client tab from index or widget (or close current tab)."""
         if not self.tabwidget.count():
             return
@@ -243,7 +302,26 @@ class NotebookPlugin(SpyderPluginWidget):
         if index is not None:
             client = self.tabwidget.widget(index)
 
-        # TODO: Eliminate the notebook from disk if it's an Untitled one
+        if not save:
+            client.save()
+            wait_save = QEventLoop()
+            QTimer.singleShot(1000, wait_save.quit)
+            wait_save.exec_()
+            path = client.get_filename()
+            fname = osp.basename(path)
+            nb_contents = nbformat.read(path, as_version=4)
+
+            if ('untitled' in fname and len(nb_contents['cells']) > 0 and
+                    len(nb_contents['cells'][0]['source']) > 0):
+                buttons = QMessageBox.Yes | QMessageBox.No
+                answer = QMessageBox.question(self, self.get_plugin_title(),
+                                              _("<b>{0}</b> has been modified."
+                                                "<br>Do you want to "
+                                                "save changes?".format(fname)),
+                                              buttons)
+                if answer == QMessageBox.Yes:
+                    self.save_as(close=True)
+
         client.shutdown_kernel()
         client.close()
 
@@ -251,7 +329,7 @@ class NotebookPlugin(SpyderPluginWidget):
         self.tabwidget.removeTab(self.tabwidget.indexOf(client))
         self.clients.remove(client)
 
-    def save_as(self, name=None):
+    def save_as(self, name=None, close=False):
         """Save notebook as."""
         current_client = self.get_current_client()
         current_client.save()
@@ -265,7 +343,8 @@ class NotebookPlugin(SpyderPluginWidget):
         if filename:
             nb_contents = nbformat.read(original_path, as_version=4)
             nbformat.write(nb_contents, filename)
-            self.close_client()
+            if not close:
+                self.close_client(save=True)
             self.create_new_client(filename=filename)
 
     def open_notebook(self, filenames=None):
@@ -273,7 +352,6 @@ class NotebookPlugin(SpyderPluginWidget):
         if not filenames:
             filenames, _selfilter = getopenfilenames(self, _("Open notebook"),
                                                      '', FILES_FILTER)
-        print(filenames)
         if filenames:
             for filename in filenames:
                 self.create_new_client(filename=filename)
