@@ -162,7 +162,8 @@ class NotebookPlugin(SpyderPluginWidget):
         self.focus_changed.connect(self.main.plugin_focus_changed)
         self.main.add_dockwidget(self)
         self.create_new_client(give_focus=False)
-        self.main.add_to_fileswitcher(self.tabwidget, self.clients, self)
+        self.main.add_to_fileswitcher(self, self.tabwidget, self.clients,
+                                      ima.icon('FileIcon'))
 
     # ------ Public API (for clients) -----------------------------------------
     def get_clients(self):
@@ -295,9 +296,15 @@ class NotebookPlugin(SpyderPluginWidget):
         client = self.clients.pop(index_from)
         self.clients.insert(index_to, client)
 
-    def set_stack_index(self, index):
+    # ------ Public API (for FileSwitcher) --------------------------------------------
+    def set_stack_index(self, index, instance):
         """Set the index of the current notebook."""
-        self.tabwidget.setCurrentIndex(index)
+        if instance == self:
+            self.tabwidget.setCurrentIndex(index)
+
+    def get_current_tab_manager(self):
+        """Get the widget with the TabWidget attribute."""
+        return self
 
     def open_fileswitcher_dlg(self):
         """Open notebook list management dialog box."""
@@ -308,9 +315,10 @@ class NotebookPlugin(SpyderPluginWidget):
             self.fileswitcher_dlg.hide()
             self.fileswitcher_dlg.is_visible = False
             return
-        self.fileswitcher_dlg = FileSwitcher(self, self.tabwidget,
-                                             self.clients)
+        self.fileswitcher_dlg = FileSwitcher(self, self, self.tabwidget,
+                                             self.clients,
+                                             ima.icon('FileIcon'))
         self.fileswitcher_dlg.sig_goto_file.connect(self.set_stack_index)
-        self.fileswitcher_dlg.sig_close_file.connect(self.close_client)
+        self.fileswitcher_dlg.setup()
         self.fileswitcher_dlg.show()
         self.fileswitcher_dlg.is_visible = True
