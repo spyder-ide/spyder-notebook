@@ -374,7 +374,7 @@ class NotebookPlugin(SpyderPluginWidget):
         client = self.clients.pop(index_from)
         self.clients.insert(index_to, client)
 
-    # ------ Public API (for FileSwitcher) --------------------------------------------
+    # ------ Public API (for FileSwitcher) ------------------------------------
     def set_stack_index(self, index, instance):
         """Set the index of the current notebook."""
         if instance == self:
