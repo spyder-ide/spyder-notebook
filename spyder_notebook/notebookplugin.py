@@ -13,7 +13,7 @@ import sys
 
 # Qt imports
 from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
-from qtpy.QtCore import Qt, QEventLoop, QTimer, Signal, Slot
+from qtpy.QtCore import Qt, QEventLoop, QTimer, Signal
 from qtpy.compat import getsavefilename, getopenfilenames
 
 # Third-party imports
@@ -26,7 +26,6 @@ from spyder.utils.programs import TEMPDIR
 from spyder.utils.qthelpers import (create_action, create_toolbutton,
                                     add_actions, MENU_SEPARATOR)
 from spyder.widgets.tabs import Tabs
-from spyder.widgets.fileswitcher import FileSwitcher
 from spyder.plugins import SpyderPluginWidget
 
 # Local imports
@@ -65,10 +64,6 @@ class NotebookPlugin(SpyderPluginWidget):
 
         layout = QVBoxLayout()
 
-        filelist_btn = create_toolbutton(self,
-                                         icon=ima.icon('filelist'),
-                                         tip=_("File list management"),
-                                         triggered=self.open_fileswitcher_dlg)
         new_notebook_btn = create_toolbutton(self,
                                              icon=ima.icon('project_expanded'),
                                              tip=_('Open a new notebook'),
@@ -80,8 +75,7 @@ class NotebookPlugin(SpyderPluginWidget):
         menu_btn.setMenu(self.menu)
         menu_btn.setPopupMode(menu_btn.InstantPopup)
         add_actions(self.menu, self.menu_actions)
-        corner_widgets = {Qt.TopRightCorner: [filelist_btn,
-                                              new_notebook_btn, menu_btn]}
+        corner_widgets = {Qt.TopRightCorner: [new_notebook_btn, menu_btn]}
         self.tabwidget = Tabs(self, menu=self.menu, actions=self.menu_actions,
                               corner_widgets=corner_widgets)
 
@@ -383,20 +377,3 @@ class NotebookPlugin(SpyderPluginWidget):
     def get_current_tab_manager(self):
         """Get the widget with the TabWidget attribute."""
         return self
-
-    def open_fileswitcher_dlg(self):
-        """Open notebook list management dialog box."""
-        if not self.tabwidget.count():
-            return
-        if self.fileswitcher_dlg is not None and \
-           self.fileswitcher_dlg.is_visible:
-            self.fileswitcher_dlg.hide()
-            self.fileswitcher_dlg.is_visible = False
-            return
-        self.fileswitcher_dlg = FileSwitcher(self, self, self.tabwidget,
-                                             self.clients,
-                                             ima.icon('FileIcon'))
-        self.fileswitcher_dlg.sig_goto_file.connect(self.set_stack_index)
-        self.fileswitcher_dlg.setup()
-        self.fileswitcher_dlg.show()
-        self.fileswitcher_dlg.is_visible = True
