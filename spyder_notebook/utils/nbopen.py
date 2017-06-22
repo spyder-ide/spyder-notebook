@@ -9,12 +9,13 @@
 """Open notebooks using the best available server."""
 
 import atexit
-import os.path
+import os
+import os.path as osp
 import subprocess
 import time
 
 from notebook import notebookapp
-from spyder.config.base import get_home_dir
+from spyder.config.base import DEV, get_home_dir, get_module_path
 
 
 class NBServerError(Exception):
@@ -37,7 +38,7 @@ def nbopen(filename):
 
     Returns information about the selected server.
     """
-    filename = os.path.abspath(filename)
+    filename = osp.abspath(filename)
     home_dir = get_home_dir()
     server_info = find_best_server(filename)
 
@@ -48,17 +49,28 @@ def nbopen(filename):
         if filename.startswith(home_dir):
             nbdir = home_dir
         else:
-            nbdir = os.path.dirname(filename)
+            nbdir = osp.dirname(filename)
 
         print("Starting new server")
+        kernelspec = 'spyder.utils.ipython.kernelspec.SpyderKernelSpec'
         command = ['jupyter', 'notebook', '--no-browser',
                    '--notebook-dir={}'.format(nbdir),
-                   '--NotebookApp.password=']
+                   '--NotebookApp.password=',
+                   "--KernelSpecManager.kernel_spec_class='{}'".format(
+                           kernelspec)]
+
         if os.name == 'nt':
             creation_flag = 0x08000000  # CREATE_NO_WINDOW
         else:
             creation_flag = 0  # Default value
-        proc = subprocess.Popen(command, creationflags=creation_flag)
+
+        if DEV:
+            env = os.environ.copy()
+            env["PYTHONPATH"] = osp.dirname(get_module_path('spyder'))
+            proc = subprocess.Popen(command, creationflags=creation_flag,
+                                    env=env)
+        else:
+            proc = subprocess.Popen(command, creationflags=creation_flag)
         atexit.register(proc.terminate)
 
         # Wait ~10 secs for the server to be up
