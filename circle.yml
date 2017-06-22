@@ -29,7 +29,11 @@ dependencies:
       source activate test &&
       conda install -q ciocheck -c spyder-ide --no-update-deps &&
       if [ "$CIRCLE_NODE_INDEX" = "2" ]; then pip install -q pyqt5 spyder notebook; else conda install -q spyder notebook; fi &&
-      python setup.py install > /dev/null;
+      if [ "$CIRCLE_NODE_INDEX" = "2" ]; then pip uninstall -q -y spyder; else conda remove -q -y spyder; fi &&
+      mkdir spyder-source && cd spyder-source &&
+      wget -q https://github.com/spyder-ide/spyder/archive/3.x.zip && unzip -q 3.x.zip &&
+      cd spyder-3.x && python setup.py install > /dev/null &&
+      cd ../../ && pip install -q . > /dev/null;
     - DISPLAY=:99 /usr/bin/matchbox-window-manager:
         background: true
     - sleep 5
