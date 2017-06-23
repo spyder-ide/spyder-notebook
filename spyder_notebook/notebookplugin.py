@@ -37,9 +37,8 @@ from .widgets.client import NotebookClient
 NOTEBOOK_TMPDIR = osp.join(TEMPDIR, 'notebooks')
 FILTER_TITLE = _("Jupyter notebooks")
 FILES_FILTER = "{} (*.ipynb)".format(FILTER_TITLE)
-PACKAGE_PATH = os.path.dirname(__file__)
+PACKAGE_PATH = osp.dirname(__file__)
 
-print(PACKAGE_PATH)
 
 class NotebookPlugin(SpyderPluginWidget):
     """IPython Notebook plugin."""
@@ -170,9 +169,9 @@ class NotebookPlugin(SpyderPluginWidget):
         self.focus_changed.connect(self.main.plugin_focus_changed)
         self.main.add_dockwidget(self)
         self.create_new_client(give_focus=False)
-        img_path = os.path.join(PACKAGE_PATH, 'img_src'+ os.sep +'icon.svg')
+        icon_path = os.path.join(PACKAGE_PATH, 'images', 'icon.svg')
         self.main.add_to_fileswitcher(self, self.tabwidget, self.clients,
-                                      QIcon(img_path))
+                                      QIcon(icon_path))
         self.recent_notebook_menu.aboutToShow.connect(self.setup_menu_actions)
 
     # ------ Public API (for clients) -----------------------------------------
