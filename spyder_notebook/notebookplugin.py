@@ -47,9 +47,10 @@ class NotebookPlugin(SpyderPluginWidget):
     CONF_SECTION = 'notebook'
     focus_changed = Signal()
 
-    def __init__(self, parent):
+    def __init__(self, parent, testing=False):
         """Constructor."""
         SpyderPluginWidget.__init__(self, parent)
+        self.testing = testing
 
         self.fileswitcher_dlg = None
         self.tabwidget = None
@@ -270,8 +271,9 @@ class NotebookPlugin(SpyderPluginWidget):
 
         # Save spyder_pythonpath before creating a client
         # because it's needed by our kernel spec.
-        CONF.set('main', 'spyder_pythonpath',
-                 self.main.get_spyder_pythonpath())
+        if not self.testing:
+            CONF.set('main', 'spyder_pythonpath',
+                     self.main.get_spyder_pythonpath())
 
         # Open the notebook with nbopen and get the url we need to render
         try:
