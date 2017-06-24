@@ -226,45 +226,6 @@ def test_new_notebook(qtbot):
     # Assert that we have one notebook
     assert len(notebook.clients) == 1
 
-@flaky(max_runs=3)
-def test_fileswitcher(qtbot):
-    """Test the fileswithcher."""
-    # Create notebook
-    notebook = setup_notebook(qtbot)
-
-    # Create new notebook
-    notebook.create_new_client()
-
-    # Wait for prompt
-    nbwidget = notebook.get_current_nbwidget()
-    qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
-
-    # Assert that we have two notebooks
-    assert len(notebook.clients) == 2
-
-    # Fileswitcher of the notebook
-    notebook.open_fileswitcher_dlg()
-    fileswitcher = notebook.fileswitcher_dlg
-
-    # Search for the first untitled0 notebook
-    fileswitcher.edit.setText("0")
-    
-    # Assert that we are at the first notebook
-    assert notebook.tabwidget.currentIndex() == 0
-    assert notebook.get_current_client().get_short_name() == 'untitled0'
-
-    # Search for the untitled1 notebook
-    fileswitcher.edit.setText("1")
-
-    # Assert that we are at the first notebook
-    assert notebook.tabwidget.currentIndex() == 1
-    assert notebook.get_current_client().get_short_name() == 'untitled1'
-
-    # Assert that the fileswitcher dialog hides
-    qtbot.keyPress(fileswitcher.edit, Qt.Key_Enter)
-    qtbot.waitUntil(lambda: not fileswitcher.isVisible(), timeout=NOTEBOOK_UP)
-    assert not fileswitcher.isVisible()
-
 
 if __name__ == "__main__":
     pytest.main()
