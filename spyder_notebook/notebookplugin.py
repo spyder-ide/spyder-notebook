@@ -168,24 +168,23 @@ class NotebookPlugin(SpyderPluginWidget):
 
     def register_plugin(self):
         """Register plugin in Spyder's main window."""
-        if self.check_compatibility()[0]:
-            self.focus_changed.connect(self.main.plugin_focus_changed)
-            self.main.add_dockwidget(self)
-            self.create_new_client(give_focus=False)
-            icon_path = os.path.join(PACKAGE_PATH, 'images', 'icon.svg')
-            self.main.add_to_fileswitcher(self, self.tabwidget, self.clients,
-                                          QIcon(icon_path))
-            self.recent_notebook_menu.aboutToShow.connect(
-                    self.setup_menu_actions)
+        self.focus_changed.connect(self.main.plugin_focus_changed)
+        self.main.add_dockwidget(self)
+        self.create_new_client(give_focus=False)
+        icon_path = os.path.join(PACKAGE_PATH, 'images', 'icon.svg')
+        self.main.add_to_fileswitcher(self, self.tabwidget, self.clients,
+                                      QIcon(icon_path))
+        self.recent_notebook_menu.aboutToShow.connect(self.setup_menu_actions)
 
     def check_compatibility(self):
         """Check compatibility for PyQt and sWebEngine."""
         message = ''
         value = True
         if PYQT4 or WEBENGINE:
-            message = _("You are working with Qt4 or WebEngine. <br><br>"
-                        "In order to make the Notebook plugin work "
-                        "you should update to Qt5 and use WebKit.")
+            message = _("You are working with Qt4 or the PyQt5 wheels."
+                        "<br><br>In order to make the Notebook plugin "
+                        "work you should update to Qt5 and/or use "
+                        "Anaconda or Miniconda.")
             value = False
         return value, message
 
