@@ -22,6 +22,7 @@ import nbformat
 
 # Spyder imports
 from spyder.config.base import _
+from spyder.config.main import CONF
 from spyder.utils import icon_manager as ima
 from spyder.utils.programs import TEMPDIR
 from spyder.utils.qthelpers import (create_action, create_toolbutton,
@@ -46,9 +47,10 @@ class NotebookPlugin(SpyderPluginWidget):
     CONF_SECTION = 'notebook'
     focus_changed = Signal()
 
-    def __init__(self, parent):
+    def __init__(self, parent, testing=False):
         """Constructor."""
         SpyderPluginWidget.__init__(self, parent)
+        self.testing = testing
 
         self.fileswitcher_dlg = None
         self.tabwidget = None
@@ -266,6 +268,12 @@ class NotebookPlugin(SpyderPluginWidget):
             nb_contents = nbformat.v4.new_notebook()
             nbformat.write(nb_contents, filename)
             self.untitled_num += 1
+
+        # Save spyder_pythonpath before creating a client
+        # because it's needed by our kernel spec.
+        if not self.testing:
+            CONF.set('main', 'spyder_pythonpath',
+                     self.main.get_spyder_pythonpath())
 
         # Open the notebook with nbopen and get the url we need to render
         try:

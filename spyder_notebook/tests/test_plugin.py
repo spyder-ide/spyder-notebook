@@ -26,11 +26,17 @@ from notebook.utils import url_path_join
 from spyder_notebook.notebookplugin import NotebookPlugin
 
 
+#==============================================================================
+# Constants
+#==============================================================================
 NOTEBOOK_UP = 5000
 INTERACTION_CLICK = 100
 LOCATION = osp.realpath(osp.join(os.getcwd(), osp.dirname(__file__)))
 
 
+#==============================================================================
+# Utility functions
+#==============================================================================
 def prompt_present(nbwidget):
     """Check if an In prompt is present in the notebook."""
     if WEBENGINE:
@@ -45,6 +51,7 @@ def prompt_present(nbwidget):
     else:
         return '&nbsp;[&nbsp;]:' in nbwidget.dom.toHtml()
 
+
 def text_present(nbwidget, text="Test"):
     """Check if a text is present in the notebook."""
     if WEBENGINE:
@@ -58,6 +65,7 @@ def text_present(nbwidget, text="Test"):
             return False
     else:
         return text in nbwidget.dom.toHtml()
+
 
 def manage_save_dialog(qtbot, fname, directory=LOCATION):
     """
@@ -76,6 +84,7 @@ def manage_save_dialog(qtbot, fname, directory=LOCATION):
             input_field.setText(fname)
             qtbot.keyClick(w, Qt.Key_Enter)
 
+
 def get_kernel_id(client):
     """Get the kernel id for a client and the sessions url."""
     sessions_url = client.add_token(url_path_join(client.server_url,
@@ -93,6 +102,7 @@ def get_kernel_id(client):
             kernel_id = session['kernel']['id']
             return (kernel_id, sessions_url)
 
+
 def is_kernel_up(kernel_id, sessions_url):
     """Determine if the kernel with the id is up."""
     sessions_req = requests.get(sessions_url).content.decode()
@@ -106,15 +116,23 @@ def is_kernel_up(kernel_id, sessions_url):
 
     return kernel
 
+
+#==============================================================================
+# Fixtures
+#==============================================================================
 @pytest.fixture
 def setup_notebook(qtbot):
     """Set up the Notebook plugin."""
-    notebook = NotebookPlugin(None)
+    notebook = NotebookPlugin(None, testing=True)
     qtbot.addWidget(notebook)
     notebook.create_new_client()
     notebook.show()
     return notebook
 
+
+#==============================================================================
+# Tests
+#==============================================================================
 @flaky(max_runs=3)
 def test_hide_header(qtbot):
     """Test that the kernel header is hidden."""
@@ -132,6 +150,7 @@ def test_hide_header(qtbot):
 
     # Assert that the header is hidden
     assert text_present(nbwidget, 'id="header-container" class="hidden"')
+
 
 @flaky(max_runs=3)
 def test_shutdown_notebook_kernel(qtbot):
@@ -152,6 +171,7 @@ def test_shutdown_notebook_kernel(qtbot):
 
     # Assert that the kernel is down for the closed client
     assert not is_kernel_up(kernel_id, sessions_url)
+
 
 @flaky(max_runs=3)
 def test_open_notebook(qtbot):
@@ -175,6 +195,7 @@ def test_open_notebook(qtbot):
     qtbot.waitUntil(lambda: text_present(nbwidget), timeout=NOTEBOOK_UP)
     assert text_present(nbwidget)
     assert notebook.get_current_client().get_short_name() == "test"
+
 
 @flaky(max_runs=3)
 def test_save_notebook(qtbot):
@@ -212,6 +233,7 @@ def test_save_notebook(qtbot):
     qtbot.waitUntil(lambda: text_present(nbwidget, text="test"), timeout=NOTEBOOK_UP)
     assert text_present(nbwidget, text="test")
     assert notebook.get_current_client().get_short_name() == "save"
+
 
 @flaky(max_runs=3)
 def test_new_notebook(qtbot):
