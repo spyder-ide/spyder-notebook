@@ -12,6 +12,8 @@ import subprocess
 import sys
 
 # Qt imports
+from qtpy import PYQT4
+from qtpy.QtWebEngineWidgets import WEBENGINE
 from qtpy.QtGui import QIcon
 from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
 from qtpy.QtCore import Qt, QEventLoop, QTimer, Signal
@@ -166,13 +168,26 @@ class NotebookPlugin(SpyderPluginWidget):
 
     def register_plugin(self):
         """Register plugin in Spyder's main window."""
-        self.focus_changed.connect(self.main.plugin_focus_changed)
-        self.main.add_dockwidget(self)
-        self.create_new_client(give_focus=False)
-        icon_path = os.path.join(PACKAGE_PATH, 'images', 'icon.svg')
-        self.main.add_to_fileswitcher(self, self.tabwidget, self.clients,
-                                      QIcon(icon_path))
-        self.recent_notebook_menu.aboutToShow.connect(self.setup_menu_actions)
+        if self.check_compatibility()[0]:
+            self.focus_changed.connect(self.main.plugin_focus_changed)
+            self.main.add_dockwidget(self)
+            self.create_new_client(give_focus=False)
+            icon_path = os.path.join(PACKAGE_PATH, 'images', 'icon.svg')
+            self.main.add_to_fileswitcher(self, self.tabwidget, self.clients,
+                                          QIcon(icon_path))
+            self.recent_notebook_menu.aboutToShow.connect(
+                    self.setup_menu_actions)
+
+    def check_compatibility(self):
+        """Check compatibility for PyQt and sWebEngine."""
+        message = ''
+        value = True
+        if PYQT4 or WEBENGINE:
+            message = _("You are working with Qt4 or WebEngine. <br><br>"
+                        "In order to make the Notebook plugin work "
+                        "you should update to Qt5 and use WebKit.")
+            value = False
+        return value, message
 
     # ------ Public API (for clients) -----------------------------------------
     def setup_menu_actions(self):
