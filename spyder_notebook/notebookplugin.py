@@ -183,7 +183,7 @@ class NotebookPlugin(SpyderPluginWidget):
         if PYQT4 or WEBENGINE:
             message = _("You are working with Qt4 or the PyQt5 wheels."
                         "<br><br>In order to make the Notebook plugin "
-                        "work you should update to Qt5 and/or use "
+                        "work you need to update to Qt5 and/or use "
                         "Anaconda or Miniconda.")
             value = False
         return value, message
