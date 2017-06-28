@@ -13,11 +13,11 @@ import sys
 
 # Qt imports
 from qtpy import PYQT4
-from qtpy.QtWebEngineWidgets import WEBENGINE
-from qtpy.QtGui import QIcon
-from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
-from qtpy.QtCore import Qt, QEventLoop, QTimer, Signal
 from qtpy.compat import getsavefilename, getopenfilenames
+from qtpy.QtCore import Qt, QEventLoop, QTimer, Signal
+from qtpy.QtGui import QIcon
+from qtpy.QtWebEngineWidgets import WEBENGINE
+from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
 
 # Third-party imports
 import nbformat
