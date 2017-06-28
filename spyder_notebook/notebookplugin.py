@@ -12,10 +12,12 @@ import subprocess
 import sys
 
 # Qt imports
-from qtpy.QtGui import QIcon
-from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
-from qtpy.QtCore import Qt, QEventLoop, QTimer, Signal
+from qtpy import PYQT4
 from qtpy.compat import getsavefilename, getopenfilenames
+from qtpy.QtCore import Qt, QEventLoop, QTimer, Signal
+from qtpy.QtGui import QIcon
+from qtpy.QtWebEngineWidgets import WEBENGINE
+from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
 
 # Third-party imports
 import nbformat
@@ -175,6 +177,18 @@ class NotebookPlugin(SpyderPluginWidget):
         self.main.add_to_fileswitcher(self, self.tabwidget, self.clients,
                                       QIcon(icon_path))
         self.recent_notebook_menu.aboutToShow.connect(self.setup_menu_actions)
+
+    def check_compatibility(self):
+        """Check compatibility for PyQt and sWebEngine."""
+        message = ''
+        value = True
+        if PYQT4 or WEBENGINE:
+            message = _("You are working with Qt4 or the PyQt5 wheels."
+                        "<br><br>In order to make the Notebook plugin "
+                        "work you need to update to Qt5 and/or use "
+                        "Anaconda or Miniconda.")
+            value = False
+        return value, message
 
     # ------ Public API (for clients) -----------------------------------------
     def setup_menu_actions(self):
