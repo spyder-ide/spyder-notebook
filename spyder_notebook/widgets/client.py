@@ -204,6 +204,23 @@ class NotebookClient(QWidget):
         """Save current notebook."""
         self.notebookwidget.click("#save-notbook button")
 
+    def get_kernel_id(self):
+        """Get the kernel id and the sessions url of the client."""
+        sessions_url = self.add_token(url_path_join(self.server_url,
+                                                      'api/sessions'))
+        sessions_req = requests.get(sessions_url).content.decode()
+        sessions = json.loads(sessions_req)
+
+        if os.name == 'nt':
+            path = self.path.replace('\\', '/')
+        else:
+            path = self.path
+
+        for session in sessions:
+            if session['notebook']['path'] == path:
+                kernel_id = session['kernel']['id']
+                return (kernel_id, sessions_url)
+
     def shutdown_kernel(self):
         """Shutdown the kernel of the client."""
         sessions_url = self.add_token(url_path_join(self.server_url,

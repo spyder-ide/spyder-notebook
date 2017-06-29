@@ -20,6 +20,7 @@ from qtpy.QtWebEngineWidgets import WEBENGINE
 from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
 
 # Third-party imports
+from jupyter_core.paths import jupyter_runtime_dir
 import nbformat
 
 # Spyder imports
@@ -74,6 +75,10 @@ class NotebookPlugin(SpyderPluginWidget):
                                              icon=ima.icon('project_expanded'),
                                              tip=_('Open a new notebook'),
                                              triggered=self.create_new_client)
+        open_console_btn = create_toolbutton(self,
+                                             icon=ima.icon('ipython_console'),
+                                             tip=_('Open the IPython console'),
+                                             triggered=self.open_console)
         menu_btn = create_toolbutton(self, icon=ima.icon('tooloptions'),
                                      tip=_('Options'))
 
@@ -81,7 +86,8 @@ class NotebookPlugin(SpyderPluginWidget):
         menu_btn.setMenu(self.menu)
         menu_btn.setPopupMode(menu_btn.InstantPopup)
         add_actions(self.menu, self.menu_actions)
-        corner_widgets = {Qt.TopRightCorner: [new_notebook_btn, menu_btn]}
+        corner_widgets = {Qt.TopRightCorner: [new_notebook_btn,
+                                              open_console_btn, menu_btn]}
         self.tabwidget = Tabs(self, menu=self.menu, actions=self.menu_actions,
                               corner_widgets=corner_widgets)
 
@@ -157,13 +163,18 @@ class NotebookPlugin(SpyderPluginWidget):
                                     _("Open..."),
                                     icon=ima.icon('fileopen'),
                                     triggered=self.open_notebook)
+        open_console_action = create_action(self,
+                                            _("Open console"),
+                                            icon=ima.icon('ipython_console'),
+                                            triggered=self.open_console)
         self.clear_recent_notebooks_action =\
             create_action(self, _("Clear this list"),
                           triggered=self.clear_recent_notebooks)
         # Plugin actions
         self.menu_actions = [create_nb_action, open_action,
                              self.recent_notebook_menu, MENU_SEPARATOR,
-                             save_as_action]
+                             save_as_action, MENU_SEPARATOR,
+                             open_console_action]
         self.setup_menu_actions()
 
         return self.menu_actions
@@ -172,6 +183,7 @@ class NotebookPlugin(SpyderPluginWidget):
         """Register plugin in Spyder's main window."""
         self.focus_changed.connect(self.main.plugin_focus_changed)
         self.main.add_dockwidget(self)
+        self.ipyconsole = self.main.ipyconsole
         self.create_new_client(give_focus=False)
         icon_path = os.path.join(PACKAGE_PATH, 'images', 'icon.svg')
         self.main.add_to_fileswitcher(self, self.tabwidget, self.clients,
@@ -374,6 +386,16 @@ class NotebookPlugin(SpyderPluginWidget):
         if filenames:
             for filename in filenames:
                 self.create_new_client(filename=filename)
+
+    def open_console(self, client=None):
+        """Open an IPython console for the given client or the current one."""
+        if not client:
+            client = self.get_current_client()
+        if self.ipyconsole is not None:
+            kernel_name = 'kernel-' + client.get_kernel_id()[0] + '.json'
+            kernel_path = osp.join(jupyter_runtime_dir(), kernel_name)
+            self.ipyconsole._create_client_for_kernel(kernel_path, None, None,
+                                                      None)
 
     # ------ Public API (for tabs) --------------------------------------------
     def add_tab(self, widget):

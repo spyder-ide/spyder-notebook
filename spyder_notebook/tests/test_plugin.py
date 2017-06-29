@@ -19,9 +19,6 @@ from qtpy.QtWebEngineWidgets import WEBENGINE
 from qtpy.QtCore import Qt, QTimer
 from qtpy.QtWidgets import QFileDialog, QApplication, QLineEdit
 
-# Notebook imports
-from notebook.utils import url_path_join
-
 # Local imports
 from spyder_notebook.notebookplugin import NotebookPlugin
 
@@ -85,24 +82,6 @@ def manage_save_dialog(qtbot, fname, directory=LOCATION):
             qtbot.keyClick(w, Qt.Key_Enter)
 
 
-def get_kernel_id(client):
-    """Get the kernel id for a client and the sessions url."""
-    sessions_url = client.add_token(url_path_join(client.server_url,
-                                                  'api/sessions'))
-    sessions_req = requests.get(sessions_url).content.decode()
-    sessions = json.loads(sessions_req)
-
-    if os.name == 'nt':
-        path = client.path.replace('\\', '/')
-    else:
-        path = client.path
-
-    for session in sessions:
-        if session['notebook']['path'] == path:
-            kernel_id = session['kernel']['id']
-            return (kernel_id, sessions_url)
-
-
 def is_kernel_up(kernel_id, sessions_url):
     """Determine if the kernel with the id is up."""
     sessions_req = requests.get(sessions_url).content.decode()
@@ -163,8 +142,9 @@ def test_shutdown_notebook_kernel(qtbot):
     qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
 
     # Get kernel id for the client
-    qtbot.waitUntil(lambda: get_kernel_id(notebook.get_current_client()) is not None, timeout=NOTEBOOK_UP)
-    kernel_id, sessions_url = get_kernel_id(notebook.get_current_client())
+    client = notebook.get_current_client()
+    qtbot.waitUntil(lambda: client.get_kernel_id() is not None, timeout=NOTEBOOK_UP)
+    kernel_id, sessions_url = client.get_kernel_id()
 
     # Close the current client
     notebook.close_client()
