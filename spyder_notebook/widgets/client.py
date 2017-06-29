@@ -204,7 +204,7 @@ class NotebookClient(QWidget):
         """Save current notebook."""
         self.notebookwidget.click("#save-notbook button")
 
-    def get_kernel_id(self):
+    def get_kernel_info(self):
         """Get the kernel id and the sessions url of the client."""
         sessions_url = self.add_token(url_path_join(self.server_url,
                                                     'api/sessions'))

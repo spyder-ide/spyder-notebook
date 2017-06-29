@@ -392,9 +392,8 @@ class NotebookPlugin(SpyderPluginWidget):
         if not client:
             client = self.get_current_client()
         if self.ipyconsole is not None:
-            kernel_name = 'kernel-' + client.get_kernel_id()[0] + '.json'
-            kernel_path = osp.join(jupyter_runtime_dir(), kernel_name)
-            self.ipyconsole._create_client_for_kernel(kernel_path, None, None,
+            kernel_id = client.get_kernel_info()[0]
+            self.ipyconsole._create_client_for_kernel(kernel_id, None, None,
                                                       None)
 
     # ------ Public API (for tabs) --------------------------------------------
