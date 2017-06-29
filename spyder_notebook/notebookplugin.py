@@ -20,7 +20,6 @@ from qtpy.QtWebEngineWidgets import WEBENGINE
 from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
 
 # Third-party imports
-from jupyter_core.paths import jupyter_runtime_dir
 import nbformat
 
 # Spyder imports
@@ -75,10 +74,6 @@ class NotebookPlugin(SpyderPluginWidget):
                                              icon=ima.icon('project_expanded'),
                                              tip=_('Open a new notebook'),
                                              triggered=self.create_new_client)
-        open_console_btn = create_toolbutton(self,
-                                             icon=ima.icon('ipython_console'),
-                                             tip=_('Open the IPython console'),
-                                             triggered=self.open_console)
         menu_btn = create_toolbutton(self, icon=ima.icon('tooloptions'),
                                      tip=_('Options'))
 
@@ -86,8 +81,7 @@ class NotebookPlugin(SpyderPluginWidget):
         menu_btn.setMenu(self.menu)
         menu_btn.setPopupMode(menu_btn.InstantPopup)
         add_actions(self.menu, self.menu_actions)
-        corner_widgets = {Qt.TopRightCorner: [new_notebook_btn,
-                                              open_console_btn, menu_btn]}
+        corner_widgets = {Qt.TopRightCorner: [new_notebook_btn, menu_btn]}
         self.tabwidget = Tabs(self, menu=self.menu, actions=self.menu_actions,
                               corner_widgets=corner_widgets)
 
