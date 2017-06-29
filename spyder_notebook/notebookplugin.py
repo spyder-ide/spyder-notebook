@@ -386,7 +386,7 @@ class NotebookPlugin(SpyderPluginWidget):
         if not client:
             client = self.get_current_client()
         if self.ipyconsole is not None:
-            kernel_id = client.get_kernel_info()[0]
+            kernel_id = client.get_kernel_id()
             self.ipyconsole._create_client_for_kernel(kernel_id, None, None,
                                                       None)
 

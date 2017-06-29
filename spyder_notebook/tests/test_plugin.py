@@ -144,7 +144,8 @@ def test_shutdown_notebook_kernel(qtbot):
     # Get kernel id for the client
     client = notebook.get_current_client()
     qtbot.waitUntil(lambda: client.get_kernel_info() is not None, timeout=NOTEBOOK_UP)
-    kernel_id, sessions_url = client.get_kernel_info()
+    kernel_id = client.get_kernel_info()
+    sessions_url = client.get_session_url()
 
     # Close the current client
     notebook.close_client()
