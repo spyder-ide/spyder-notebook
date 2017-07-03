@@ -226,21 +226,7 @@ class NotebookClient(QWidget):
 
     def shutdown_kernel(self):
         """Shutdown the kernel of the client."""
-        sessions_url = self.add_token(url_path_join(self.server_url,
-                                                    'api/sessions'))
-        sessions_req = requests.get(sessions_url).content.decode()
-        sessions = json.loads(sessions_req)
-        kernel_id = None
-
-        if os.name == 'nt':
-            path = self.path.replace('\\', '/')
-        else:
-            path = self.path
-
-        for session in sessions:
-            if session['notebook']['path'] == path:
-                kernel_id = session['kernel']['id']
-                break
+        kernel_id = self.get_kernel_id()
 
         if kernel_id:
             delete_url = self.add_token(url_path_join(self.server_url,
