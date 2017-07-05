@@ -389,6 +389,10 @@ class NotebookPlugin(SpyderPluginWidget):
             kernel_id = client.get_kernel_id()
             self.ipyconsole._create_client_for_kernel(kernel_id, None, None,
                                                       None)
+            ipyclient = self.ipyconsole.get_current_client()
+            ipyclient.allow_rename = False
+            self.ipyconsole.rename_client_tab(ipyclient,
+                                              client.get_short_name())
 
     # ------ Public API (for tabs) --------------------------------------------
     def add_tab(self, widget):
