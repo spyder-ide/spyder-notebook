@@ -1,15 +1,12 @@
 # Spyder notebook plugin
 
-Spyder plugin for the use of notebooks inside Spyder,
-using Jupyter Notebook. Currently it supports basic functionality as `New`,
-`Open`, `Save As...`, and multiple notebooks open at once. Also, supports the use of the `find in files` functionality and the `file switcher` functionality.
+Spyder plugin to use Jupyter notebooks inside Spyder. Currently it supports
+basic functionality such as creating new notebooks, opening any notebook in
+your filesystem and saving notebooks at any location.
 
-**NOTE**
-
-*This is a very (very!) crude implementation of the notebook running inside
-Spyder as a plugin.*
-
-*It won't be usable until we release the **0.1** version.*
+You can also use Spyder's file switcher to easily switch between notebooks
+and open an IPython console connected to the kernel of a notebook to inspect
+its variables in the Variable Explorer.
 
 ## Build status
 
@@ -17,14 +14,17 @@ Spyder as a plugin.*
 [![Coverage Status](https://coveralls.io/repos/github/spyder-ide/spyder-notebook/badge.svg?branch=master)](https://coveralls.io/github/spyder-ide/spyder-notebook?branch=master)
 
 ## Installation
+
 To install this plugin, you can use either ``pip`` or ``conda`` package managers, as follows:
 
-Using conda (recommended way!):
+Using conda (the recommended way!):
+
 ```
 conda install spyder-notebook -c spyder-ide
 ```
 
 Using pip:
+
 ```
 pip install spyder-notebook
 ```
@@ -33,7 +33,7 @@ pip install spyder-notebook
 
 This project depends on:
 
-* [Spyder](https://github.com/spyder-ide/spyder) `>=3.1.4`
+* [Spyder](https://github.com/spyder-ide/spyder) `>=3.2`
 * [Notebook](https://github.com/jupyter/notebook) `>=4.3`
 
 
