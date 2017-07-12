@@ -66,7 +66,7 @@ In this release 30 issues were closed
 * [PR 27](https://github.com/spyder-ide/spyder-notebook/pull/27) - PR: Add a better filter to the "Save as" dialog
 * [PR 26](https://github.com/spyder-ide/spyder-notebook/pull/26) - PR: Shutdown kernel of the notebook before closing it
 * [PR 25](https://github.com/spyder-ide/spyder-notebook/pull/25) - PR: Shorten notebook names with more than 15 characters
-* [PR 24](https://github.com/spyder-ide/spyder-notebook/pull/24) - Add a widget to do DOM manipulations using Javascript
+* [PR 24](https://github.com/spyder-ide/spyder-notebook/pull/24) - PR: Add a widget to do DOM manipulations using Javascript
 * [PR 23](https://github.com/spyder-ide/spyder-notebook/pull/23) - PR: Fix [Errno 2] No such file or directory message
 * [PR 20](https://github.com/spyder-ide/spyder-notebook/pull/20) - PR: Add 'Options menu' and a way to move notebooks ('Save as…')
 * [PR 18](https://github.com/spyder-ide/spyder-notebook/pull/18) - PR: Change time to wait for the start of the server to max 10 secs.
