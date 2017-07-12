@@ -157,13 +157,18 @@ class NotebookPlugin(SpyderPluginWidget):
                                     _("Open..."),
                                     icon=ima.icon('fileopen'),
                                     triggered=self.open_notebook)
+        open_console_action = create_action(self,
+                                            _("Open console"),
+                                            icon=ima.icon('ipython_console'),
+                                            triggered=self.open_console)
         self.clear_recent_notebooks_action =\
             create_action(self, _("Clear this list"),
                           triggered=self.clear_recent_notebooks)
         # Plugin actions
         self.menu_actions = [create_nb_action, open_action,
                              self.recent_notebook_menu, MENU_SEPARATOR,
-                             save_as_action]
+                             save_as_action, MENU_SEPARATOR,
+                             open_console_action]
         self.setup_menu_actions()
 
         return self.menu_actions
@@ -172,6 +177,7 @@ class NotebookPlugin(SpyderPluginWidget):
         """Register plugin in Spyder's main window."""
         self.focus_changed.connect(self.main.plugin_focus_changed)
         self.main.add_dockwidget(self)
+        self.ipyconsole = self.main.ipyconsole
         self.create_new_client(give_focus=False)
         icon_path = os.path.join(PACKAGE_PATH, 'images', 'icon.svg')
         self.main.add_to_fileswitcher(self, self.tabwidget, self.clients,
@@ -374,6 +380,19 @@ class NotebookPlugin(SpyderPluginWidget):
         if filenames:
             for filename in filenames:
                 self.create_new_client(filename=filename)
+
+    def open_console(self, client=None):
+        """Open an IPython console for the given client or the current one."""
+        if not client:
+            client = self.get_current_client()
+        if self.ipyconsole is not None:
+            kernel_id = client.get_kernel_id()
+            self.ipyconsole._create_client_for_kernel(kernel_id, None, None,
+                                                      None)
+            ipyclient = self.ipyconsole.get_current_client()
+            ipyclient.allow_rename = False
+            self.ipyconsole.rename_client_tab(ipyclient,
+                                              client.get_short_name())
 
     # ------ Public API (for tabs) --------------------------------------------
     def add_tab(self, widget):
