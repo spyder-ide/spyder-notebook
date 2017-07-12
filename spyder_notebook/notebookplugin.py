@@ -12,7 +12,7 @@ import subprocess
 import sys
 
 # Qt imports
-from qtpy import PYQT4
+from qtpy import PYQT4, PYSIDE
 from qtpy.compat import getsavefilename, getopenfilenames
 from qtpy.QtCore import Qt, QEventLoop, QTimer, Signal
 from qtpy.QtGui import QIcon
@@ -188,11 +188,11 @@ class NotebookPlugin(SpyderPluginWidget):
         """Check compatibility for PyQt and sWebEngine."""
         message = ''
         value = True
-        if PYQT4 or WEBENGINE:
-            message = _("You are working with Qt4 or the PyQt5 wheels."
-                        "<br><br>In order to make the Notebook plugin "
-                        "work you need to update to Qt5 and/or use "
-                        "Anaconda or Miniconda.")
+        if PYQT4 or PYSIDE:
+            message = _("You are working with Qt4 and in order to use this "
+                        "plugin you need to have Qt5.<br><br>"
+                        "Please update your Qt and/or PyQt packages to "
+                        "meet this requirement.")
             value = False
         return value, message
 
