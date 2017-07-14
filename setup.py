@@ -35,7 +35,8 @@ def get_version(module='spyder_notebook'):
     return version
 
 
-REQUIREMENTS = ['spyder>=3.2.0.dev0', 'notebook>=4.3']
+REQUIREMENTS = ['spyder>=3.2.0.dev0', 'notebook>=4.3',
+                'qtpy', 'requests', 'psutil', 'nbformat']
 
 setup(
     name='spyder-notebook',

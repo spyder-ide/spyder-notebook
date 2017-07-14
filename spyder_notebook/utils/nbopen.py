@@ -15,6 +15,8 @@ import subprocess
 import time
 
 from notebook import notebookapp
+import psutil
+
 from spyder.config.base import DEV, get_home_dir, get_module_path
 
 
@@ -71,7 +73,17 @@ def nbopen(filename):
                                     env=env)
         else:
             proc = subprocess.Popen(command, creationflags=creation_flag)
-        atexit.register(proc.terminate)
+
+        # Kill the server at exit. We need to use psutil for this because
+        # Popen.terminate doesn't work when creationflags or shell=True
+        # are used.
+        def kill_server_and_childs(pid):
+            ps_proc = psutil.Process(pid)
+            for child in ps_proc.children(recursive=True):
+                child.kill()
+            ps_proc.kill()
+
+        atexit.register(kill_server_and_childs, proc.pid)
 
         # Wait ~10 secs for the server to be up
         for _x in range(40):
