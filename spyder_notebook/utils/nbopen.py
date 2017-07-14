@@ -75,10 +75,15 @@ def nbopen(filename):
             proc = subprocess.Popen(command, creationflags=creation_flag)
 
         # Kill the server at exit. We need to use psutil for this because
-        # proc.terminate doesn't work when creationflags or shell=True
+        # Popen.terminate doesn't work when creationflags or shell=True
         # are used.
-        ps_proc = psutil.Process(proc.pid)
-        atexit.register(ps_proc.kill)
+        def kill_server_and_childs(pid):
+            ps_proc = psutil.Process(pid)
+            for child in ps_proc.children(recursive=True):
+                child.kill()
+            ps_proc.kill()
+
+        atexit.register(kill_server_and_childs, proc.pid)
 
         # Wait ~10 secs for the server to be up
         for _x in range(40):
