@@ -1,8 +1,8 @@
 To release a new version of Spyder notebook on PyPI:
 
-* git pull
+* git fetch upstream && get merge upstream/master
 
-* Update CHANGELOG.md
+* Update CHANGELOG.md with loghub
 
 * Update `_version.py` (set release version, remove 'dev0')
 
@@ -12,7 +12,7 @@ To release a new version of Spyder notebook on PyPI:
 
 * python setup.py bdist_wheel upload
 
-* git tag -a vX.X.X -m 'comment'
+* git tag -a vX.X.X -m 'Release X.X.X'
 
 * Update `_version.py` (add 'dev0' and increment minor)
 
