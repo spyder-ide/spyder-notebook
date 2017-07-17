@@ -17,7 +17,8 @@ from qtpy.compat import getsavefilename, getopenfilenames
 from qtpy.QtCore import Qt, QEventLoop, QTimer, Signal
 from qtpy.QtGui import QIcon
 from qtpy.QtWebEngineWidgets import WEBENGINE
-from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
+from qtpy.QtWidgets import (QApplication, QMessageBox, QVBoxLayout,
+                            QMenu, QMenuBar)
 
 # Third-party imports
 import nbformat
@@ -84,7 +85,6 @@ class NotebookPlugin(SpyderPluginWidget):
         corner_widgets = {Qt.TopRightCorner: [new_notebook_btn, menu_btn]}
         self.tabwidget = Tabs(self, menu=self.menu, actions=self.menu_actions,
                               corner_widgets=corner_widgets)
-
         if hasattr(self.tabwidget, 'setDocumentMode') \
            and not sys.platform == 'darwin':
             # Don't set document mode to true on OSX because it generates
@@ -405,12 +405,23 @@ class NotebookPlugin(SpyderPluginWidget):
             self.dockwidget.setVisible(True)
             self.dockwidget.raise_()
         self.activateWindow()
+        self.set_menu_bar()
         widget.notebookwidget.setFocus()
 
     def move_tab(self, index_from, index_to):
         """Move tab."""
         client = self.clients.pop(index_from)
         self.clients.insert(index_to, client)
+
+    def set_menu_bar(self):
+        """Add a menu bar for all the tabs."""
+        num_tabs = self.tabwidget.count()
+        for i in range(num_tabs):
+            layout = self.tabwidget.widget(i).layout()
+            if not layout.menuBar():
+                menuBar = QMenuBar()
+                add_actions(menuBar, self.menu_actions)
+                layout.setMenuBar(menuBar)
 
     # ------ Public API (for FileSwitcher) ------------------------------------
     def set_stack_index(self, index, instance):
