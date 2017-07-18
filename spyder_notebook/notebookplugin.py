@@ -58,6 +58,7 @@ class NotebookPlugin(SpyderPluginWidget):
         self.fileswitcher_dlg = None
         self.tabwidget = None
         self.menu_actions = None
+        self.menu_bar_actions = None
 
         self.main = parent
 
@@ -71,18 +72,13 @@ class NotebookPlugin(SpyderPluginWidget):
 
         layout = QVBoxLayout()
 
-        new_notebook_btn = create_toolbutton(self,
-                                             icon=ima.icon('project_expanded'),
-                                             tip=_('Open a new notebook'),
-                                             triggered=self.create_new_client)
         menu_btn = create_toolbutton(self, icon=ima.icon('tooloptions'),
                                      tip=_('Options'))
-
         self.menu = QMenu(self)
         menu_btn.setMenu(self.menu)
         menu_btn.setPopupMode(menu_btn.InstantPopup)
         add_actions(self.menu, self.menu_actions)
-        corner_widgets = {Qt.TopRightCorner: [new_notebook_btn, menu_btn]}
+        corner_widgets = {Qt.TopRightCorner: [menu_btn]}
         self.tabwidget = Tabs(self, menu=self.menu, actions=self.menu_actions,
                               corner_widgets=corner_widgets)
         if hasattr(self.tabwidget, 'setDocumentMode') \
@@ -96,7 +92,11 @@ class NotebookPlugin(SpyderPluginWidget):
 
         self.tabwidget.set_close_function(self.close_client)
 
+        self.menuBar = QMenuBar(self)
+        add_actions(self.menuBar, self.menu_bar_actions)
+
         layout.addWidget(self.tabwidget)
+        layout.setMenuBar(self.menuBar)
         self.setLayout(layout)
 
     # ------ SpyderPluginMixin API --------------------------------------------
@@ -169,6 +169,11 @@ class NotebookPlugin(SpyderPluginWidget):
                              self.recent_notebook_menu, MENU_SEPARATOR,
                              save_as_action, MENU_SEPARATOR,
                              open_console_action]
+
+        # Plugin menu bar actions
+        self.menu_bar_actions = [create_nb_action, open_action,
+                                 save_as_action, open_console_action]
+
         self.setup_menu_actions()
 
         return self.menu_actions
@@ -405,23 +410,12 @@ class NotebookPlugin(SpyderPluginWidget):
             self.dockwidget.setVisible(True)
             self.dockwidget.raise_()
         self.activateWindow()
-        self.set_menu_bar()
         widget.notebookwidget.setFocus()
 
     def move_tab(self, index_from, index_to):
         """Move tab."""
         client = self.clients.pop(index_from)
         self.clients.insert(index_to, client)
-
-    def set_menu_bar(self):
-        """Add a menu bar for all the tabs."""
-        num_tabs = self.tabwidget.count()
-        for i in range(num_tabs):
-            layout = self.tabwidget.widget(i).layout()
-            if not layout.menuBar():
-                menuBar = QMenuBar()
-                add_actions(menuBar, self.menu_actions)
-                layout.setMenuBar(menuBar)
 
     # ------ Public API (for FileSwitcher) ------------------------------------
     def set_stack_index(self, index, instance):
