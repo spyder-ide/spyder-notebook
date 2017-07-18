@@ -17,7 +17,8 @@ from qtpy.compat import getsavefilename, getopenfilenames
 from qtpy.QtCore import Qt, QEventLoop, QTimer, Signal
 from qtpy.QtGui import QIcon
 from qtpy.QtWebEngineWidgets import WEBENGINE
-from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
+from qtpy.QtWidgets import (QApplication, QMessageBox, QVBoxLayout,
+                            QMenu, QMenuBar)
 
 # Third-party imports
 import nbformat
@@ -57,6 +58,7 @@ class NotebookPlugin(SpyderPluginWidget):
         self.fileswitcher_dlg = None
         self.tabwidget = None
         self.menu_actions = None
+        self.menu_bar_actions = None
 
         self.main = parent
 
@@ -70,21 +72,15 @@ class NotebookPlugin(SpyderPluginWidget):
 
         layout = QVBoxLayout()
 
-        new_notebook_btn = create_toolbutton(self,
-                                             icon=ima.icon('project_expanded'),
-                                             tip=_('Open a new notebook'),
-                                             triggered=self.create_new_client)
         menu_btn = create_toolbutton(self, icon=ima.icon('tooloptions'),
                                      tip=_('Options'))
-
         self.menu = QMenu(self)
         menu_btn.setMenu(self.menu)
         menu_btn.setPopupMode(menu_btn.InstantPopup)
         add_actions(self.menu, self.menu_actions)
-        corner_widgets = {Qt.TopRightCorner: [new_notebook_btn, menu_btn]}
+        corner_widgets = {Qt.TopRightCorner: [menu_btn]}
         self.tabwidget = Tabs(self, menu=self.menu, actions=self.menu_actions,
                               corner_widgets=corner_widgets)
-
         if hasattr(self.tabwidget, 'setDocumentMode') \
            and not sys.platform == 'darwin':
             # Don't set document mode to true on OSX because it generates
@@ -96,7 +92,11 @@ class NotebookPlugin(SpyderPluginWidget):
 
         self.tabwidget.set_close_function(self.close_client)
 
+        self.menuBar = QMenuBar(self)
+        add_actions(self.menuBar, self.menu_bar_actions)
+
         layout.addWidget(self.tabwidget)
+        layout.setMenuBar(self.menuBar)
         self.setLayout(layout)
 
     # ------ SpyderPluginMixin API --------------------------------------------
@@ -169,6 +169,11 @@ class NotebookPlugin(SpyderPluginWidget):
                              self.recent_notebook_menu, MENU_SEPARATOR,
                              save_as_action, MENU_SEPARATOR,
                              open_console_action]
+
+        # Plugin menu bar actions
+        self.menu_bar_actions = [create_nb_action, open_action,
+                                 save_as_action, open_console_action]
+
         self.setup_menu_actions()
 
         return self.menu_actions
