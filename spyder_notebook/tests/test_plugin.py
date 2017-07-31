@@ -226,8 +226,8 @@ def test_new_notebook(qtbot):
     nbwidget = notebook.get_current_nbwidget()
     qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
 
-    # Assert that we have one notebook
-    assert len(notebook.clients) == 1
+    # Assert that we have one notebook and the welcome page
+    assert len(notebook.clients) == 2
 
 
 if __name__ == "__main__":
