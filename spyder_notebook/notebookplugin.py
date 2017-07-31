@@ -160,7 +160,8 @@ class NotebookPlugin(SpyderPluginWidget):
                                     triggered=self.open_notebook)
         self.open_console_action = create_action(self,
                                                  _("Open console"),
-                                                 icon=ima.icon('ipython_console'),
+                                                 icon=ima.icon(
+                                                         'ipython_console'),
                                                  triggered=self.open_console)
         self.clear_recent_notebooks_action =\
             create_action(self, _("Clear this list"),
@@ -239,7 +240,6 @@ class NotebookPlugin(SpyderPluginWidget):
         self.open_console_action.setEnabled(False)
         self.menu.clear()
         add_actions(self.menu, self.menu_actions)
-
 
     def add_to_recent(self, notebook):
         """
@@ -334,7 +334,7 @@ class NotebookPlugin(SpyderPluginWidget):
             self.setup_menu_actions()
         client.register(server_info)
         client.load_notebook()
-        if welcome_client:
+        if welcome_client and not self.testing:
             self.tabwidget.setCurrentIndex(0)
 
     def close_client(self, index=None, client=None, save=False):
@@ -377,7 +377,7 @@ class NotebookPlugin(SpyderPluginWidget):
         self.clients.remove(client)
 
     def create_welcome_client(self):
-        "Create a welcome client with some instructions."
+        """Create a welcome client with some instructions."""
         if self.tabwidget.count() == 0:
             welcome = open(WELCOME).read()
             client = NotebookClient(self, WELCOME, ini_message=welcome)
