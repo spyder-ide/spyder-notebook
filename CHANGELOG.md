@@ -1,9 +1,17 @@
-## Version 0.1
+## Version 0.1 (2017-08-05)
+
+### New features
+
+Initial release
 
 ### Bugs fixed
 
 **Issues**
 
+* [Issue 93](https://github.com/spyder-ide/spyder-notebook/issues/93) - How to open notebooks after a failed (because slow) server start?
+* [Issue 86](https://github.com/spyder-ide/spyder-notebook/issues/86) - Add RELEASE.md file
+* [Issue 85](https://github.com/spyder-ide/spyder-notebook/issues/85) - Pandas Dataframes are not rendered as html tables but as plain text
+* [Issue 83](https://github.com/spyder-ide/spyder-notebook/issues/83) - Notebook servers are not terminated after closing Spyder
 * [Issue 75](https://github.com/spyder-ide/spyder-notebook/issues/75) - Add a menu entry to open an IPython console
 * [Issue 74](https://github.com/spyder-ide/spyder-notebook/issues/74) - Check compatibility for PyQt4 and WebEngine
 * [Issue 69](https://github.com/spyder-ide/spyder-notebook/issues/69) - Make Ctrl+P to show the file switcher here
@@ -16,6 +24,7 @@
 * [Issue 56](https://github.com/spyder-ide/spyder-notebook/issues/56) - Update Readme
 * [Issue 54](https://github.com/spyder-ide/spyder-notebook/issues/54) - Installation is failing if jupyter notebook isn't already installed
 * [Issue 52](https://github.com/spyder-ide/spyder-notebook/issues/52) - Add Jupyter Trove classifier
+* [Issue 51](https://github.com/spyder-ide/spyder-notebook/issues/51) - Release 0.1
 * [Issue 48](https://github.com/spyder-ide/spyder-notebook/issues/48) - Rename the plugin to Notebook
 * [Issue 47](https://github.com/spyder-ide/spyder-notebook/issues/47) - Add more tests
 * [Issue 45](https://github.com/spyder-ide/spyder-notebook/issues/45) - Add a file switcher instance to this plugin
@@ -35,10 +44,15 @@
 * [Issue 5](https://github.com/spyder-ide/spyder-notebook/issues/5) - Shutdown kernel when closing a notebook
 * [Issue 1](https://github.com/spyder-ide/spyder-notebook/issues/1) - Spelling Error in readme.md
 
-In this release 30 issues were closed
+In this release 35 issues were closed
 
 **Pull requests**
 
+* [PR 95](https://github.com/spyder-ide/spyder-notebook/pull/95) - PR: Add welcome message page
+* [PR 87](https://github.com/spyder-ide/spyder-notebook/pull/87) - PR: Add RELEASE.md file
+* [PR 84](https://github.com/spyder-ide/spyder-notebook/pull/84) - PR: Close servers when closing Spyder
+* [PR 82](https://github.com/spyder-ide/spyder-notebook/pull/82) - PR: Minor fix for a typo and a comment formatting
+* [PR 80](https://github.com/spyder-ide/spyder-notebook/pull/80) - PR: Improve Readme and Changelog
 * [PR 79](https://github.com/spyder-ide/spyder-notebook/pull/79) - PR: Add option to open an IPython console connected to the current notebook
 * [PR 78](https://github.com/spyder-ide/spyder-notebook/pull/78) - PR: Add check_compatibility for PyQt4 and WebEngine
 * [PR 77](https://github.com/spyder-ide/spyder-notebook/pull/77) - PR: Use Spyder kernel spec to create kernel notebooks
@@ -76,4 +90,4 @@ In this release 30 issues were closed
 * [PR 4](https://github.com/spyder-ide/spyder-notebook/pull/4) - PR: Initial implementation
 * [PR 2](https://github.com/spyder-ide/spyder-notebook/pull/2) - PR: Spelling Error Fix
 
-In this release 36 pull requests were merged
+In this release 41 pull requests were merged
