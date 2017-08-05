@@ -105,6 +105,10 @@ class NotebookWidget(DOMWidget):
                                            message=message)
         self.setHtml(page)
 
+    def show_message(self, page):
+        """Show a message page with the given .html file."""
+        self.setHtml(page)
+
 
 class NotebookClient(QWidget):
     """
@@ -114,7 +118,7 @@ class NotebookClient(QWidget):
     render notebooks.
     """
 
-    def __init__(self, plugin, filename):
+    def __init__(self, plugin, filename, ini_message=None):
         """Constructor."""
         super(NotebookClient, self).__init__(plugin)
 
@@ -133,7 +137,10 @@ class NotebookClient(QWidget):
         else:
             self.notebookwidget.selectionChanged.connect(self.hide_header)
         self.notebookwidget.urlChanged.connect(self.hide_header)
-        self.notebookwidget.show_blank()
+        if ini_message:
+            self.notebookwidget.show_message(ini_message)
+        else:
+            self.notebookwidget.show_blank()
 
         self.find_widget = FindReplace(self)
         self.find_widget.set_editor(self.notebookwidget)

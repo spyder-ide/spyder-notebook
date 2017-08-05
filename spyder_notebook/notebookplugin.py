@@ -16,7 +16,6 @@ from qtpy import PYQT4, PYSIDE
 from qtpy.compat import getsavefilename, getopenfilenames
 from qtpy.QtCore import Qt, QEventLoop, QTimer, Signal
 from qtpy.QtGui import QIcon
-from qtpy.QtWebEngineWidgets import WEBENGINE
 from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
 
 # Third-party imports
@@ -41,6 +40,7 @@ NOTEBOOK_TMPDIR = osp.join(TEMPDIR, 'notebooks')
 FILTER_TITLE = _("Jupyter notebooks")
 FILES_FILTER = "{} (*.ipynb)".format(FILTER_TITLE)
 PACKAGE_PATH = osp.dirname(__file__)
+WELCOME = osp.join(PACKAGE_PATH, 'utils', 'templates', 'welcome.html')
 
 
 class NotebookPlugin(SpyderPluginWidget):
@@ -64,6 +64,7 @@ class NotebookPlugin(SpyderPluginWidget):
         self.untitled_num = 0
         self.recent_notebooks = self.get_option('recent_notebooks', default=[])
         self.recent_notebook_menu = QMenu(_("Open recent"), self)
+        self.menu = QMenu(self)
 
         # Initialize plugin
         self.initialize_plugin()
@@ -77,7 +78,6 @@ class NotebookPlugin(SpyderPluginWidget):
         menu_btn = create_toolbutton(self, icon=ima.icon('tooloptions'),
                                      tip=_('Options'))
 
-        self.menu = QMenu(self)
         menu_btn.setMenu(self.menu)
         menu_btn.setPopupMode(menu_btn.InstantPopup)
         add_actions(self.menu, self.menu_actions)
@@ -142,6 +142,7 @@ class NotebookPlugin(SpyderPluginWidget):
             nb.setFocus()
         else:
             nb = None
+        self.update_notebook_actions()
 
     def get_plugin_actions(self):
         """Return a list of actions related to plugin."""
@@ -149,26 +150,27 @@ class NotebookPlugin(SpyderPluginWidget):
                                          _("New notebook"),
                                          icon=ima.icon('filenew'),
                                          triggered=self.create_new_client)
-        save_as_action = create_action(self,
-                                       _("Save as..."),
-                                       icon=ima.icon('filesaveas'),
-                                       triggered=self.save_as)
+        self.save_as_action = create_action(self,
+                                            _("Save as..."),
+                                            icon=ima.icon('filesaveas'),
+                                            triggered=self.save_as)
         open_action = create_action(self,
                                     _("Open..."),
                                     icon=ima.icon('fileopen'),
                                     triggered=self.open_notebook)
-        open_console_action = create_action(self,
-                                            _("Open console"),
-                                            icon=ima.icon('ipython_console'),
-                                            triggered=self.open_console)
+        self.open_console_action = create_action(self,
+                                                 _("Open console"),
+                                                 icon=ima.icon(
+                                                         'ipython_console'),
+                                                 triggered=self.open_console)
         self.clear_recent_notebooks_action =\
             create_action(self, _("Clear this list"),
                           triggered=self.clear_recent_notebooks)
         # Plugin actions
         self.menu_actions = [create_nb_action, open_action,
                              self.recent_notebook_menu, MENU_SEPARATOR,
-                             save_as_action, MENU_SEPARATOR,
-                             open_console_action]
+                             self.save_as_action, MENU_SEPARATOR,
+                             self.open_console_action]
         self.setup_menu_actions()
 
         return self.menu_actions
@@ -226,6 +228,18 @@ class NotebookPlugin(SpyderPluginWidget):
             self.clear_recent_notebooks_action.setEnabled(True)
         else:
             self.clear_recent_notebooks_action.setEnabled(False)
+        client = self.get_current_client()
+        if client:
+            if client.get_filename() != WELCOME:
+                self.save_as_action.setEnabled(True)
+                self.open_console_action.setEnabled(True)
+                self.menu.clear()
+                add_actions(self.menu, self.menu_actions)
+                return
+        self.save_as_action.setEnabled(False)
+        self.open_console_action.setEnabled(False)
+        self.menu.clear()
+        add_actions(self.menu, self.menu_actions)
 
     def add_to_recent(self, notebook):
         """
@@ -306,8 +320,13 @@ class NotebookPlugin(SpyderPluginWidget):
                   "taking too much time to do it. Please start it in a "
                   "system terminal with the command 'jupyter notebook' to "
                   "check for errors."))
+            # Create a welcome widget
+            # See issue 93
+            self.untitled_num -= 1
+            self.create_welcome_client()
             return
 
+        welcome_client = self.create_welcome_client()
         client = NotebookClient(self, filename)
         self.add_tab(client)
         if NOTEBOOK_TMPDIR not in filename:
@@ -315,6 +334,8 @@ class NotebookPlugin(SpyderPluginWidget):
             self.setup_menu_actions()
         client.register(server_info)
         client.load_notebook()
+        if welcome_client and not self.testing:
+            self.tabwidget.setCurrentIndex(0)
 
     def close_client(self, index=None, client=None, save=False):
         """Close client tab from index or widget (or close current tab)."""
@@ -327,7 +348,8 @@ class NotebookPlugin(SpyderPluginWidget):
         if index is not None:
             client = self.tabwidget.widget(index)
 
-        if not save:
+        is_welcome = client.get_filename() == WELCOME
+        if not save and not is_welcome:
             client.save()
             wait_save = QEventLoop()
             QTimer.singleShot(1000, wait_save.quit)
@@ -346,13 +368,21 @@ class NotebookPlugin(SpyderPluginWidget):
                                               buttons)
                 if answer == QMessageBox.Yes:
                     self.save_as(close=True)
-
-        client.shutdown_kernel()
+        if not is_welcome:
+            client.shutdown_kernel()
         client.close()
 
         # Note: notebook index may have changed after closing related widgets
         self.tabwidget.removeTab(self.tabwidget.indexOf(client))
         self.clients.remove(client)
+
+    def create_welcome_client(self):
+        """Create a welcome client with some instructions."""
+        if self.tabwidget.count() == 0:
+            welcome = open(WELCOME).read()
+            client = NotebookClient(self, WELCOME, ini_message=welcome)
+            self.add_tab(client)
+            return client
 
     def save_as(self, name=None, close=False):
         """Save notebook as."""
