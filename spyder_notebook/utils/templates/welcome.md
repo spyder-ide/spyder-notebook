@@ -3,9 +3,12 @@
 
 ## Usage
 
-With this plugin you can open, edit and create notebooks
+With this plugin you can open, edit and create Jupyter notebooks.
 
-You can right-click and click _Open new notebook_. You can also click the 
-<span title="Open new notebook"><b>&plus;</b></span> button or the 
-<span title="Options"><b>&#9881;</b></span> button to start working.
+To create new notebooks, you can right-click and click in
+_Open new notebook_. You can also click the
+<span title="Open new notebook"><b>&plus;</b></span> button.
 
+To open and save notebooks, please press the 
+<span title="Options"><b>&#9881;</b></span> button to the right
+of this plugin.
