@@ -1,6 +1,7 @@
 include CHANGELOG.md
 include LICENSE
 include README.md
+include runtests.py
 recursive-include spyder_notebook/images *.svg
 recursive-include spyder_notebook/utils/templates *.html
 recursive-include spyder_notebook/tests *.ipynb

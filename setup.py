@@ -35,7 +35,7 @@ def get_version(module='spyder_notebook'):
     return version
 
 
-REQUIREMENTS = ['spyder>=3.2.0.dev0', 'notebook>=4.3',
+REQUIREMENTS = ['spyder>=3.2.0', 'notebook>=4.3',
                 'qtpy', 'requests', 'psutil', 'nbformat']
 
 setup(
@@ -50,6 +50,7 @@ setup(
                      "to run inside Spyder as a plugin.",
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
     install_requires=REQUIREMENTS,
+    include_package_data=True,
     classifiers=['Development Status :: 4 - Beta',
                  'Framework :: Jupyter',
                  'Intended Audience :: Developers',
