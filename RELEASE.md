@@ -28,6 +28,6 @@ To release a new version of Spyder notebook on PyPI:
 
 * Publish release announcement
 
-*** Note**: Before using these commands be sure that the distribution is complete 
+* **Note**: Before using these commands be sure that the distribution is complete 
 i.e all the needed files are in the distribution for uploading. 
 Also, do not take the dist files into account when doing the commits.
