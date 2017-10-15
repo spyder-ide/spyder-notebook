@@ -43,5 +43,10 @@ Visit our [CHANGELOG](CHANGELOG.md) file to know more about our new features and
 ## Development and contribution
 To start contributing to this project you can execute ``python setup.py install`` to test your changes on Spyder. We follow PEP8 and PEP257 style guidelines.
 
-# Overview
+## Contact
+
+You can ask your questions at the [Spyder group](https://groups.google.com/forum/?utm_source=digest&utm_medium=email#!forum/spyderlib/topics)
+or create a issue in this repo. We will be more than glad to answer.
+
+## Overview
 ![example](/doc/example.gif)
