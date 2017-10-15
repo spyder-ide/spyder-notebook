@@ -376,6 +376,8 @@ class NotebookPlugin(SpyderPluginWidget):
         self.tabwidget.removeTab(self.tabwidget.indexOf(client))
         self.clients.remove(client)
 
+        self.create_welcome_client()
+
     def create_welcome_client(self):
         """Create a welcome client with some instructions."""
         if self.tabwidget.count() == 0:
