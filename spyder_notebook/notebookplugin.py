@@ -82,7 +82,8 @@ class NotebookPlugin(SpyderPluginWidget):
         menu_btn.setPopupMode(menu_btn.InstantPopup)
         add_actions(self.options_menu, self.menu_actions)
         corner_widgets = {Qt.TopRightCorner: [new_notebook_btn, menu_btn]}
-        self.tabwidget = Tabs(self, menu=self.options_menu, actions=self.menu_actions,
+        self.tabwidget = Tabs(self, menu=self.options_menu,
+                              actions=self.menu_actions,
                               corner_widgets=corner_widgets)
 
         if hasattr(self.tabwidget, 'setDocumentMode') \
