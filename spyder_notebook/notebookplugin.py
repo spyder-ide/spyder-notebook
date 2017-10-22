@@ -64,7 +64,7 @@ class NotebookPlugin(SpyderPluginWidget):
         self.untitled_num = 0
         self.recent_notebooks = self.get_option('recent_notebooks', default=[])
         self.recent_notebook_menu = QMenu(_("Open recent"), self)
-        self.menu = QMenu(self)
+        self.options_menu = QMenu(self)
 
         # Initialize plugin
         self.initialize_plugin()
@@ -78,11 +78,12 @@ class NotebookPlugin(SpyderPluginWidget):
         menu_btn = create_toolbutton(self, icon=ima.icon('tooloptions'),
                                      tip=_('Options'))
 
-        menu_btn.setMenu(self.menu)
+        menu_btn.setMenu(self.options_menu)
         menu_btn.setPopupMode(menu_btn.InstantPopup)
-        add_actions(self.menu, self.menu_actions)
+        add_actions(self.options_menu, self.menu_actions)
         corner_widgets = {Qt.TopRightCorner: [new_notebook_btn, menu_btn]}
-        self.tabwidget = Tabs(self, menu=self.menu, actions=self.menu_actions,
+        self.tabwidget = Tabs(self, menu=self.options_menu,
+                              actions=self.menu_actions,
                               corner_widgets=corner_widgets)
 
         if hasattr(self.tabwidget, 'setDocumentMode') \
@@ -233,13 +234,13 @@ class NotebookPlugin(SpyderPluginWidget):
             if client.get_filename() != WELCOME:
                 self.save_as_action.setEnabled(True)
                 self.open_console_action.setEnabled(True)
-                self.menu.clear()
-                add_actions(self.menu, self.menu_actions)
+                self.options_menu.clear()
+                add_actions(self.options_menu, self.menu_actions)
                 return
         self.save_as_action.setEnabled(False)
         self.open_console_action.setEnabled(False)
-        self.menu.clear()
-        add_actions(self.menu, self.menu_actions)
+        self.options_menu.clear()
+        add_actions(self.options_menu, self.menu_actions)
 
     def add_to_recent(self, notebook):
         """
