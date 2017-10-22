@@ -85,8 +85,8 @@ def nbopen(filename):
 
         atexit.register(kill_server_and_childs, proc.pid)
 
-        # Wait ~10 secs for the server to be up
-        for _x in range(40):
+        # Wait ~25 secs for the server to be up
+        for _x in range(100):
             server_info = find_best_server(filename)
             if server_info is not None:
                 break
