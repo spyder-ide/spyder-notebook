@@ -1,3 +1,31 @@
+## Version 0.1.2 (2018-02-15)
+
+### Bugs fixed
+
+**Issues**
+
+* [Issue 137](https://github.com/spyder-ide/spyder-notebook/issues/137) - Add Opencollective badges to the project ([PR 138](https://github.com/spyder-ide/spyder-notebook/pull/138))
+* [Issue 122](https://github.com/spyder-ide/spyder-notebook/issues/122) - Template for the reports of issues ([PR 124](https://github.com/spyder-ide/spyder-notebook/pull/124))
+* [Issue 121](https://github.com/spyder-ide/spyder-notebook/issues/121) - Changes for compatibility with new undocking behavior of Spyder ([PR 123](https://github.com/spyder-ide/spyder-notebook/pull/123))
+* [Issue 118](https://github.com/spyder-ide/spyder-notebook/issues/118) - Open the welcome tab if no tab is open ([PR 125](https://github.com/spyder-ide/spyder-notebook/pull/125))
+* [Issue 113](https://github.com/spyder-ide/spyder-notebook/issues/113) - Server error because it takes too much time to start ([PR 117](https://github.com/spyder-ide/spyder-notebook/pull/117))
+* [Issue 39](https://github.com/spyder-ide/spyder-notebook/issues/39) - how-to installation / testing ([PR 124](https://github.com/spyder-ide/spyder-notebook/pull/124))
+
+In this release 6 issues were closed.
+
+**Pull requests**
+
+* [PR 138](https://github.com/spyder-ide/spyder-notebook/pull/138) - PR: Update README.md with Open collective info and missing badges. ([137](https://github.com/spyder-ide/spyder-notebook/issues/137))
+* [PR 125](https://github.com/spyder-ide/spyder-notebook/pull/125) - PR: Open a 'welcome' tab if there are no open tabs ([118](https://github.com/spyder-ide/spyder-notebook/issues/118))
+* [PR 124](https://github.com/spyder-ide/spyder-notebook/pull/124) - PR: Add issue template and a link to the Spyder group for contact. ([39](https://github.com/spyder-ide/spyder-notebook/issues/39), [122](https://github.com/spyder-ide/spyder-notebook/issues/122))
+* [PR 123](https://github.com/spyder-ide/spyder-notebook/pull/123) - PR: Change 'menu' for 'options_menu' for the new Spyder 4 undocking feature ([121](https://github.com/spyder-ide/spyder-notebook/issues/121))
+* [PR 117](https://github.com/spyder-ide/spyder-notebook/pull/117) - PR: Increase time for server to start ([113](https://github.com/spyder-ide/spyder-notebook/issues/113))
+* [PR 105](https://github.com/spyder-ide/spyder-notebook/pull/105) - PR: Fix changelog
+
+In this release 6 pull requests were closed.
+
+---
+
 ## Version 0.1.1 (2017-08-06)
 
 ### Bugs fixed
