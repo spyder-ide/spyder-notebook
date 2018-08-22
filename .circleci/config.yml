@@ -1,0 +1,84 @@
+version: 2
+
+main: &main
+    machine: true
+    environment:
+      # Used by qthelpers to close widgets after a defined time
+      - TEST_CI: "True"
+      - TEST_CI_APP: "True"
+    steps:
+      - checkout
+      - run:
+          command: docker pull dorowu/ubuntu-desktop-lxde-vnc:trusty
+      - run:
+          name: Install system packages
+          command: |
+            sudo apt-get update
+            sudo apt-get install libegl1-mesa
+      - run:
+          name: Install Miniconda
+          command: |
+            wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+            bash miniconda.sh -b -p $HOME/miniconda
+            export PATH="$HOME/miniconda/bin:$PATH"
+            conda install python=$PYTHON_VERSION
+      - run:
+          name: Install Spyder from GitHub
+          command: |
+            export PATH="$HOME/miniconda/bin:$PATH"
+            conda install --only-deps spyder
+            mkdir spyder-source
+            cd spyder-source
+            wget -q https://github.com/spyder-ide/spyder/archive/3.x.zip
+            unzip -q 3.x.zip
+            cd spyder-3.x
+            python setup.py install
+      - run:
+          name: Set up test environment
+          command: |
+            export PATH="$HOME/miniconda/bin:$PATH"
+            conda install -q notebook pytest pytest-cov pytest-xvfb flaky
+            pip install pytest-qt
+            python setup.py develop
+      - run:
+          name: Run tests
+          command: |
+            export PATH="$HOME/miniconda/bin:$PATH"
+            mkdir test-reports
+            pytest spyder_notebook --cov=spyder_notebook --junitxml=test-reports/junit.xml
+            COVERALLS_REPO_TOKEN=Kr503QwklmJYKXYRXLywrtw8zbX7K8SKx coveralls
+      - run:
+          name: Run style checks
+          command: |
+            export PATH="$HOME/miniconda/bin:$PATH"
+            conda install -q -c conda-forge ciocheck
+            ciocheck spyder_unittest --disable-tests
+      - store_test_results:
+          path: test-reports
+      - store_artifacts:
+          path: test-reports
+
+jobs:
+  python2.7:
+    <<: *main
+    environment:
+      - PYTHON_VERSION: 2.7
+
+  python3.6:
+    <<: *main
+    environment:
+      - PYTHON_VERSION: 3.6
+
+  python3.7:
+    <<: *main
+    environment:
+      - PYTHON_VERSION: 3.7
+
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - python2.7
+      - python3.6
+      - python3.7
