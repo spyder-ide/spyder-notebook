@@ -37,8 +37,8 @@ main: &main
           name: Set up test environment
           command: |
             export PATH="$HOME/miniconda/bin:$PATH"
-            conda install -q notebook pytest pytest-cov pytest-xvfb flaky
-            pip install pytest-qt
+            conda install -q notebook pytest pytest-cov flaky
+            pip install pytest-qt pytest-xvfb
             python setup.py develop
       - run:
           name: Run tests
