@@ -40,6 +40,8 @@ main: &main
             conda install -q notebook pytest pytest-cov flaky
             pip install pytest-qt pytest-xvfb
             python setup.py develop
+            echo '********** output of conda list **********'
+            conda list
       - run:
           name: Run tests
           command: |
@@ -79,6 +81,4 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - python2.7
       - python3.6
-      - python3.7
