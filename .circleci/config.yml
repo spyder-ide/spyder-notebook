@@ -38,7 +38,7 @@ main: &main
           command: |
             export PATH="$HOME/miniconda/bin:$PATH"
             conda install -q notebook pytest pytest-cov flaky
-            pip install pytest-qt
+            pip install coveralls pytest-qt
             python setup.py develop
             echo '********** output of conda list **********'
             conda list
@@ -81,4 +81,6 @@ workflows:
   version: 2
   build_and_test:
     jobs:
+      - python2.7
       - python3.6
+      - python3.7
