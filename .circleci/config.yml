@@ -17,38 +17,16 @@ main: &main
             sudo apt-get install libegl1-mesa
       - run:
           name: Install Miniconda
-          command: |
-            wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-            bash miniconda.sh -b -p $HOME/miniconda
-            export PATH="$HOME/miniconda/bin:$PATH"
-            conda install python=$PYTHON_VERSION
+          command: ./.circleci/install-miniconda.sh
       - run:
           name: Install Spyder from GitHub
-          command: |
-            export PATH="$HOME/miniconda/bin:$PATH"
-            conda install --only-deps spyder
-            mkdir spyder-source
-            cd spyder-source
-            wget -q https://github.com/spyder-ide/spyder/archive/3.x.zip
-            unzip -q 3.x.zip
-            cd spyder-3.x
-            python setup.py install
+          command: ./.circleci/install-spyder.sh
       - run:
-          name: Set up test environment
-          command: |
-            export PATH="$HOME/miniconda/bin:$PATH"
-            conda install -q notebook pytest pytest-cov flaky
-            pip install coveralls pytest-qt
-            python setup.py develop
-            echo '********** output of conda list **********'
-            conda list
+          name: Install test requirements
+          command: ./.circleci/install-test-reqs.sh
       - run:
           name: Run tests
-          command: |
-            export PATH="$HOME/miniconda/bin:$PATH"
-            mkdir test-reports
-            pytest spyder_notebook --cov=spyder_notebook --junitxml=test-reports/junit.xml
-            COVERALLS_REPO_TOKEN=Kr503QwklmJYKXYRXLywrtw8zbX7K8SKx coveralls
+          command: ./.circleci/run-tests.sh
       - store_test_results:
           path: test-reports
       - store_artifacts:
