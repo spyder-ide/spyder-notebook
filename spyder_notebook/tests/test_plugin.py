@@ -230,5 +230,8 @@ def test_new_notebook(qtbot):
     assert len(notebook.clients) == 2
 
 
+def test_fails():
+    assert 1 + 1 == 3
+
 if __name__ == "__main__":
     pytest.main()
