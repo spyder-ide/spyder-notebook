@@ -11,8 +11,9 @@ wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O mi
 bash miniconda.sh -b -p $HOME/miniconda
 export PATH="$HOME/miniconda/bin:$PATH"
 
-# Install required Python version
-conda install -y python=$PYTHON_VERSION
+# Make new conda environment with required Python version
+conda create -y -n test python=$PYTHON_VERSION
+conda activate test
 
 # Install Spyder's dependencies
 conda install -y --only-deps spyder
