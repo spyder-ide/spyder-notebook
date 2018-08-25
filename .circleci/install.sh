@@ -11,10 +11,10 @@ bash miniconda.sh -b -p $HOME/miniconda
 export PATH="$HOME/miniconda/bin:$PATH"
 
 # Install required Python version
-conda install python=$PYTHON_VERSION
+conda install -y python=$PYTHON_VERSION
 
 # Install Spyder's dependencies
-conda install --only-deps spyder
+conda install -y --only-deps spyder
 
 # Download Spyder's source (3.x branch) from github 
 mkdir spyder-source
@@ -29,10 +29,10 @@ python setup.py install
 popd
 
 # Install spyder-notebook dependency
-conda install notebook
+conda install -y notebook
 
 # Install testing dependencies
-conda install pytest pytest-cov flaky
+conda install -y pytest pytest-cov flaky
 pip install coveralls pytest-qt
 
 # Install spyder-notebook from source in developer mode
