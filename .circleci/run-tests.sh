@@ -1,5 +1,6 @@
-# /bin/bash -e
+#! /bin/bash -ex
 # -e means:  Exit immediately if a command exits with a non-zero status
+# -x means:  Print commands and their arguments as they are executed.
 
 export PATH="$HOME/miniconda/bin:$PATH"
 mkdir test-reports

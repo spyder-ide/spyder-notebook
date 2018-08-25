@@ -1,5 +1,6 @@
-# /bin/bash -e
+#! /bin/bash -ex
 # -e means:  Exit immediately if a command exits with a non-zero status
+# -x means:  Print commands and their arguments as they are executed.
 
 # Install some required system packages
 sudo apt-get update
