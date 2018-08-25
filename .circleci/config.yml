@@ -11,19 +11,8 @@ main: &main
       - run:
           command: docker pull dorowu/ubuntu-desktop-lxde-vnc:trusty
       - run:
-          name: Install system packages
-          command: |
-            sudo apt-get update
-            sudo apt-get install libegl1-mesa
-      - run:
-          name: Install Miniconda
-          command: ./.circleci/install-miniconda.sh
-      - run:
-          name: Install Spyder from GitHub
-          command: ./.circleci/install-spyder.sh
-      - run:
-          name: Install test requirements
-          command: ./.circleci/install-test-reqs.sh
+          name: Install required pachages
+          command: ./.circleci/install.sh
       - run:
           name: Run tests
           command: ./.circleci/run-tests.sh
