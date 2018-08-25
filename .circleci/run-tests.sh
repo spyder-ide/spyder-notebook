@@ -2,7 +2,7 @@
 # -e means:  Exit immediately if a command exits with a non-zero status
 # -x means:  Print commands and their arguments as they are executed.
 
-export PATH="$HOME/miniconda/bin:$PATH"
+source $HOME/miniconda/etc/profile.d/conda.sh
 conda activate test
 
 # Run tests; flag -x means stop on first test failure 
