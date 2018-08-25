@@ -16,10 +16,6 @@ main: &main
       - run:
           name: Run tests
           command: ./.circleci/run-tests.sh
-      - store_test_results:
-          path: test-reports
-      - store_artifacts:
-          path: test-reports
 
 jobs:
   python2.7:
