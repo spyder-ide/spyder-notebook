@@ -36,9 +36,6 @@ conda install -y notebook
 conda install -y pytest pytest-cov flaky
 pip install coveralls pytest-qt
 
-# Install spyder-notebook from source in developer mode
-python setup.py develop
-
 # List packages for debugging
 echo '********** output of conda list **********'
 conda list
