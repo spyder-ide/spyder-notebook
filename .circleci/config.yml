@@ -1,0 +1,43 @@
+version: 2
+
+main: &main
+    machine: true
+    environment:
+      # Used by qthelpers to close widgets after a defined time
+      - TEST_CI: "True"
+      - TEST_CI_APP: "True"
+    steps:
+      - checkout
+      - run:
+          command: docker pull dorowu/ubuntu-desktop-lxde-vnc:trusty
+      - run:
+          name: Install required pachages
+          command: ./.circleci/install.sh
+      - run:
+          name: Run tests
+          command: ./.circleci/run-tests.sh
+
+jobs:
+  python2.7:
+    <<: *main
+    environment:
+      - PYTHON_VERSION: 2.7
+
+  python3.6:
+    <<: *main
+    environment:
+      - PYTHON_VERSION: 3.6
+
+  python3.7:
+    <<: *main
+    environment:
+      - PYTHON_VERSION: 3.7
+
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - python2.7
+      - python3.6
+      - python3.7
