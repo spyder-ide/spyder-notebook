@@ -7,9 +7,10 @@
 """Tests for the plugin."""
 
 # Standard library imports
+import json
 import os
 import os.path as osp
-import json
+import shutil
 
 # Third-party library imports
 from flaky import flaky
@@ -155,13 +156,13 @@ def test_shutdown_notebook_kernel(qtbot):
 
 
 @flaky(max_runs=3)
-def test_open_notebook(qtbot):
+def test_open_notebook(qtbot, tmpdir):
     """Test that a notebook can be opened from a non-ascii directory."""
     # Move the test file to non-ascii directory
     test_notebook = osp.join(LOCATION, 'test.ipynb')
-    test_notebook_non_ascii = osp.join(LOCATION, u'äöüß', 'test.ipynb')
-    os.mkdir(os.path.join(LOCATION, u'äöüß'))
-    os.rename(test_notebook, test_notebook_non_ascii)
+    test_notebook_non_ascii = osp.join(str(tmpdir), u'äöüß', 'test.ipynb')
+    os.mkdir(os.path.join(str(tmpdir), u'äöüß'))
+    shutil.copyfile(test_notebook, test_notebook_non_ascii)
 
     # Create notebook
     notebook = setup_notebook(qtbot)
@@ -179,7 +180,7 @@ def test_open_notebook(qtbot):
 
 
 @flaky(max_runs=3)
-def test_save_notebook(qtbot):
+def test_save_notebook(qtbot, tmpdir):
     """Test that a notebook can be saved."""
     # Create notebook
     notebook = setup_notebook(qtbot)
@@ -201,7 +202,7 @@ def test_save_notebook(qtbot):
     qtbot.keyClick(nbwidget, Qt.Key_QuoteDbl, delay=INTERACTION_CLICK)
 
     # Save the notebook
-    name = 'save.ipynb'
+    name = osp.join(str(tmpdir), 'save.ipynb')
     QTimer.singleShot(1000, lambda: manage_save_dialog(qtbot, fname=name))
     notebook.save_as(name=name)
 
