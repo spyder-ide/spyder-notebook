@@ -34,7 +34,7 @@ popd
 conda install -y notebook
 
 # Install testing dependencies
-conda install -y pytest pytest-cov flaky
+conda install -y pytest pytest-cov pytest-mock flaky
 pip install coveralls pytest-qt
 
 # List packages for debugging
