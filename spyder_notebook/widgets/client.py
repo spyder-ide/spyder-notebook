@@ -227,7 +227,8 @@ class NotebookClient(QWidget):
             path = self.path
 
         for session in sessions:
-            if session['notebook']['path'] == path:
+            notebook_path = session.get('notebook', {}).get('path')
+            if notebook_path is not None and notebook_path == path:
                 kernel_id = session['kernel']['id']
                 return kernel_id
 
