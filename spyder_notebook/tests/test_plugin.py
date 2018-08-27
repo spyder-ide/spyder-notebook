@@ -11,6 +11,7 @@ import json
 import os
 import os.path as osp
 import shutil
+import tempfile
 
 # Third-party library imports
 from flaky import flaky
@@ -19,10 +20,10 @@ import requests
 from qtpy.QtWebEngineWidgets import WEBENGINE
 from qtpy.QtCore import Qt, QTimer
 from qtpy.QtWidgets import QFileDialog, QApplication, QLineEdit
+from spyder.config.base import get_home_dir
 
 # Local imports
 from spyder_notebook.notebookplugin import NotebookPlugin
-
 
 #==============================================================================
 # Constants
@@ -156,12 +157,15 @@ def test_shutdown_notebook_kernel(qtbot):
 
 
 @flaky(max_runs=3)
-def test_open_notebook(qtbot, tmpdir):
+def test_open_notebook(qtbot):
     """Test that a notebook can be opened from a non-ascii directory."""
     # Move the test file to non-ascii directory
     test_notebook = osp.join(LOCATION, 'test.ipynb')
-    test_notebook_non_ascii = osp.join(str(tmpdir), u'äöüß', 'test.ipynb')
-    os.mkdir(os.path.join(str(tmpdir), u'äöüß'))
+
+    # For Python 2, non-ascii directory needs to be under home dir
+    tmpdir = tempfile.mkdtemp(dir=get_home_dir())
+    test_notebook_non_ascii = osp.join(tmpdir, u'äöüß', 'test.ipynb')
+    os.mkdir(os.path.join(tmpdir, u'äöüß'))
     shutil.copyfile(test_notebook, test_notebook_non_ascii)
 
     # Create notebook
