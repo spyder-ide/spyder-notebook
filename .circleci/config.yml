@@ -22,16 +22,19 @@ jobs:
     <<: *main
     environment:
       - PYTHON_VERSION: 2.7
+        SPYDER_BRANCH: 3.x
 
   python3.6:
     <<: *main
     environment:
       - PYTHON_VERSION: 3.6
+        SPYDER_BRANCH: 3.x
 
-  python3.7:
+  python3.7_spyder4:
     <<: *main
     environment:
       - PYTHON_VERSION: 3.7
+        SPYDER_BRANCH: master
 
 
 workflows:
@@ -40,4 +43,4 @@ workflows:
     jobs:
       - python2.7
       - python3.6
-      - python3.7
+      - python3.7_spyder4
