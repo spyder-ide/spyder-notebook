@@ -25,17 +25,17 @@ from spyder.config.base import get_home_dir
 # Local imports
 from spyder_notebook.notebookplugin import NotebookPlugin
 
-#==============================================================================
+# =============================================================================
 # Constants
-#==============================================================================
+# =============================================================================
 NOTEBOOK_UP = 5000
 INTERACTION_CLICK = 100
 LOCATION = osp.realpath(osp.join(os.getcwd(), osp.dirname(__file__)))
 
 
-#==============================================================================
+# =============================================================================
 # Utility functions
-#==============================================================================
+# =============================================================================
 def prompt_present(nbwidget):
     """Check if an In prompt is present in the notebook."""
     if WEBENGINE:
@@ -98,9 +98,9 @@ def is_kernel_up(kernel_id, sessions_url):
     return kernel
 
 
-#==============================================================================
+# =============================================================================
 # Fixtures
-#==============================================================================
+# =============================================================================
 @pytest.fixture
 def setup_notebook(qtbot):
     """Set up the Notebook plugin."""
@@ -111,9 +111,9 @@ def setup_notebook(qtbot):
     return notebook
 
 
-#==============================================================================
+# =============================================================================
 # Tests
-#==============================================================================
+# =============================================================================
 @flaky(max_runs=3)
 def test_hide_header(qtbot):
     """Test that the kernel header is hidden."""
@@ -125,17 +125,17 @@ def test_hide_header(qtbot):
     qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
 
     # Wait for hide header
-    qtbot.waitUntil(lambda: text_present(nbwidget,
-                                         'id="header-container" class="hidden"'),
+    html_fragment = 'id="header-container" class="hidden"'
+    qtbot.waitUntil(lambda: text_present(nbwidget, html_fragment),
                     timeout=NOTEBOOK_UP)
 
     # Assert that the header is hidden
-    assert text_present(nbwidget, 'id="header-container" class="hidden"')
+    assert text_present(nbwidget, html_fragment)
 
 
 @flaky(max_runs=3)
 def test_shutdown_notebook_kernel(qtbot):
-    """Test that the kernel is shutdown from the server when closing a notebook."""
+    """Test that kernel is shutdown from server when closing a notebook."""
     # Create notebook
     notebook = setup_notebook(qtbot)
 
@@ -145,7 +145,8 @@ def test_shutdown_notebook_kernel(qtbot):
 
     # Get kernel id for the client
     client = notebook.get_current_client()
-    qtbot.waitUntil(lambda: client.get_kernel_id() is not None, timeout=NOTEBOOK_UP)
+    qtbot.waitUntil(lambda: client.get_kernel_id() is not None,
+                    timeout=NOTEBOOK_UP)
     kernel_id = client.get_kernel_id()
     sessions_url = client.get_session_url()
 
@@ -216,7 +217,8 @@ def test_save_notebook(qtbot, tmpdir):
 
     # Assert that the In prompt has "test" in it
     # and the client has the correct name
-    qtbot.waitUntil(lambda: text_present(nbwidget, text="test"), timeout=NOTEBOOK_UP)
+    qtbot.waitUntil(lambda: text_present(nbwidget, text="test"),
+                    timeout=NOTEBOOK_UP)
     assert text_present(nbwidget, text="test")
     assert notebook.get_current_client().get_short_name() == "save"
 
