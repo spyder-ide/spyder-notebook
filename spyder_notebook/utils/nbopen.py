@@ -20,6 +20,16 @@ import psutil
 from spyder.config.base import DEV, get_home_dir, get_module_path
 
 
+try:
+    # Spyder 4
+    from spyder.plugins.ipythonconsole.utils.kernelspec import SpyderKernelSpec
+    KERNELSPEC = ('spyder.plugins.ipythonconsole.utils'
+                  '.kernelspec.SpyderKernelSpec')
+except ImportError:
+    # Spyder 3
+    KERNELSPEC = 'spyder.utils.ipython.kernelspec.SpyderKernelSpec'
+
+
 class NBServerError(Exception):
     """Exception for notebook server errors."""
 
@@ -54,12 +64,11 @@ def nbopen(filename):
             nbdir = osp.dirname(filename)
 
         print("Starting new server")
-        kernelspec = 'spyder.utils.ipython.kernelspec.SpyderKernelSpec'
         command = ['jupyter', 'notebook', '--no-browser',
                    '--notebook-dir={}'.format(nbdir),
                    '--NotebookApp.password=',
                    "--KernelSpecManager.kernel_spec_class='{}'".format(
-                           kernelspec)]
+                           KERNELSPEC)]
 
         if os.name == 'nt':
             creation_flag = 0x08000000  # CREATE_NO_WINDOW

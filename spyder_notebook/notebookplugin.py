@@ -29,7 +29,13 @@ from spyder.utils.programs import TEMPDIR
 from spyder.utils.qthelpers import (create_action, create_toolbutton,
                                     add_actions, MENU_SEPARATOR)
 from spyder.widgets.tabs import Tabs
-from spyder.plugins import SpyderPluginWidget
+
+try:
+    # Spyder 4
+    from spyder.api.plugins import SpyderPluginWidget
+except ImportError:
+    # Spyder 3
+    from spyder.plugins import SpyderPluginWidget
 
 # Local imports
 from .utils.nbopen import nbopen, NBServerError
