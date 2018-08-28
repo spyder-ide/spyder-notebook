@@ -21,12 +21,12 @@ conda install -y --only-deps spyder
 # Download Spyder's source (3.x branch) from github 
 mkdir spyder-source
 pushd spyder-source
-wget -q https://github.com/spyder-ide/spyder/archive/3.x.zip
-unzip -q 3.x.zip
+wget -q https://github.com/spyder-ide/spyder/archive/$SPYDER_BRANCH.zip
+unzip -q $SPYDER_BRANCH.zip
 popd
 
 # Install Spyder from source
-pushd spyder-source/spyder-3.x
+pushd spyder-source/spyder-$SPYDER_BRANCH
 python setup.py install
 popd
 
