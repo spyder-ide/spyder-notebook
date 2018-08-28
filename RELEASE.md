@@ -8,6 +8,8 @@ To release a new version of Spyder notebook on PyPI:
 
 * git fetch upstream && get merge upstream/master
 
+* git clean -xfdi
+
 * Update CHANGELOG.md with loghub
 
 * Update `_version.py` (set release version, remove 'dev0')
@@ -29,5 +31,4 @@ To release a new version of Spyder notebook on PyPI:
 * Publish release announcement
 
 * **Note**: Before using these commands be sure that the distribution is complete 
-i.e all the needed files are in the distribution for uploading. 
-Also, do not take the dist files into account when doing the commits.
+i.e all the needed files are in the tarball for uploading.
