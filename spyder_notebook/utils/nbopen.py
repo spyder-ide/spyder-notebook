@@ -12,6 +12,7 @@ import atexit
 import os
 import os.path as osp
 import subprocess
+import sys
 import time
 
 from notebook import notebookapp
@@ -64,7 +65,7 @@ def nbopen(filename):
             nbdir = osp.dirname(filename)
 
         print("Starting new server")
-        command = ['jupyter', 'notebook', '--no-browser',
+        command = [sys.executable, '-m', 'notebook', '--no-browser',
                    '--notebook-dir={}'.format(nbdir),
                    '--NotebookApp.password=',
                    "--KernelSpecManager.kernel_spec_class='{}'".format(
