@@ -426,6 +426,11 @@ class NotebookPlugin(SpyderPluginWidget):
             client = self.get_current_client()
         if self.ipyconsole is not None:
             kernel_id = client.get_kernel_id()
+            if not kernel_id:
+                QMessageBox.critical(
+                    self, _('Error opening console'),
+                    _('There is no kernel associated to this notebook.'))
+                return
             self.ipyconsole._create_client_for_kernel(kernel_id, None, None,
                                                       None)
             ipyclient = self.ipyconsole.get_current_client()

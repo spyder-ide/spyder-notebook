@@ -246,5 +246,31 @@ def test_new_notebook(qtbot):
     assert len(notebook.clients) == 2
 
 
+def test_open_console_when_no_kernel(qtbot, mocker):
+    """Test that open_console() handles the case when there is no kernel."""
+    # Create notebook and mock IPython console plugin and QMessageBox
+    notebook = setup_notebook(qtbot)
+    notebook.ipyconsole = mocker.Mock()
+    MockMessageBox = mocker.patch('spyder_notebook.notebookplugin.QMessageBox')
+
+    # Wait for prompt
+    nbwidget = notebook.get_current_nbwidget()
+    qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
+
+    # Shut the kernel down and check that this is successful
+    client = notebook.get_current_client()
+    kernel_id = client.get_kernel_id()
+    sessions_url = client.get_session_url()
+    client.shutdown_kernel()
+    assert not is_kernel_up(kernel_id, sessions_url)
+
+    # Try opening a console
+    notebook.open_console(client)
+
+    # Assert that a dialog is displayed and no console was opened
+    MockMessageBox.critical.assert_called()
+    notebook.ipyconsole._create_client_for_kernel.assert_not_called()
+
+
 if __name__ == "__main__":
     pytest.main()

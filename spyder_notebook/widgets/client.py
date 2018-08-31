@@ -230,7 +230,11 @@ class NotebookClient(QWidget):
         return self.add_token(url_path_join(self.server_url, 'api/sessions'))
 
     def get_kernel_id(self):
-        """Get the kernel id of the client."""
+        """
+        Get the kernel id of the client.
+
+        Return a str with the kernel id or None.
+        """
         sessions_url = self.get_session_url()
         sessions_req = requests.get(sessions_url).content.decode()
         sessions = json.loads(sessions_req)
