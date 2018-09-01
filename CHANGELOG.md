@@ -1,3 +1,34 @@
+## Version 0.1.3 (2018/09/01)
+
+This is a bug fix release, which resolves some problems reported by our users.
+
+### Issues Closed
+
+* [Issue 166](https://github.com/spyder-ide/spyder-notebook/issues/166) - Tests leave temporary directories in the home dir ([PR 167](https://github.com/spyder-ide/spyder-notebook/pull/167))
+* [Issue 163](https://github.com/spyder-ide/spyder-notebook/issues/163) - test_open_notebook fails when running tests twice in a row ([PR 164](https://github.com/spyder-ide/spyder-notebook/pull/164))
+* [Issue 160](https://github.com/spyder-ide/spyder-notebook/issues/160) - Set up pep8speaks
+* [Issue 158](https://github.com/spyder-ide/spyder-notebook/issues/158) - Make plugin compatible with Spyder's split-plugins change ([PR 165](https://github.com/spyder-ide/spyder-notebook/pull/165))
+* [Issue 157](https://github.com/spyder-ide/spyder-notebook/issues/157) - Be more robust when starting notebook ([PR 168](https://github.com/spyder-ide/spyder-notebook/pull/168))
+* [Issue 156](https://github.com/spyder-ide/spyder-notebook/issues/156) - Migrate to CircleCI 2.0 ([PR 159](https://github.com/spyder-ide/spyder-notebook/pull/159))
+* [Issue 153](https://github.com/spyder-ide/spyder-notebook/issues/153) - TypeError when parsing JSON when shutting kernel down ([PR 161](https://github.com/spyder-ide/spyder-notebook/pull/161))
+* [Issue 152](https://github.com/spyder-ide/spyder-notebook/issues/152) - Opening console for notebook without kernel yields an error ([PR 170](https://github.com/spyder-ide/spyder-notebook/pull/170))
+* [Issue 141](https://github.com/spyder-ide/spyder-notebook/issues/141) - Spyder notebook complains about missing file or directory: 'jupyter' ([PR 168](https://github.com/spyder-ide/spyder-notebook/pull/168))
+
+In this release 9 issues were closed.
+
+### Pull Requests Merged
+
+* [PR 170](https://github.com/spyder-ide/spyder-notebook/pull/170) - PR: Display error when opening console for notebook with no kernel ([152](https://github.com/spyder-ide/spyder-notebook/issues/152))
+* [PR 168](https://github.com/spyder-ide/spyder-notebook/pull/168) - PR: Do not call the jupyter executable when opening notebooks ([157](https://github.com/spyder-ide/spyder-notebook/issues/157), [141](https://github.com/spyder-ide/spyder-notebook/issues/141))
+* [PR 167](https://github.com/spyder-ide/spyder-notebook/pull/167) - PR: Remove temporary directory created in test_open_notebook() ([166](https://github.com/spyder-ide/spyder-notebook/issues/166))
+* [PR 165](https://github.com/spyder-ide/spyder-notebook/pull/165) - PR: Update to Spyder 4 after the split-plugins merge ([158](https://github.com/spyder-ide/spyder-notebook/issues/158))
+* [PR 164](https://github.com/spyder-ide/spyder-notebook/pull/164) - PR: Make tests use a temporary directory ([163](https://github.com/spyder-ide/spyder-notebook/issues/163))
+* [PR 161](https://github.com/spyder-ide/spyder-notebook/pull/161) - PR: More robust parsing of server reply in NotebookClient.get_kernel_id() ([153](https://github.com/spyder-ide/spyder-notebook/issues/153))
+* [PR 159](https://github.com/spyder-ide/spyder-notebook/pull/159) - PR: Upgrade to CircleCI v2.0 ([156](https://github.com/spyder-ide/spyder-notebook/issues/156))
+
+In this release 7 pull requests were closed.
+
+
 ## Version 0.1.2 (2018-02-15)
 
 ### Bugs fixed
