@@ -31,7 +31,8 @@ try:
 except ImportError:
     # Spyder 3
     from spyder.utils.programs import TEMPDIR
-    get_temp_dir = lambda : TEMPDIR
+    def get_temp_dir():
+        return TEMPDIR
 from spyder.utils.qthelpers import (create_action, create_toolbutton,
                                     add_actions, MENU_SEPARATOR)
 from spyder.widgets.tabs import Tabs
