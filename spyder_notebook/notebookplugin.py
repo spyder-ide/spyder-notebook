@@ -25,7 +25,13 @@ import nbformat
 from spyder.config.base import _
 from spyder.config.main import CONF
 from spyder.utils import icon_manager as ima
-from spyder.utils.programs import TEMPDIR
+try:
+    # Spyder 4
+    from spyder.utils.programs import get_temp_dir
+except ImportError:
+    # Spyder 3
+    from spyder.utils.programs import TEMPDIR
+    get_temp_dir = lambda : TEMPDIR
 from spyder.utils.qthelpers import (create_action, create_toolbutton,
                                     add_actions, MENU_SEPARATOR)
 from spyder.widgets.tabs import Tabs
@@ -42,7 +48,7 @@ from .utils.nbopen import nbopen, NBServerError
 from .widgets.client import NotebookClient
 
 
-NOTEBOOK_TMPDIR = osp.join(TEMPDIR, 'notebooks')
+NOTEBOOK_TMPDIR = osp.join(get_temp_dir(), 'notebooks')
 FILTER_TITLE = _("Jupyter notebooks")
 FILES_FILTER = "{} (*.ipynb)".format(FILTER_TITLE)
 PACKAGE_PATH = osp.dirname(__file__)
