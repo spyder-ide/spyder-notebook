@@ -25,18 +25,19 @@ import nbformat
 from spyder.config.base import _
 from spyder.config.main import CONF
 from spyder.utils import icon_manager as ima
-try:
-    # Spyder 4
-    from spyder.utils.programs import get_temp_dir
-except ImportError:
-    # Spyder 3
-    from spyder.utils.programs import TEMPDIR
-    def get_temp_dir():
-        return TEMPDIR
 from spyder.utils.qthelpers import (create_action, create_toolbutton,
                                     add_actions, MENU_SEPARATOR)
 from spyder.widgets.tabs import Tabs
 
+try:
+    # Spyder >= 3.3.2
+    from spyder.utils.programs import get_temp_dir
+except ImportError:
+    # Spyder < 3.3.2
+    from spyder.utils.programs import TEMPDIR
+
+    def get_temp_dir():
+        return TEMPDIR
 try:
     # Spyder 4
     from spyder.api.plugins import SpyderPluginWidget
