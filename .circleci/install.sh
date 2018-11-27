@@ -31,7 +31,8 @@ python setup.py install
 popd
 
 # Install spyder-notebook dependency
-conda install -y notebook
+# Specify Qt 5 to prevent Qt 4 being installed with Python 2
+conda install -y notebook qt=5
 
 # Install testing dependencies
 conda install -y pytest pytest-cov pytest-mock flaky
