@@ -102,13 +102,13 @@ def is_kernel_up(kernel_id, sessions_url):
 # Fixtures
 # =============================================================================
 @pytest.fixture
-def setup_notebook(qtbot):
+def notebook(qtbot):
     """Set up the Notebook plugin."""
-    notebook = NotebookPlugin(None, testing=True)
-    qtbot.addWidget(notebook)
-    notebook.create_new_client()
-    notebook.show()
-    return notebook
+    notebook_plugin = NotebookPlugin(None, testing=True)
+    qtbot.addWidget(notebook_plugin)
+    notebook_plugin.create_new_client()
+    notebook_plugin.show()
+    return notebook_plugin
 
 
 @pytest.fixture(scope='module')
@@ -124,11 +124,8 @@ def tmpdir_under_home():
 # Tests
 # =============================================================================
 @flaky(max_runs=3)
-def test_hide_header(qtbot):
+def test_hide_header(notebook, qtbot):
     """Test that the kernel header is hidden."""
-    # Create notebook
-    notebook = setup_notebook(qtbot)
-
     # Wait for prompt
     nbwidget = notebook.get_current_nbwidget()
     qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
@@ -143,11 +140,8 @@ def test_hide_header(qtbot):
 
 
 @flaky(max_runs=3)
-def test_shutdown_notebook_kernel(qtbot):
+def test_shutdown_notebook_kernel(notebook, qtbot):
     """Test that kernel is shutdown from server when closing a notebook."""
-    # Create notebook
-    notebook = setup_notebook(qtbot)
-
     # Wait for prompt
     nbwidget = notebook.get_current_nbwidget()
     qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
@@ -167,7 +161,7 @@ def test_shutdown_notebook_kernel(qtbot):
 
 
 @flaky(max_runs=3)
-def test_open_notebook(qtbot, tmpdir_under_home):
+def test_open_notebook(notebook, qtbot, tmpdir_under_home):
     """Test that a notebook can be opened from a non-ascii directory."""
     # Move the test file to non-ascii directory
     test_notebook = osp.join(LOCATION, 'test.ipynb')
@@ -177,9 +171,6 @@ def test_open_notebook(qtbot, tmpdir_under_home):
                                        u'äöüß', 'test.ipynb')
     os.mkdir(os.path.join(tmpdir_under_home, u'äöüß'))
     shutil.copyfile(test_notebook, test_notebook_non_ascii)
-
-    # Create notebook
-    notebook = setup_notebook(qtbot)
 
     # Wait for prompt
     notebook.open_notebook(filenames=[test_notebook_non_ascii])
@@ -194,11 +185,8 @@ def test_open_notebook(qtbot, tmpdir_under_home):
 
 
 @flaky(max_runs=3)
-def test_save_notebook(qtbot, tmpdir):
+def test_save_notebook(notebook, qtbot, tmpdir):
     """Test that a notebook can be saved."""
-    # Create notebook
-    notebook = setup_notebook(qtbot)
-
     # Wait for prompt
     nbwidget = notebook.get_current_nbwidget()
     qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
@@ -233,11 +221,8 @@ def test_save_notebook(qtbot, tmpdir):
 
 
 @flaky(max_runs=3)
-def test_new_notebook(qtbot):
+def test_new_notebook(notebook, qtbot):
     """Test that a new client is really a notebook."""
-    # Create notebook
-    notebook = setup_notebook(qtbot)
-
     # Wait for prompt
     nbwidget = notebook.get_current_nbwidget()
     qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
@@ -246,10 +231,9 @@ def test_new_notebook(qtbot):
     assert len(notebook.clients) == 2
 
 
-def test_open_console_when_no_kernel(qtbot, mocker):
+def test_open_console_when_no_kernel(notebook, qtbot, mocker):
     """Test that open_console() handles the case when there is no kernel."""
-    # Create notebook and mock IPython console plugin and QMessageBox
-    notebook = setup_notebook(qtbot)
+    # Create mock IPython console plugin and QMessageBox
     notebook.ipyconsole = mocker.Mock()
     MockMessageBox = mocker.patch('spyder_notebook.notebookplugin.QMessageBox')
 
