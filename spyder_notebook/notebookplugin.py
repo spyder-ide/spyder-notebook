@@ -387,6 +387,14 @@ class NotebookPlugin(SpyderPluginWidget):
             client.shutdown_kernel()
         client.close()
 
+        # Delete notebook file if it is in temporary directory
+        filename = client.get_filename()
+        if filename.startswith(get_temp_dir()):
+            try:
+                os.remove(filename)
+            except EnvironmentError:
+                pass
+
         # Note: notebook index may have changed after closing related widgets
         self.tabwidget.removeTab(self.tabwidget.indexOf(client))
         self.clients.remove(client)

@@ -160,6 +160,24 @@ def test_shutdown_notebook_kernel(notebook, qtbot):
     assert not is_kernel_up(kernel_id, sessions_url)
 
 
+def test_file_in_temp_dir_deleted_after_notebook_closed(notebook, qtbot):
+    """Test that notebook file in temporary directory is deleted after the
+    notebook is closed."""
+    # Wait for prompt
+    nbwidget = notebook.get_current_nbwidget()
+    qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
+
+    # Get file name
+    client = notebook.get_current_client()
+    filename = client.get_filename()
+
+    # Close the current client
+    notebook.close_client()
+
+    # Assert file is deleted
+    assert not osp.exists(filename)
+
+
 @flaky(max_runs=3)
 def test_open_notebook(notebook, qtbot, tmpdir_under_home):
     """Test that a notebook can be opened from a non-ascii directory."""
