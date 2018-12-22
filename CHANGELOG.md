@@ -1,3 +1,26 @@
+## Version 0.1.4 (2018/12/22)
+
+This is a bug fix release, mainly to resolve an incompatibility with Spyder 3.3.2.
+
+### Issues Closed
+
+* [Issue 183](https://github.com/spyder-ide/spyder-notebook/issues/183) - Resolve CI test failures with Python 2 ([PR 182](https://github.com/spyder-ide/spyder-notebook/pull/182))
+* [Issue 181](https://github.com/spyder-ide/spyder-notebook/issues/181) - Update handling of temp directory for Spyder 3.3.2 ([PR 178](https://github.com/spyder-ide/spyder-notebook/pull/178))
+* [Issue 179](https://github.com/spyder-ide/spyder-notebook/issues/179) - Update tests for pytest v4 ([PR 180](https://github.com/spyder-ide/spyder-notebook/pull/180))
+* [Issue 172](https://github.com/spyder-ide/spyder-notebook/issues/172) - Remove untitled notebooks after they are closed ([PR 190](https://github.com/spyder-ide/spyder-notebook/pull/190))
+
+In this release 4 issues were closed.
+
+### Pull Requests Merged
+
+* [PR 190](https://github.com/spyder-ide/spyder-notebook/pull/190) - PR: Delete file when closing notebook if in temp dir ([172](https://github.com/spyder-ide/spyder-notebook/issues/172))
+* [PR 182](https://github.com/spyder-ide/spyder-notebook/pull/182) - PR: Specify Qt 5 in CI test script ([183](https://github.com/spyder-ide/spyder-notebook/issues/183))
+* [PR 180](https://github.com/spyder-ide/spyder-notebook/pull/180) - PR: Use test fixture as pytest intends it ([179](https://github.com/spyder-ide/spyder-notebook/issues/179))
+* [PR 178](https://github.com/spyder-ide/spyder-notebook/pull/178) - PR: Fix Spyder 3.3.2 import of TEMPDIR ([181](https://github.com/spyder-ide/spyder-notebook/issues/181))
+
+In this release 4 pull requests were closed.
+
+
 ## Version 0.1.3 (2018/09/01)
 
 This is a bug fix release, which resolves some problems reported by our users.
