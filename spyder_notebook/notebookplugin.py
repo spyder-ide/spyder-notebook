@@ -13,7 +13,7 @@ import sys
 
 # Qt imports
 from qtpy import PYQT4, PYSIDE
-from qtpy.compat import getsavefilename, getopenfilenames
+from qtpy.compat import getsavefilename
 from qtpy.QtCore import Qt, QEventLoop, QTimer, Signal
 from qtpy.QtGui import QIcon
 from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
@@ -62,6 +62,9 @@ class NotebookPlugin(SpyderPluginWidget):
 
     CONF_SECTION = 'notebook'
     focus_changed = Signal()
+
+    # To open these file extensions directly here
+    file_extensions = ['.ipynb']
 
     def __init__(self, parent, testing=False):
         """Constructor."""
@@ -114,7 +117,7 @@ class NotebookPlugin(SpyderPluginWidget):
         layout.addWidget(self.tabwidget)
         self.setLayout(layout)
 
-    # ------ SpyderPluginMixin API --------------------------------------------
+    # ------ SpyderPluginWidget API -------------------------------------------
     def on_first_registration(self):
         """Action to be performed on first plugin registration."""
         self.main.tabify_plugins(self.main.editor, self)
@@ -125,7 +128,6 @@ class NotebookPlugin(SpyderPluginWidget):
         # this.
         pass
 
-    # ------ SpyderPluginWidget API -------------------------------------------
     def get_plugin_title(self):
         """Return widget title."""
         title = _('Notebook')
@@ -169,10 +171,6 @@ class NotebookPlugin(SpyderPluginWidget):
                                             _("Save as..."),
                                             icon=ima.icon('filesaveas'),
                                             triggered=self.save_as)
-        open_action = create_action(self,
-                                    _("Open..."),
-                                    icon=ima.icon('fileopen'),
-                                    triggered=self.open_notebook)
         self.open_console_action = create_action(self,
                                                  _("Open console"),
                                                  icon=ima.icon(
@@ -182,9 +180,11 @@ class NotebookPlugin(SpyderPluginWidget):
             create_action(self, _("Clear this list"),
                           triggered=self.clear_recent_notebooks)
         # Plugin actions
-        self.menu_actions = [create_nb_action, open_action,
-                             self.recent_notebook_menu, MENU_SEPARATOR,
-                             self.save_as_action, MENU_SEPARATOR,
+        self.menu_actions = [create_nb_action,
+                             self.recent_notebook_menu,
+                             MENU_SEPARATOR,
+                             self.save_as_action,
+                             MENU_SEPARATOR,
                              self.open_console_action]
         self.setup_menu_actions()
 
@@ -212,6 +212,10 @@ class NotebookPlugin(SpyderPluginWidget):
                         "meet this requirement.")
             value = False
         return value, message
+
+    def open_file(self, filename):
+        """Open notebooks using Spyder's 'Open file' dialog."""
+        self.create_new_client(filename=filename)
 
     # ------ Public API (for clients) -----------------------------------------
     def setup_menu_actions(self):
@@ -426,15 +430,6 @@ class NotebookPlugin(SpyderPluginWidget):
             if not close:
                 self.close_client(save=True)
             self.create_new_client(filename=filename)
-
-    def open_notebook(self, filenames=None):
-        """Open a notebook from file."""
-        if not filenames:
-            filenames, _selfilter = getopenfilenames(self, _("Open notebook"),
-                                                     '', FILES_FILTER)
-        if filenames:
-            for filename in filenames:
-                self.create_new_client(filename=filename)
 
     def open_console(self, client=None):
         """Open an IPython console for the given client or the current one."""
