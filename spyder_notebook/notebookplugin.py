@@ -456,9 +456,8 @@ class NotebookPlugin(SpyderPluginWidget):
         index = self.tabwidget.addTab(widget, widget.get_short_name())
         self.tabwidget.setCurrentIndex(index)
         self.tabwidget.setTabToolTip(index, widget.get_filename())
-        if self.dockwidget and not self.ismaximized:
-            self.dockwidget.setVisible(True)
-            self.dockwidget.raise_()
+        if self.dockwidget:
+            self.switch_to_plugin()
         self.activateWindow()
         widget.notebookwidget.setFocus()
 
