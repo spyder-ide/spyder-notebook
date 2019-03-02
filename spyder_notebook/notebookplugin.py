@@ -66,6 +66,9 @@ class NotebookPlugin(SpyderPluginWidget):
     # To open these file extensions directly here
     file_extensions = ['.ipynb']
 
+    # Tell Spyder that this plugin is able to save files
+    can_save_files = True
+
     def __init__(self, parent, testing=False):
         """Constructor."""
         SpyderPluginWidget.__init__(self, parent)
@@ -369,24 +372,7 @@ class NotebookPlugin(SpyderPluginWidget):
 
         is_welcome = client.get_filename() == WELCOME
         if not save and not is_welcome:
-            client.save()
-            wait_save = QEventLoop()
-            QTimer.singleShot(1000, wait_save.quit)
-            wait_save.exec_()
-            path = client.get_filename()
-            fname = osp.basename(path)
-            nb_contents = nbformat.read(path, as_version=4)
-
-            if ('untitled' in fname and len(nb_contents['cells']) > 0 and
-                    len(nb_contents['cells'][0]['source']) > 0):
-                buttons = QMessageBox.Yes | QMessageBox.No
-                answer = QMessageBox.question(self, self.get_plugin_title(),
-                                              _("<b>{0}</b> has been modified."
-                                                "<br>Do you want to "
-                                                "save changes?".format(fname)),
-                                              buttons)
-                if answer == QMessageBox.Yes:
-                    self.save_as(close=True)
+            self.save_untitled()
         if not is_welcome:
             client.shutdown_kernel()
         client.close()
@@ -412,6 +398,38 @@ class NotebookPlugin(SpyderPluginWidget):
             client = NotebookClient(self, WELCOME, ini_message=welcome)
             self.add_tab(client)
             return client
+
+    def save_file(self):
+        """Save current notebook."""
+        client = self.get_current_client()
+        if 'untitled' in client.get_filename():
+            self.save_untitled()
+        else:
+            client.save()
+
+    def save_untitled(self):
+        """Save operation for untitled notebooks."""
+        client = self.get_current_client()
+        client.save()
+        wait_save = QEventLoop()
+        QTimer.singleShot(1000, wait_save.quit)
+        wait_save.exec_()
+        path = client.get_filename()
+        fname = osp.basename(path)
+        nb_contents = nbformat.read(path, as_version=4)
+
+        if ('untitled' in fname and len(nb_contents['cells']) > 0 and
+                len(nb_contents['cells'][0]['source']) > 0):
+            buttons = QMessageBox.Yes | QMessageBox.No
+            answer = QMessageBox.question(
+                self,
+                self.get_plugin_title(),
+                _("<b>{0}</b> has been modified."
+                  "<br>Do you want to "
+                  "save changes?".format(fname)),
+                buttons)
+            if answer == QMessageBox.Yes:
+                self.save_as(close=True)
 
     def save_as(self, name=None, close=False):
         """Save notebook as."""
