@@ -15,35 +15,20 @@ import sys
 from qtpy import PYQT4, PYSIDE
 from qtpy.compat import getsavefilename, getopenfilenames
 from qtpy.QtCore import Qt, QEventLoop, QTimer, Signal
-from qtpy.QtGui import QIcon
 from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
 
 # Third-party imports
 import nbformat
 
 # Spyder imports
+from spyder.api.plugins import SpyderPluginWidget
 from spyder.config.base import _
-from spyder.config.main import CONF
 from spyder.utils import icon_manager as ima
+from spyder.utils.programs import get_temp_dir
 from spyder.utils.qthelpers import (create_action, create_toolbutton,
                                     add_actions, MENU_SEPARATOR)
 from spyder.widgets.tabs import Tabs
 
-try:
-    # Spyder >= 3.3.2
-    from spyder.utils.programs import get_temp_dir
-except ImportError:
-    # Spyder < 3.3.2
-    from spyder.utils.programs import TEMPDIR
-
-    def get_temp_dir():
-        return TEMPDIR
-try:
-    # Spyder 4
-    from spyder.api.plugins import SpyderPluginWidget
-except ImportError:
-    # Spyder 3
-    from spyder.plugins import SpyderPluginWidget
 
 # Local imports
 from .utils.nbopen import nbopen, NBServerError
@@ -65,6 +50,9 @@ class NotebookPlugin(SpyderPluginWidget):
 
     def __init__(self, parent, testing=False):
         """Constructor."""
+        if testing:
+            self.CONF_FILE = False
+
         SpyderPluginWidget.__init__(self, parent)
         self.testing = testing
 
@@ -80,21 +68,17 @@ class NotebookPlugin(SpyderPluginWidget):
         self.recent_notebook_menu = QMenu(_("Open recent"), self)
         self.options_menu = QMenu(self)
 
-        # Initialize plugin
-        self.initialize_plugin()
-
         layout = QVBoxLayout()
 
         new_notebook_btn = create_toolbutton(self,
-                                             icon=ima.icon('project_expanded'),
-                                             tip=_('Open a new notebook'),
-                                             triggered=self.create_new_client)
+                                              icon=ima.icon('options_more'),
+                                              tip=_('Open a new notebook'),
+                                              triggered=self.create_new_client)
         menu_btn = create_toolbutton(self, icon=ima.icon('tooloptions'),
-                                     tip=_('Options'))
+                                      tip=_('Options'))
 
         menu_btn.setMenu(self.options_menu)
         menu_btn.setPopupMode(menu_btn.InstantPopup)
-        add_actions(self.options_menu, self.menu_actions)
         corner_widgets = {Qt.TopRightCorner: [new_notebook_btn, menu_btn]}
         self.tabwidget = Tabs(self, menu=self.options_menu,
                               actions=self.menu_actions,
@@ -192,13 +176,14 @@ class NotebookPlugin(SpyderPluginWidget):
 
     def register_plugin(self):
         """Register plugin in Spyder's main window."""
+        super(NotebookPlugin, self).register_plugin()
         self.focus_changed.connect(self.main.plugin_focus_changed)
-        self.main.add_dockwidget(self)
         self.ipyconsole = self.main.ipyconsole
         self.create_new_client(give_focus=False)
-        icon_path = os.path.join(PACKAGE_PATH, 'images', 'icon.svg')
-        self.main.add_to_fileswitcher(self, self.tabwidget, self.clients,
-                                      QIcon(icon_path))
+        # TODO Convert to new Switcher
+        # icon_path = os.path.join(PACKAGE_PATH, 'images', 'icon.svg')
+        # self.main.add_to_fileswitcher(self, self.tabwidget, self.clients,
+        #                               QIcon(icon_path))
         self.recent_notebook_menu.aboutToShow.connect(self.setup_menu_actions)
 
     def check_compatibility(self):
@@ -321,8 +306,8 @@ class NotebookPlugin(SpyderPluginWidget):
         # Save spyder_pythonpath before creating a client
         # because it's needed by our kernel spec.
         if not self.testing:
-            CONF.set('main', 'spyder_pythonpath',
-                     self.main.get_spyder_pythonpath())
+            self.set_option('main/spyder_pythonpath',
+                            self.main.get_spyder_pythonpath())
 
         # Open the notebook with nbopen and get the url we need to render
         try:
@@ -461,11 +446,9 @@ class NotebookPlugin(SpyderPluginWidget):
         index = self.tabwidget.addTab(widget, widget.get_short_name())
         self.tabwidget.setCurrentIndex(index)
         self.tabwidget.setTabToolTip(index, widget.get_filename())
-        if self.dockwidget and not self.ismaximized:
-            self.dockwidget.setVisible(True)
-            self.dockwidget.raise_()
+        if self.dockwidget:
+            self.switch_to_plugin()
         self.activateWindow()
-        widget.notebookwidget.setFocus()
 
     def move_tab(self, index_from, index_to):
         """Move tab."""

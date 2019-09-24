@@ -45,18 +45,11 @@ try:
 except NameError:
     FileNotFoundError = IOError  # Python 2
 
-try:
-    # Spyder 4
-    PLUGINS_PATH = get_module_source_path('spyder', 'plugins')
-    CSS_PATH = osp.join(PLUGINS_PATH, 'help', 'utils', 'static', 'css')
-    TEMPLATES_PATH = osp.join(
-            PLUGINS_PATH, 'ipythonconsole', 'assets', 'templates')
-    open(osp.join(TEMPLATES_PATH, 'blank.html'))
-except FileNotFoundError:
-    # Spyder 3
-    UTILS_PATH = get_module_source_path('spyder', 'utils')
-    CSS_PATH = osp.join(UTILS_PATH, 'help', 'static', 'css')
-    TEMPLATES_PATH = osp.join(UTILS_PATH, 'ipython', 'templates')
+PLUGINS_PATH = get_module_source_path('spyder', 'plugins')
+CSS_PATH = osp.join(PLUGINS_PATH, 'help', 'utils', 'static', 'css')
+TEMPLATES_PATH = osp.join(
+        PLUGINS_PATH, 'ipythonconsole', 'assets', 'templates')
+open(osp.join(TEMPLATES_PATH, 'blank.html'))
 
 BLANK = open(osp.join(TEMPLATES_PATH, 'blank.html')).read()
 LOADING = open(osp.join(TEMPLATES_PATH, 'loading.html')).read()
