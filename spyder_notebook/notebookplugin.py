@@ -71,11 +71,11 @@ class NotebookPlugin(SpyderPluginWidget):
         layout = QVBoxLayout()
 
         new_notebook_btn = create_toolbutton(self,
-                                              icon=ima.icon('options_more'),
-                                              tip=_('Open a new notebook'),
-                                              triggered=self.create_new_client)
+                                             icon=ima.icon('options_more'),
+                                             tip=_('Open a new notebook'),
+                                             triggered=self.create_new_client)
         menu_btn = create_toolbutton(self, icon=ima.icon('tooloptions'),
-                                      tip=_('Options'))
+                                     tip=_('Options'))
 
         menu_btn.setMenu(self.options_menu)
         menu_btn.setPopupMode(menu_btn.InstantPopup)
