@@ -1,0 +1,2 @@
+notebook
+spyder >=4.0.0b5

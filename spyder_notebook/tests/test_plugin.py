@@ -107,7 +107,6 @@ def notebook(qtbot):
     notebook_plugin = NotebookPlugin(None, testing=True)
     qtbot.addWidget(notebook_plugin)
     notebook_plugin.create_new_client()
-    notebook_plugin.show()
     return notebook_plugin
 
 

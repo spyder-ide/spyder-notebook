@@ -1,0 +1,6 @@
+coveralls
+flaky
+pytest
+pytest-cov
+pytest-mock
+pytest-qt
