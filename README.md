@@ -18,29 +18,9 @@ its variables in the Variable Explorer.
 
 ## Build status
 
-[![CircleCI](https://circleci.com/gh/spyder-ide/spyder-notebook.svg?style=svg)](https://circleci.com/gh/spyder-ide/spyder-notebook)
+[![CircleCI](https://circleci.com/gh/spyder-ide/spyder-notebook.svg?style=shield)](https://circleci.com/gh/spyder-ide/spyder-notebook)
 [![Coverage Status](https://coveralls.io/repos/github/spyder-ide/spyder-notebook/badge.svg?branch=master)](https://coveralls.io/github/spyder-ide/spyder-notebook?branch=master)
-
-----
-
-## Important Announcement: Spyder is unfunded!
-
-Since mid November/2017, [Anaconda, Inc](https://www.anaconda.com/) has
-stopped funding Spyder development, after doing it for the past 18
-months. Because of that, development will focus from now on maintaining
-Spyder 3 at a much slower pace than before.
-
-If you want to contribute to maintain Spyder, please consider donating at
-
-https://opencollective.com/spyder
-
-We appreciate all the help you can provide us and can't thank you enough for
-supporting the work of Spyder devs and Spyder development.
-
-If you want to know more about this, please read this
-[page](https://github.com/spyder-ide/spyder/wiki/Anaconda-stopped-funding-Spyder).
-
-----
+[![Crowdin](https://badges.crowdin.net/spyder-notebook/localized.svg)](https://crowdin.com/project/spyder-notebook)
 
 
 ## Installation
