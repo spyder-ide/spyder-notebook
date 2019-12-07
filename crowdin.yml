@@ -1,3 +1,9 @@
+commit_message: "[ci skip] New translations %original_file_name% from Crowdin"
+append_commit_message: false
 files:
   - source: /spyder_notebook/locale/spyder_notebook.pot
     translation: /spyder_notebook/locale/%two_letters_code%/LC_MESSAGES/%file_name%.po
+    languages_mapping:
+      two_letters_code:
+        pt-BR: pt_BR
+        zh-CN: zh_CN
