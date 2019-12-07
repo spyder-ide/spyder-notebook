@@ -1,0 +1,4 @@
+files:
+  - source: /spyder_notebook/locale/spyder_notebook.pot
+    translation: >-
+      /spyder_notebook/locale/%locale_with_underscore%/LC_MESSAGES/%original_path%
