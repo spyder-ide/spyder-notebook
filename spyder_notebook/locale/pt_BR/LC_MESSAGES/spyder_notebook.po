@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: spyder-notebook\n"
 "POT-Creation-Date: 2019-12-09 10:12-0500\n"
-"PO-Revision-Date: 2019-12-09 16:32\n"
+"PO-Revision-Date: 2019-12-10 11:47\n"
 "Last-Translator: Gonzalo Peña-Castellanos (goanpeca)\n"
 "Language-Team: Portuguese, Brazilian\n"
 "MIME-Version: 1.0\n"
@@ -18,43 +18,43 @@ msgstr ""
 
 #: spyder_notebook/notebookplugin.py:41
 msgid "Jupyter notebooks"
-msgstr ""
+msgstr "Notebooks do Jupyter"
 
 #: spyder_notebook/notebookplugin.py:70
 msgid "Open recent"
-msgstr ""
+msgstr "Abrir recente"
 
 #: spyder_notebook/notebookplugin.py:77
 msgid "Open a new notebook"
-msgstr ""
+msgstr "Abrir um novo notebook"
 
 #: spyder_notebook/notebookplugin.py:80
 msgid "Options"
-msgstr ""
+msgstr "Opções"
 
 #: spyder_notebook/notebookplugin.py:117
 msgid "Notebook"
-msgstr ""
+msgstr "Notebook"
 
 #: spyder_notebook/notebookplugin.py:151
 msgid "New notebook"
-msgstr ""
+msgstr "Novo notebook"
 
 #: spyder_notebook/notebookplugin.py:155
 msgid "Save as..."
-msgstr ""
+msgstr "Salvar como..."
 
 #: spyder_notebook/notebookplugin.py:159
 msgid "Open..."
-msgstr ""
+msgstr "Abrir..."
 
 #: spyder_notebook/notebookplugin.py:163
 msgid "Open console"
-msgstr ""
+msgstr "Abrir console"
 
 #: spyder_notebook/notebookplugin.py:168
 msgid "Clear this list"
-msgstr ""
+msgstr "Limpar esta lista"
 
 #: spyder_notebook/notebookplugin.py:199
 msgid "You are working with Qt4 and in order to use this plugin you need to have Qt5.<br><br>Please update your Qt and/or PyQt packages to meet this requirement."
