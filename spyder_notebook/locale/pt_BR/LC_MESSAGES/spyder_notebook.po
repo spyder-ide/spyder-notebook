@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: spyder-notebook\n"
 "POT-Creation-Date: 2019-12-09 10:12-0500\n"
-"PO-Revision-Date: 2019-12-10 11:47\n"
+"PO-Revision-Date: 2019-12-10 12:00\n"
 "Last-Translator: Gonzalo Peña-Castellanos (goanpeca)\n"
 "Language-Team: Portuguese, Brazilian\n"
 "MIME-Version: 1.0\n"
@@ -58,41 +58,41 @@ msgstr "Limpar esta lista"
 
 #: spyder_notebook/notebookplugin.py:199
 msgid "You are working with Qt4 and in order to use this plugin you need to have Qt5.<br><br>Please update your Qt and/or PyQt packages to meet this requirement."
-msgstr ""
+msgstr "Você está trabalhando com Qt4 e para usar este plugin você precisa ter Qt5.<br><br>Por favor, atualize seus pacotes Qt e/ou PyQt para cumprir este requisito."
 
 #: spyder_notebook/notebookplugin.py:323 spyder_notebook/widgets/client.py:258
 msgid "Server error"
-msgstr ""
+msgstr "Erro no servidor"
 
 #: spyder_notebook/notebookplugin.py:324
 msgid "The Jupyter Notebook server failed to start or it is taking too much time to do it. Please start it in a system terminal with the command 'jupyter notebook' to check for errors."
-msgstr ""
+msgstr "O servidor Notebook Jupyter falhou ao iniciar ou está demorando muito para fazê-lo. Por favor, inicie-o em um terminal de sistema com o comando 'jupyter notebook' para verificar se há erros."
 
 #: spyder_notebook/notebookplugin.py:411
 msgid "Save notebook"
-msgstr ""
+msgstr "Salvar notebook"
 
 #: spyder_notebook/notebookplugin.py:423
 msgid "Open notebook"
-msgstr ""
+msgstr "Abrir notebook"
 
 #: spyder_notebook/notebookplugin.py:437
 msgid "Error opening console"
-msgstr ""
+msgstr "Erro ao abrir o console"
 
 #: spyder_notebook/notebookplugin.py:438
 msgid "There is no kernel associated to this notebook."
-msgstr ""
+msgstr "Não há kernel associado a este notebook."
 
 #: spyder_notebook/widgets/client.py:96
 msgid "An error occurred while starting the kernel"
-msgstr ""
+msgstr "Um erro ocorreu enquanto o kernel era inicializado"
 
 #: spyder_notebook/widgets/client.py:109
 msgid "Connecting to kernel..."
-msgstr ""
+msgstr "Conectando ao kernel..."
 
 #: spyder_notebook/widgets/client.py:259
 msgid "The Jupyter Notebook server failed to shutdown the kernel associated with this notebook. If you want to shut it down, you'll have to close Spyder."
-msgstr ""
+msgstr "O servidor do Jupyter Notebook falhou ao desligar o kernel associado a ele. Se você quiser desligá-lo terá que fechar o Spyder."
 
