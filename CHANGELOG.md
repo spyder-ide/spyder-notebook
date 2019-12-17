@@ -1,3 +1,14 @@
+## Version 0.2.0 (2019/12/17)
+
+This release updates the plugin to be used with Spyder 4.
+
+### Pull Requests Merged
+
+* [PR 218](https://github.com/spyder-ide/spyder-notebook/pull/218) - PR: Compatibility changes for Spyder 4
+
+In this release 1 pull request was closed.
+
+
 ## Version 0.1.4 (2018/12/22)
 
 This is a bug fix release, mainly to resolve an incompatibility with Spyder 3.3.2.
