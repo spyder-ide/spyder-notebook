@@ -48,6 +48,7 @@ class NotebookPlugin(SpyderPluginWidget):
     """IPython Notebook plugin."""
 
     CONF_SECTION = 'notebook'
+    CONF_DEFAULTS = {'recent_notebooks': []}
     focus_changed = Signal()
 
     def __init__(self, parent, testing=False):
