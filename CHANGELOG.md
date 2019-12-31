@@ -1,3 +1,20 @@
+## Version 0.2.1 (2019/12/31)
+
+This release fixes a major bug when opening or saving notebooks. Happy New Year!
+
+### Issues Closed
+
+* [Issue 225](https://github.com/spyder-ide/spyder-notebook/issues/225) - Trying to save Jupyter notebook crashes notebook plugin, kernel shutdown ([PR 229](https://github.com/spyder-ide/spyder-notebook/pull/229))
+
+In this release 1 issue was closed.
+
+### Pull Requests Merged
+
+* [PR 229](https://github.com/spyder-ide/spyder-notebook/pull/229) - PR: Set default for recent_notebooks config value ([225](https://github.com/spyder-ide/spyder-notebook/issues/225))
+
+In this release 1 pull request was closed.
+
+
 ## Version 0.2.0 (2019/12/17)
 
 This release updates the plugin to be used with Spyder 4.
