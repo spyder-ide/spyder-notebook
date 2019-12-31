@@ -1,4 +1,4 @@
-coveralls
+coveralls >=1.8
 flaky
 pytest
 pytest-cov
