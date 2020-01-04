@@ -1,0 +1,97 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: spyder-notebook\n"
+"POT-Creation-Date: 2019-12-09 10:12-0500\n"
+"PO-Revision-Date: 2020-01-04 15:27\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Polish\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+"X-Crowdin-Project: spyder-notebook\n"
+"X-Crowdin-Language: pl\n"
+"X-Crowdin-File: /master/spyder_notebook/locale/spyder_notebook.pot\n"
+"Language: pl_PL\n"
+
+#: spyder_notebook/notebookplugin.py:41
+msgid "Jupyter notebooks"
+msgstr ""
+
+#: spyder_notebook/notebookplugin.py:70
+msgid "Open recent"
+msgstr ""
+
+#: spyder_notebook/notebookplugin.py:77
+msgid "Open a new notebook"
+msgstr ""
+
+#: spyder_notebook/notebookplugin.py:80
+msgid "Options"
+msgstr ""
+
+#: spyder_notebook/notebookplugin.py:117
+msgid "Notebook"
+msgstr ""
+
+#: spyder_notebook/notebookplugin.py:151
+msgid "New notebook"
+msgstr ""
+
+#: spyder_notebook/notebookplugin.py:155
+msgid "Save as..."
+msgstr ""
+
+#: spyder_notebook/notebookplugin.py:159
+msgid "Open..."
+msgstr ""
+
+#: spyder_notebook/notebookplugin.py:163
+msgid "Open console"
+msgstr ""
+
+#: spyder_notebook/notebookplugin.py:168
+msgid "Clear this list"
+msgstr ""
+
+#: spyder_notebook/notebookplugin.py:199
+msgid "You are working with Qt4 and in order to use this plugin you need to have Qt5.<br><br>Please update your Qt and/or PyQt packages to meet this requirement."
+msgstr ""
+
+#: spyder_notebook/notebookplugin.py:323 spyder_notebook/widgets/client.py:258
+msgid "Server error"
+msgstr ""
+
+#: spyder_notebook/notebookplugin.py:324
+msgid "The Jupyter Notebook server failed to start or it is taking too much time to do it. Please start it in a system terminal with the command 'jupyter notebook' to check for errors."
+msgstr ""
+
+#: spyder_notebook/notebookplugin.py:411
+msgid "Save notebook"
+msgstr ""
+
+#: spyder_notebook/notebookplugin.py:423
+msgid "Open notebook"
+msgstr ""
+
+#: spyder_notebook/notebookplugin.py:437
+msgid "Error opening console"
+msgstr ""
+
+#: spyder_notebook/notebookplugin.py:438
+msgid "There is no kernel associated to this notebook."
+msgstr ""
+
+#: spyder_notebook/widgets/client.py:96
+msgid "An error occurred while starting the kernel"
+msgstr ""
+
+#: spyder_notebook/widgets/client.py:109
+msgid "Connecting to kernel..."
+msgstr ""
+
+#: spyder_notebook/widgets/client.py:259
+msgid "The Jupyter Notebook server failed to shutdown the kernel associated with this notebook. If you want to shut it down, you'll have to close Spyder."
+msgstr ""
+
