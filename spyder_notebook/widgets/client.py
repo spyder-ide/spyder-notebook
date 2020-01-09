@@ -34,7 +34,6 @@ from spyder.widgets.findreplace import FindReplace
 # Local imports
 from ..widgets.dom import DOMWidget
 
-
 # -----------------------------------------------------------------------------
 # Templates
 # -----------------------------------------------------------------------------
@@ -229,8 +228,14 @@ class NotebookClient(QWidget):
         Return a str with the kernel id or None.
         """
         sessions_url = self.get_session_url()
-        sessions_req = requests.get(sessions_url).content.decode()
-        sessions = json.loads(sessions_req)
+        sessions_response = requests.get(sessions_url)
+        sessions = json.loads(sessions_response.content.decode())
+        if sessions_response.status_code != requests.codes.ok:
+            msg = _('Spyder could not get a list of sessions '
+                    'from the Jupyter Notebook server. '
+                    'Message: {}').format(sessions.get('message'))
+            QMessageBox.warning(self, _('Server error'), msg)
+            return None
 
         if os.name == 'nt':
             path = self.path.replace('\\', '/')
