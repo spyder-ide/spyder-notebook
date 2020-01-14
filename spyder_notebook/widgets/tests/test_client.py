@@ -74,3 +74,14 @@ def test_notebookclient_get_kernel_id_with_error_status(plugin, mocker):
     plugin.client.get_kernel_id()
 
     MockMessageBox.warning.assert_called()
+
+
+def test_notebookclient_get_kernel_id_with_exception(plugin, mocker):
+    """Test NotebookClient.get_kernel_id() when request raises an exception."""
+    exception = requests.exceptions.ProxyError('kaboom')
+    mocker.patch('requests.get', side_effect=exception)
+    MockMessageBox = mocker.patch('spyder_notebook.widgets.client.QMessageBox')
+
+    plugin.client.get_kernel_id()
+
+    MockMessageBox.warning.assert_called()
