@@ -13,7 +13,7 @@ import sys
 
 # Qt imports
 from qtpy import PYQT4, PYSIDE
-from qtpy.compat import getsavefilename, getopenfilenames
+from qtpy.compat import getsavefilename
 from qtpy.QtCore import Qt, QEventLoop, QTimer, Signal
 from qtpy.QtGui import QIcon
 from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
@@ -50,6 +50,12 @@ class NotebookPlugin(SpyderPluginWidget):
     CONF_SECTION = 'notebook'
     CONF_DEFAULTS = [(CONF_SECTION, {'recent_notebooks': []})]
     focus_changed = Signal()
+
+    # To open these file extensions directly here
+    file_extensions = ['.ipynb']
+
+    # Tell Spyder that this plugin is able to save files
+    can_save_files = True
 
     def __init__(self, parent, testing=False):
         """Constructor."""
@@ -101,7 +107,7 @@ class NotebookPlugin(SpyderPluginWidget):
         layout.addWidget(self.tabwidget)
         self.setLayout(layout)
 
-    # ------ SpyderPluginMixin API --------------------------------------------
+    # ------ SpyderPluginWidget API -------------------------------------------
     def on_first_registration(self):
         """Action to be performed on first plugin registration."""
         self.main.tabify_plugins(self.main.editor, self)
@@ -112,7 +118,6 @@ class NotebookPlugin(SpyderPluginWidget):
         # this.
         pass
 
-    # ------ SpyderPluginWidget API -------------------------------------------
     def get_plugin_title(self):
         """Return widget title."""
         title = _('Notebook')
@@ -156,10 +161,6 @@ class NotebookPlugin(SpyderPluginWidget):
                                             _("Save as..."),
                                             icon=ima.icon('filesaveas'),
                                             triggered=self.save_as)
-        open_action = create_action(self,
-                                    _("Open..."),
-                                    icon=ima.icon('fileopen'),
-                                    triggered=self.open_notebook)
         self.open_console_action = create_action(self,
                                                  _("Open console"),
                                                  icon=ima.icon(
@@ -169,9 +170,11 @@ class NotebookPlugin(SpyderPluginWidget):
             create_action(self, _("Clear this list"),
                           triggered=self.clear_recent_notebooks)
         # Plugin actions
-        self.menu_actions = [create_nb_action, open_action,
-                             self.recent_notebook_menu, MENU_SEPARATOR,
-                             self.save_as_action, MENU_SEPARATOR,
+        self.menu_actions = [create_nb_action,
+                             self.recent_notebook_menu,
+                             MENU_SEPARATOR,
+                             self.save_as_action,
+                             MENU_SEPARATOR,
                              self.open_console_action]
         self.setup_menu_actions()
 
@@ -203,6 +206,10 @@ class NotebookPlugin(SpyderPluginWidget):
                         "meet this requirement.")
             value = False
         return value, message
+
+    def open_file(self, filename):
+        """Open notebooks using Spyder's 'Open file' dialog."""
+        self.create_new_client(filename=filename)
 
     # ------ Public API (for clients) -----------------------------------------
     def setup_menu_actions(self):
@@ -356,24 +363,7 @@ class NotebookPlugin(SpyderPluginWidget):
 
         is_welcome = client.get_filename() == WELCOME
         if not save and not is_welcome:
-            client.save()
-            wait_save = QEventLoop()
-            QTimer.singleShot(1000, wait_save.quit)
-            wait_save.exec_()
-            path = client.get_filename()
-            fname = osp.basename(path)
-            nb_contents = nbformat.read(path, as_version=4)
-
-            if ('untitled' in fname and len(nb_contents['cells']) > 0 and
-                    len(nb_contents['cells'][0]['source']) > 0):
-                buttons = QMessageBox.Yes | QMessageBox.No
-                answer = QMessageBox.question(self, self.get_plugin_title(),
-                                              _("<b>{0}</b> has been modified."
-                                                "<br>Do you want to "
-                                                "save changes?".format(fname)),
-                                              buttons)
-                if answer == QMessageBox.Yes:
-                    self.save_as(close=True)
+            self.save_untitled()
         if not is_welcome:
             client.shutdown_kernel()
         client.close()
@@ -400,6 +390,38 @@ class NotebookPlugin(SpyderPluginWidget):
             self.add_tab(client)
             return client
 
+    def save_file(self):
+        """Save current notebook."""
+        client = self.get_current_client()
+        if 'untitled' in client.get_filename():
+            self.save_untitled()
+        else:
+            client.save()
+
+    def save_untitled(self):
+        """Save operation for untitled notebooks."""
+        client = self.get_current_client()
+        client.save()
+        wait_save = QEventLoop()
+        QTimer.singleShot(1000, wait_save.quit)
+        wait_save.exec_()
+        path = client.get_filename()
+        fname = osp.basename(path)
+        nb_contents = nbformat.read(path, as_version=4)
+
+        if ('untitled' in fname and len(nb_contents['cells']) > 0 and
+                len(nb_contents['cells'][0]['source']) > 0):
+            buttons = QMessageBox.Yes | QMessageBox.No
+            answer = QMessageBox.question(
+                self,
+                self.get_plugin_title(),
+                _("<b>{0}</b> has been modified."
+                  "<br>Do you want to "
+                  "save changes?".format(fname)),
+                buttons)
+            if answer == QMessageBox.Yes:
+                self.save_as(close=True)
+
     def save_as(self, name=None, close=False):
         """Save notebook as."""
         current_client = self.get_current_client()
@@ -417,15 +439,6 @@ class NotebookPlugin(SpyderPluginWidget):
             if not close:
                 self.close_client(save=True)
             self.create_new_client(filename=filename)
-
-    def open_notebook(self, filenames=None):
-        """Open a notebook from file."""
-        if not filenames:
-            filenames, _selfilter = getopenfilenames(self, _("Open notebook"),
-                                                     '', FILES_FILTER)
-        if filenames:
-            for filename in filenames:
-                self.create_new_client(filename=filename)
 
     def open_console(self, client=None):
         """Open an IPython console for the given client or the current one."""
