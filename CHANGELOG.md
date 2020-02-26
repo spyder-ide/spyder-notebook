@@ -1,3 +1,22 @@
+## Version 0.2.2 (2020/02/26)
+
+This release corrects the bug fix in version 0.2.1 which was triggered opening or saving notebooks.
+
+### Issues Closed
+
+* [Issue 213](https://github.com/spyder-ide/spyder-notebook/issues/213) - closing_ipynb_tab ([PR 232](https://github.com/spyder-ide/spyder-notebook/pull/232))
+* [Issue 192](https://github.com/spyder-ide/spyder-notebook/issues/192) - AttributeError: 'str' object has no attribute 'get' ([PR 232](https://github.com/spyder-ide/spyder-notebook/pull/232))
+
+In this release 2 issues were closed.
+
+### Pull Requests Merged
+
+* [PR 234](https://github.com/spyder-ide/spyder-notebook/pull/234) - PR: Use correct type for CONF_DEFAULTS
+* [PR 232](https://github.com/spyder-ide/spyder-notebook/pull/232) - PR: Make .get_kernel_id() more robust ([213](https://github.com/spyder-ide/spyder-notebook/issues/213), [192](https://github.com/spyder-ide/spyder-notebook/issues/192))
+
+In this release 2 pull requests were closed.
+
+
 ## Version 0.2.1 (2019/12/31)
 
 This release fixes a major bug when opening or saving notebooks. Happy New Year!
