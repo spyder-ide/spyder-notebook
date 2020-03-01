@@ -344,7 +344,11 @@ class NotebookPlugin(SpyderPluginWidget):
             self.tabwidget.setCurrentIndex(0)
 
     def close_client(self, index=None, client=None, save=False):
-        """Close client tab from index or widget (or close current tab)."""
+        """
+        Close client tab from index or widget (or close current tab).
+
+        The notebook is saved if `save` is `False`.
+        """
         if not self.tabwidget.count():
             return
         if client is not None:
@@ -356,24 +360,7 @@ class NotebookPlugin(SpyderPluginWidget):
 
         is_welcome = client.get_filename() == WELCOME
         if not save and not is_welcome:
-            client.save()
-            wait_save = QEventLoop()
-            QTimer.singleShot(1000, wait_save.quit)
-            wait_save.exec_()
-            path = client.get_filename()
-            fname = osp.basename(path)
-            nb_contents = nbformat.read(path, as_version=4)
-
-            if ('untitled' in fname and len(nb_contents['cells']) > 0 and
-                    len(nb_contents['cells'][0]['source']) > 0):
-                buttons = QMessageBox.Yes | QMessageBox.No
-                answer = QMessageBox.question(self, self.get_plugin_title(),
-                                              _("<b>{0}</b> has been modified."
-                                                "<br>Do you want to "
-                                                "save changes?".format(fname)),
-                                              buttons)
-                if answer == QMessageBox.Yes:
-                    self.save_as(close=True)
+            self.save_notebook(client)
         if not is_welcome:
             client.shutdown_kernel()
         client.close()
@@ -399,6 +386,34 @@ class NotebookPlugin(SpyderPluginWidget):
             client = NotebookClient(self, WELCOME, ini_message=welcome)
             self.add_tab(client)
             return client
+
+    def save_notebook(self, client):
+        """
+        Save notebook corresponding to given client.
+
+        If the notebook is newly created and not empty, then ask the user for
+        a new filename and save under that name.
+
+        This function is called when the user closes a tab.
+        """
+        client.save()
+        wait_save = QEventLoop()
+        QTimer.singleShot(1000, wait_save.quit)
+        wait_save.exec_()
+        path = client.get_filename()
+        fname = osp.basename(path)
+        nb_contents = nbformat.read(path, as_version=4)
+
+        if ('untitled' in fname and len(nb_contents['cells']) > 0 and
+                len(nb_contents['cells'][0]['source']) > 0):
+            buttons = QMessageBox.Yes | QMessageBox.No
+            answer = QMessageBox.question(self, self.get_plugin_title(),
+                                          _("<b>{0}</b> has been modified."
+                                            "<br>Do you want to "
+                                            "save changes?".format(fname)),
+                                          buttons)
+            if answer == QMessageBox.Yes:
+                self.save_as(close=True)
 
     def save_as(self, name=None, close=False):
         """Save notebook as."""
