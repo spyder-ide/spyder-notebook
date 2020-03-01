@@ -177,6 +177,23 @@ def test_file_in_temp_dir_deleted_after_notebook_closed(notebook, qtbot):
     assert not osp.exists(filename)
 
 
+def test_close_nonexisting_notebook(notebook, qtbot):
+    """Test that we can close a tab if the notebook file does not exist.
+    Regression test for spyder-ide/spyder-notebook#187."""
+    # Set up tab with non-existingg notebook
+    filename = osp.join(LOCATION, 'does-not-exist.ipynb')
+    notebook.open_notebook(filenames=[filename])
+    nbwidget = notebook.get_current_nbwidget()
+    qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
+    client = notebook.get_current_client()
+
+    # Close tab
+    notebook.close_client()
+
+    # Assert tab is closed (without raising an exception)
+    assert client not in notebook.clients
+
+
 @flaky(max_runs=3)
 def test_open_notebook(notebook, qtbot, tmpdir_under_home):
     """Test that a notebook can be opened from a non-ascii directory."""
