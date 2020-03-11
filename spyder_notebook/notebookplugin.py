@@ -434,8 +434,20 @@ class NotebookPlugin(SpyderPluginWidget):
         filename, _selfilter = getsavefilename(self, _("Save notebook"),
                                                original_name, FILES_FILTER)
         if filename:
-            nb_contents = nbformat.read(original_path, as_version=4)
-            nbformat.write(nb_contents, filename)
+            try:
+                nb_contents = nbformat.read(original_path, as_version=4)
+            except EnvironmentError as error:
+                txt = (_("Error while reading {}<p>{}")
+                       .format(original_path, str(error)))
+                QMessageBox.critical(self, _("File Error"), txt)
+                return
+            try:
+                nbformat.write(nb_contents, filename)
+            except EnvironmentError as error:
+                txt = (_("Error while writing {}<p>{}")
+                       .format(filename, str(error)))
+                QMessageBox.critical(self, _("File Error"), txt)
+                return
             if not close:
                 self.close_client(save=True)
             self.create_new_client(filename=filename)
