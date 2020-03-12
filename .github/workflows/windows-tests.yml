@@ -36,6 +36,11 @@ jobs:
       - name: Install test dependencies
         shell: bash -l {0}
         run: conda install -c spyder-ide --file requirements/tests.txt -y -q
+      - name: Install pytest-mock v1
+        # For some reason, pytest-mock=2 does not work with Python 2.7
+        if: matrix.PYTHON_VERSION == '2.7'
+        shell: bash -l {0}
+        run: conda install pytest-mock=1 -y -q
       - name: Install Package
         shell: bash -l {0}
         run: pip install --no-deps -e .
