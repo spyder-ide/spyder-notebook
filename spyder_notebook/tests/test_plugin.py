@@ -11,6 +11,7 @@ import json
 import os
 import os.path as osp
 import shutil
+import sys
 import tempfile
 
 # Third-party library imports
@@ -219,6 +220,8 @@ def test_open_notebook(notebook, qtbot, tmpdir_under_home):
 
 
 @flaky(max_runs=3)
+@pytest.mark.skipif(not sys.platform.startswith('linux'),
+                    reason='Test hangs on CI on Windows and MacOS')
 def test_save_notebook(notebook, qtbot, tmpdir):
     """Test that a notebook can be saved."""
     # Wait for prompt
