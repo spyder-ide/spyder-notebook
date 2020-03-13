@@ -1,0 +1,13 @@
+# See https://docs.codecov.io/docs/codecovyml-reference
+
+coverage:
+  status:
+    project:
+      default:
+        threshold: 5%  # allow for 5% decrease in total coverage
+    patch:
+      default:
+        target: 50%  # require 50% of diff to be covered
+
+comment:
+  layout: "files"

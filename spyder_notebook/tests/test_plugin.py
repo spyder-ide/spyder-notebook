@@ -26,6 +26,10 @@ from spyder.config.base import get_home_dir
 # Local imports
 from spyder_notebook.notebookplugin import NotebookPlugin
 
+# Python 2 compatibility
+if sys.version_info[0] == 2:
+    PermissionError = OSError
+
 # =============================================================================
 # Constants
 # =============================================================================
@@ -255,6 +259,28 @@ def test_save_notebook(notebook, qtbot, tmpdir):
                     timeout=NOTEBOOK_UP)
     assert text_present(nbwidget, text="test")
     assert notebook.get_current_client().get_short_name() == "save"
+
+
+def test_save_notebook_as_with_error(mocker, notebook, qtbot, tmpdir):
+    """Test that errors are handled in save_as()."""
+    # Set up mocks
+    name = osp.join(str(tmpdir), 'save.ipynb')
+    mocker.patch('spyder_notebook.notebookplugin.getsavefilename',
+                 return_value=(name, 'ignored'))
+    mocker.patch('spyder_notebook.notebookplugin.nbformat.write',
+                 side_effect=PermissionError)
+    mock_critical = mocker.patch('spyder_notebook.notebookplugin.QMessageBox'
+                                 '.critical')
+
+    # Wait for prompt
+    nbwidget = notebook.get_current_nbwidget()
+    qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
+
+    # Save the notebook
+    notebook.save_as()
+
+    # Assert that message box is displayed (reporting error raised by write)
+    assert mock_critical.called
 
 
 @flaky(max_runs=3)
