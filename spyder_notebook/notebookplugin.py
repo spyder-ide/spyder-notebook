@@ -80,10 +80,10 @@ class NotebookPlugin(SpyderPluginWidget):
         menu_btn = create_toolbutton(self, icon=ima.icon('tooloptions'),
                                      tip=_('Options'))
 
-        menu_btn.setMenu(self.options_menu)
+        menu_btn.setMenu(self._options_menu)
         menu_btn.setPopupMode(menu_btn.InstantPopup)
         corner_widgets = {Qt.TopRightCorner: [new_notebook_btn, menu_btn]}
-        self.tabwidget = Tabs(self, menu=self.options_menu,
+        self.tabwidget = Tabs(self, menu=self._options_menu,
                               actions=self.menu_actions,
                               corner_widgets=corner_widgets)
 
