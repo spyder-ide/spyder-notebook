@@ -48,8 +48,8 @@ pip install spyder-notebook
 
 This project depends on:
 
-* [Spyder](https://github.com/spyder-ide/spyder) `>=3.2`
-* [Notebook](https://github.com/jupyter/notebook) `>=4.3`
+* [Spyder](https://github.com/spyder-ide/spyder) (version 4.x)
+* [Notebook](https://github.com/jupyter/notebook) (version 4.3 or later)
 
 
 ## Changelog
