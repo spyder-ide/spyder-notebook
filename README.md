@@ -1,5 +1,6 @@
 # Spyder notebook plugin
 
+
 Spyder plugin to use Jupyter notebooks inside Spyder. Currently it supports
 basic functionality such as creating new notebooks, opening any notebook in
 your filesystem and saving notebooks at any location.
@@ -11,6 +12,8 @@ its variables in the Variable Explorer.
 ## Project details
 
 ![license](https://img.shields.io/pypi/l/spyder-notebook.svg)
+[![conda version](https://img.shields.io/conda/v/spyder-ide/spyder-notebook.svg)](https://www.anaconda.com/download/)
+[![download count](https://img.shields.io/conda/d/spyder-ide/spyder-notebook.svg)](https://www.anaconda.com/download/)
 [![pypi version](https://img.shields.io/pypi/v/spyder-notebook.svg)](https://pypi.python.org/pypi/spyder-notebook)
 [![Join the chat at https://gitter.im/spyder-ide/public](https://badges.gitter.im/spyder-ide/spyder.svg)](https://gitter.im/spyder-ide/public)
 [![OpenCollective Backers](https://opencollective.com/spyder/backers/badge.svg?color=blue)](#backers)
@@ -18,8 +21,10 @@ its variables in the Variable Explorer.
 
 ## Build status
 
-[![CircleCI](https://circleci.com/gh/spyder-ide/spyder-notebook.svg?style=shield)](https://circleci.com/gh/spyder-ide/spyder-notebook)
-[![Coverage Status](https://coveralls.io/repos/github/spyder-ide/spyder-notebook/badge.svg?branch=master)](https://coveralls.io/github/spyder-ide/spyder-notebook?branch=master)
+[![Windows status](https://github.com/spyder-ide/spyder-notebook/workflows/Windows%20tests/badge.svg)](https://github.com/spyder-ide/spyder-notebook/actions?query=workflow%3A%22Windows+tests%22)
+[![Linux status](https://github.com/spyder-ide/spyder-notebook/workflows/Linux%20tests/badge.svg)](https://github.com/spyder-ide/spyder-notebook/actions?query=workflow%3A%22Linux+tests%22)
+[![MacOS status](https://github.com/spyder-ide/spyder-notebook/workflows/Macos%20tests/badge.svg)](https://github.com/spyder-ide/spyder-notebook/actions?query=workflow%3A%22Macos+tests%22)
+[![codecov](https://codecov.io/gh/spyder-ide/spyder-notebook/branch/master/graph/badge.svg)](https://codecov.io/gh/spyder-ide/spyder-notebook/branch/master)
 [![Crowdin](https://badges.crowdin.net/spyder-notebook/localized.svg)](https://crowdin.com/project/spyder-notebook)
 
 
@@ -43,8 +48,8 @@ pip install spyder-notebook
 
 This project depends on:
 
-* [Spyder](https://github.com/spyder-ide/spyder) `>=3.2`
-* [Notebook](https://github.com/jupyter/notebook) `>=4.3`
+* [Spyder](https://github.com/spyder-ide/spyder) (version 4.x)
+* [Notebook](https://github.com/jupyter/notebook) (version 4.3 or later)
 
 
 ## Changelog
@@ -61,16 +66,12 @@ or create a issue in this repo. We will be more than glad to answer.
 ## Overview
 ![example](/doc/example.gif)
 
-## Backers
-
-Support us with a monthly donation and help us continue our activities.
-
-[![Backers](https://opencollective.com/spyder/backers.svg)](https://opencollective.com/spyder#support)
-
-
 ## Sponsors
 
-Become a sponsor to get your logo on our README on Github.
+Spyder and its subprojects are funded thanks to the generous support of
+
+[![Quansight](https://static.wixstatic.com/media/095d2c_2508c560e87d436ea00357abc404cf1d~mv2.png/v1/crop/x_0,y_9,w_915,h_329/fill/w_380,h_128,al_c,usm_0.66_1.00_0.01/095d2c_2508c560e87d436ea00357abc404cf1d~mv2.png)](https://www.quansight.com/)[![Numfocus](https://i2.wp.com/numfocus.org/wp-content/uploads/2017/07/NumFocus_LRG.png?fit=320%2C148&ssl=1)](https://numfocus.org/)
+
+and the donations we have received from our users around the world through [Open Collective](https://opencollective.com/spyder/):
 
 [![Sponsors](https://opencollective.com/spyder/sponsors.svg)](https://opencollective.com/spyder#support)
-
