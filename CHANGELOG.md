@@ -1,3 +1,29 @@
+## Version 0.2.3 (2020/03/21)
+
+This release fixes some annoying bugs and UI glitches.
+
+### Issues Closed
+
+* [Issue 254](https://github.com/spyder-ide/spyder-notebook/issues/254) - Update badges in Readme ([PR 255](https://github.com/spyder-ide/spyder-notebook/pull/255))
+* [Issue 245](https://github.com/spyder-ide/spyder-notebook/issues/245) - Cannot undock "Notebook" pane ([PR 256](https://github.com/spyder-ide/spyder-notebook/pull/256))
+* [Issue 241](https://github.com/spyder-ide/spyder-notebook/issues/241) - Move CI to github actions ([PR 253](https://github.com/spyder-ide/spyder-notebook/pull/253))
+* [Issue 215](https://github.com/spyder-ide/spyder-notebook/issues/215) - "Open recent" menu is buggy. Flickers when moused over. ([PR 256](https://github.com/spyder-ide/spyder-notebook/pull/256))
+* [Issue 187](https://github.com/spyder-ide/spyder-notebook/issues/187) - Error when trying to open a moved recent file ([PR 249](https://github.com/spyder-ide/spyder-notebook/pull/249))
+* [Issue 150](https://github.com/spyder-ide/spyder-notebook/issues/150) - Error when saving notebooks in write-protected directory ([PR 250](https://github.com/spyder-ide/spyder-notebook/pull/250))
+
+In this release 6 issues were closed.
+
+### Pull Requests Merged
+
+* [PR 256](https://github.com/spyder-ide/spyder-notebook/pull/256) - PR: Use _options_menu instead of options_menu in plugin ([245](https://github.com/spyder-ide/spyder-notebook/issues/245), [215](https://github.com/spyder-ide/spyder-notebook/issues/215))
+* [PR 255](https://github.com/spyder-ide/spyder-notebook/pull/255) - PR: Update badges in README ([254](https://github.com/spyder-ide/spyder-notebook/issues/254))
+* [PR 253](https://github.com/spyder-ide/spyder-notebook/pull/253) - PR: Use GitHub Actions to do automatic testing ([241](https://github.com/spyder-ide/spyder-notebook/issues/241))
+* [PR 250](https://github.com/spyder-ide/spyder-notebook/pull/250) - PR: Handle I/O errors when doing "Save As" ([150](https://github.com/spyder-ide/spyder-notebook/issues/150))
+* [PR 249](https://github.com/spyder-ide/spyder-notebook/pull/249) - PR: Avoid reading notebook file when closing tab ([187](https://github.com/spyder-ide/spyder-notebook/issues/187))
+
+In this release 5 pull requests were merged.
+
+
 ## Version 0.2.2 (2020/02/26)
 
 This release corrects the bug fix in version 0.2.1 which was triggered opening or saving notebooks.
