@@ -10,6 +10,7 @@
 import json
 import os
 import os.path as osp
+import re
 import shutil
 import sys
 import tempfile
@@ -56,19 +57,19 @@ def prompt_present(nbwidget):
         return '&nbsp;[&nbsp;]:' in nbwidget.dom.toHtml()
 
 
-def text_present(nbwidget, text="Test"):
-    """Check if a text is present in the notebook."""
+def regexp_present(nbwidget, regexp="Test"):
+    """Check if a regular expression is present in the HTML of the notebook."""
     if WEBENGINE:
         def callback(data):
             global html
             html = data
         nbwidget.dom.toHtml(callback)
         try:
-            return text in html
+            return bool(re.search(regexp, html))
         except NameError:
             return False
     else:
-        return text in nbwidget.dom.toHtml()
+        return bool(re.search(regexp, nbwidget.dom.toHtml()))
 
 
 def manage_save_dialog(qtbot, fname, directory=LOCATION):
@@ -128,19 +129,20 @@ def tmpdir_under_home():
 # Tests
 # =============================================================================
 @flaky(max_runs=3)
-def test_hide_header(notebook, qtbot):
-    """Test that the kernel header is hidden."""
+def test_hide_stuff(notebook, qtbot):
+    """Test that the kernel header and File menu are hidden."""
     # Wait for prompt
     nbwidget = notebook.get_current_nbwidget()
     qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
 
     # Wait for hide header
     html_fragment = 'id="header-container" class="hidden"'
-    qtbot.waitUntil(lambda: text_present(nbwidget, html_fragment),
+    qtbot.waitUntil(lambda: regexp_present(nbwidget, html_fragment),
                     timeout=NOTEBOOK_UP)
 
-    # Assert that the header is hidden
-    assert text_present(nbwidget, html_fragment)
+    # Assert that the header and File menu are hidden
+    assert regexp_present(nbwidget, html_fragment)
+    assert regexp_present(nbwidget, 'id="filelink"[^>]*class="hidden"')
 
 
 @flaky(max_runs=3)
@@ -218,8 +220,8 @@ def test_open_notebook(notebook, qtbot, tmpdir_under_home):
 
     # Assert that the In prompt has "Test" in it
     # and the client has the correct name
-    qtbot.waitUntil(lambda: text_present(nbwidget), timeout=NOTEBOOK_UP)
-    assert text_present(nbwidget)
+    qtbot.waitUntil(lambda: regexp_present(nbwidget), timeout=NOTEBOOK_UP)
+    assert regexp_present(nbwidget)
     assert notebook.get_current_client().get_short_name() == "test"
 
 
@@ -255,9 +257,9 @@ def test_save_notebook(notebook, qtbot, tmpdir):
 
     # Assert that the In prompt has "test" in it
     # and the client has the correct name
-    qtbot.waitUntil(lambda: text_present(nbwidget, text="test"),
+    qtbot.waitUntil(lambda: regexp_present(nbwidget, "test"),
                     timeout=NOTEBOOK_UP)
-    assert text_present(nbwidget, text="test")
+    assert regexp_present(nbwidget, "test")
     assert notebook.get_current_client().get_short_name() == "save"
 
 
