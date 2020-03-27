@@ -65,7 +65,8 @@ def nbopen(filename):
             nbdir = osp.dirname(filename)
 
         print("Starting new server")
-        command = [sys.executable, '-m', 'notebook', '--no-browser',
+        serverscript = osp.join(osp.dirname(__file__), '../server/main.py')
+        command = [sys.executable, serverscript, '--no-browser',
                    '--notebook-dir={}'.format(nbdir),
                    '--NotebookApp.password=',
                    "--KernelSpecManager.kernel_spec_class='{}'".format(
