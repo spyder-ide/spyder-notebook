@@ -179,7 +179,8 @@ class NotebookClient(QWidget):
         # Server token
         self.token = server_info['token']
 
-        url = url_path_join(self.server_url, 'example')
+        url = url_path_join(self.server_url, 'notebook',
+                            url_escape(self.path))
 
         # Set file url to load this notebook
         self.file_url = self.add_token(url)
