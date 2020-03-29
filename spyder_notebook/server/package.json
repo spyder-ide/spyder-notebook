@@ -31,8 +31,6 @@
     "rimraf": "~2.6.2",
     "style-loader": "~0.23.1",
     "svg-url-loader": "~2.3.2",
-    "svgo": "~1.2.1",
-    "svgo-loader": "~2.2.0",
     "typescript": "~3.5.1",
     "url-loader": "~1.1.2",
     "watch": "~1.0.2",
