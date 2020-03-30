@@ -214,8 +214,19 @@ class NotebookClient(QWidget):
         return sname
 
     def save(self):
-        """Save current notebook."""
-        self.notebookwidget.click("#save-notbook button")
+        """
+        Save current notebook.
+
+        This function saves the current notebook by simulating a click on the
+        Save button in the notebook. The Save button is found by selecting the
+        first element of class `jp-ToolbarButtonComponent` whose `title`
+        attribute begins with the string "Save".
+
+        NB: I am not sure whether the save is performed before the function
+        returns.
+        """
+        self.notebookwidget.mousedown(
+            '.jp-ToolbarButtonComponent[title^="Save"]')
 
     def get_session_url(self):
         """Get the kernel sessions url of the client."""
