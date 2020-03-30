@@ -300,7 +300,10 @@ class NotebookPlugin(SpyderPluginWidget):
                 os.makedirs(NOTEBOOK_TMPDIR)
             nb_name = 'untitled' + str(self.untitled_num) + '.ipynb'
             filename = osp.join(NOTEBOOK_TMPDIR, nb_name)
-            nb_contents = nbformat.v4.new_notebook()
+            kernelspec = dict(display_name='Python 3 (Spyder)',
+                              name='python3')
+            metadata = dict(kernelspec=kernelspec)
+            nb_contents = nbformat.v4.new_notebook(metadata=metadata)
             nbformat.write(nb_contents, filename)
             self.untitled_num += 1
 
