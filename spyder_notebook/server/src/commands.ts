@@ -26,6 +26,7 @@ const cmdIds = {
   restart: 'notebook:restart-kernel',
   switchKernel: 'notebook:switch-kernel',
   runAndAdvance: 'notebook-cells:run-and-advance',
+  runAll: 'notebook-cells:run-all-cells',
   deleteCell: 'notebook-cells:delete',
   selectAbove: 'notebook-cells:select-above',
   selectBelow: 'notebook-cells:select-below',
@@ -144,6 +145,15 @@ export const SetupCommands = (
       );
     }
   });
+  commands.addCommand(cmdIds.runAll, {
+    label: 'Run All Cells',
+    execute: () => {
+      return NotebookActions.runAll(
+        nbWidget.content,
+        nbWidget.context.session
+      );
+    }
+  });
   commands.addCommand(cmdIds.editMode, {
     label: 'Edit Mode',
     execute: () => {
@@ -212,6 +222,7 @@ export const SetupCommands = (
   category = 'Notebook Cell Operations';
   [
     cmdIds.runAndAdvance,
+    cmdIds.runAll,
     cmdIds.split,
     cmdIds.merge,
     cmdIds.selectAbove,
