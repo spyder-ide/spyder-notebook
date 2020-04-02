@@ -46,6 +46,12 @@ jobs:
       - name: Install Package
         shell: bash -l {0}
         run: pip install --no-deps -e .
+      - name: Set up notebook server
+        shell: bash -l {0}
+        run: |
+          cd spyder_notebook/server
+          jlpm install
+          jlpm build
       - name: Show environment information
         shell: bash -l {0}
         run: |
