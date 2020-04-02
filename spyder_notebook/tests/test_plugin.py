@@ -33,7 +33,7 @@ if sys.version_info[0] == 2:
 # =============================================================================
 # Constants
 # =============================================================================
-NOTEBOOK_UP = 5000
+NOTEBOOK_UP = 40000
 INTERACTION_CLICK = 100
 LOCATION = osp.realpath(osp.join(os.getcwd(), osp.dirname(__file__)))
 
