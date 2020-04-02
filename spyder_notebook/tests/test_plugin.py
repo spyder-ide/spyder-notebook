@@ -128,22 +128,6 @@ def tmpdir_under_home():
 # Tests
 # =============================================================================
 @flaky(max_runs=3)
-def test_hide_header(notebook, qtbot):
-    """Test that the kernel header is hidden."""
-    # Wait for prompt
-    nbwidget = notebook.get_current_nbwidget()
-    qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
-
-    # Wait for hide header
-    html_fragment = 'id="header-container" class="hidden"'
-    qtbot.waitUntil(lambda: text_present(nbwidget, html_fragment),
-                    timeout=NOTEBOOK_UP)
-
-    # Assert that the header is hidden
-    assert text_present(nbwidget, html_fragment)
-
-
-@flaky(max_runs=3)
 def test_shutdown_notebook_kernel(notebook, qtbot):
     """Test that kernel is shutdown from server when closing a notebook."""
     # Wait for prompt
