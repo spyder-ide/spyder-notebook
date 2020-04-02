@@ -43,17 +43,7 @@ LOCATION = osp.realpath(osp.join(os.getcwd(), osp.dirname(__file__)))
 # =============================================================================
 def prompt_present(nbwidget):
     """Check if an In prompt is present in the notebook."""
-    if WEBENGINE:
-        def callback(data):
-            global html
-            html = data
-        nbwidget.dom.toHtml(callback)
-        try:
-            return '&nbsp;[&nbsp;]:' in html
-        except NameError:
-            return False
-    else:
-        return '&nbsp;[&nbsp;]:' in nbwidget.dom.toHtml()
+    return text_present(nbwidget, '[ ]:')
 
 
 def text_present(nbwidget, text="Test"):
