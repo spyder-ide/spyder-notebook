@@ -20,8 +20,6 @@ jobs:
       fail-fast: false 
       matrix:
         PYTHON_VERSION: ['3.6', '3.7', '3.8']
-        # We skip Python 2.7 because pytest segfaults at the very end
-        # under Windows with Python 2.7
     steps:
       - name: Checkout branch
         uses: actions/checkout@v2
@@ -38,11 +36,6 @@ jobs:
       - name: Install test dependencies
         shell: bash -l {0}
         run: conda install -c spyder-ide --file requirements/tests.txt -y -q
-      - name: Install pytest-mock v1
-        # For some reason, pytest-mock=2 does not work with Python 2.7
-        if: matrix.PYTHON_VERSION == '2.7'
-        shell: bash -l {0}
-        run: conda install pytest-mock=1 -y -q
       - name: Install Package
         shell: bash -l {0}
         run: pip install --no-deps -e .
@@ -57,10 +50,6 @@ jobs:
         run: |
           conda info
           conda list
-      - name: Set correct enconding
-        shell: bash -l {0}
-        if: matrix.PYTHON_VERSION == '2.7'
-        run: echo "::set-env name=PYTHONIOENCODING::cp1252"
       - name: Run tests
         shell: bash -l {0}
         run: pytest spyder_notebook --cov=spyder_notebook -x -vv
