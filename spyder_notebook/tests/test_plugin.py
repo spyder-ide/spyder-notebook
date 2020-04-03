@@ -105,7 +105,7 @@ def notebook(qtbot):
     return notebook_plugin
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture
 def tmpdir_under_home():
     """Create a temporary directory under the home dir."""
     tmpdir = tempfile.mkdtemp(dir=get_home_dir())
