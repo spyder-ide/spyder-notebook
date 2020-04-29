@@ -56,7 +56,11 @@ This project depends on:
 Visit our [CHANGELOG](CHANGELOG.md) file to know more about our new features and improvements.
 
 ## Development and contribution
-To start contributing to this project you can execute ``python setup.py install`` to test your changes on Spyder. We follow PEP8 and PEP257 style guidelines.
+
+See the 
+[Contributing Guide](CONTRIBUTING.md)
+for information on how to contribute to the Spyder notebook plugin, including
+instructions for setting up a development environment.
 
 ## Contact
 
