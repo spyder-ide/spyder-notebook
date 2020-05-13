@@ -138,11 +138,6 @@ class NotebookClient(QWidget):
 
         self.plugin_actions = plugin.get_plugin_actions()
         self.notebookwidget = NotebookWidget(self)
-        if WEBENGINE:
-            self.notebookwidget.loadFinished.connect(self.hide_header)
-        else:
-            self.notebookwidget.selectionChanged.connect(self.hide_header)
-        self.notebookwidget.urlChanged.connect(self.hide_header)
         if ini_message:
             self.notebookwidget.show_message(ini_message)
         else:
@@ -179,7 +174,7 @@ class NotebookClient(QWidget):
         # Server token
         self.token = server_info['token']
 
-        url = url_path_join(self.server_url, 'notebooks',
+        url = url_path_join(self.server_url, 'notebook',
                             url_escape(self.path))
 
         # Set file url to load this notebook
@@ -197,10 +192,6 @@ class NotebookClient(QWidget):
         """Load the associated notebook."""
         self.go_to(self.file_url)
 
-    def hide_header(self):
-        """Hide the header of the notebook."""
-        self.notebookwidget.set_class_value("#header-container", "hidden")
-
     def get_filename(self):
         """Get notebook's filename."""
         return self.filename
@@ -214,8 +205,19 @@ class NotebookClient(QWidget):
         return sname
 
     def save(self):
-        """Save current notebook."""
-        self.notebookwidget.click("#save-notbook button")
+        """
+        Save current notebook.
+
+        This function saves the current notebook by simulating a click on the
+        Save button in the notebook. The Save button is found by selecting the
+        first element of class `jp-ToolbarButtonComponent` whose `title`
+        attribute begins with the string "Save".
+
+        NB: I am not sure whether the save is performed before the function
+        returns.
+        """
+        self.notebookwidget.mousedown(
+            '.jp-ToolbarButtonComponent[title^="Save"]')
 
     def get_session_url(self):
         """Get the kernel sessions url of the client."""

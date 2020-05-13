@@ -33,7 +33,7 @@ if sys.version_info[0] == 2:
 # =============================================================================
 # Constants
 # =============================================================================
-NOTEBOOK_UP = 5000
+NOTEBOOK_UP = 40000
 INTERACTION_CLICK = 100
 LOCATION = osp.realpath(osp.join(os.getcwd(), osp.dirname(__file__)))
 
@@ -43,17 +43,7 @@ LOCATION = osp.realpath(osp.join(os.getcwd(), osp.dirname(__file__)))
 # =============================================================================
 def prompt_present(nbwidget):
     """Check if an In prompt is present in the notebook."""
-    if WEBENGINE:
-        def callback(data):
-            global html
-            html = data
-        nbwidget.dom.toHtml(callback)
-        try:
-            return '&nbsp;[&nbsp;]:' in html
-        except NameError:
-            return False
-    else:
-        return '&nbsp;[&nbsp;]:' in nbwidget.dom.toHtml()
+    return text_present(nbwidget, '[ ]:')
 
 
 def text_present(nbwidget, text="Test"):
@@ -115,7 +105,7 @@ def notebook(qtbot):
     return notebook_plugin
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture
 def tmpdir_under_home():
     """Create a temporary directory under the home dir."""
     tmpdir = tempfile.mkdtemp(dir=get_home_dir())
@@ -127,22 +117,6 @@ def tmpdir_under_home():
 # =============================================================================
 # Tests
 # =============================================================================
-@flaky(max_runs=3)
-def test_hide_header(notebook, qtbot):
-    """Test that the kernel header is hidden."""
-    # Wait for prompt
-    nbwidget = notebook.get_current_nbwidget()
-    qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
-
-    # Wait for hide header
-    html_fragment = 'id="header-container" class="hidden"'
-    qtbot.waitUntil(lambda: text_present(nbwidget, html_fragment),
-                    timeout=NOTEBOOK_UP)
-
-    # Assert that the header is hidden
-    assert text_present(nbwidget, html_fragment)
-
-
 @flaky(max_runs=3)
 def test_shutdown_notebook_kernel(notebook, qtbot):
     """Test that kernel is shutdown from server when closing a notebook."""

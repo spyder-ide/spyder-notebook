@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Notebook Demo</title>
+  </head>
+  <body>
+    <script id='jupyter-config-data' type="application/json">
+      {{ config_data|tojson }}
+    </script>
+    <script src="{{config_data['frontendUrl'] | e}}bundle.js"></script>
+
+    <script type="text/javascript">
+      /* Remove token from URL. */
+      (function () {
+        var parsedUrl = new URL(window.location.href);
+        if (parsedUrl.searchParams.get('token')) {
+          parsedUrl.searchParams.delete('token');
+          window.history.replaceState({ }, '', parsedUrl.href);
+        }
+      })();
+    </script>
+
+  </body>
+</html>

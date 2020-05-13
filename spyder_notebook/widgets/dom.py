@@ -36,9 +36,9 @@ class DOMWidget(WebView):
         else:
             return self.dom.evaluateJavaScript("{}".format(script))
 
-    def click(self, selector, btn=0):
+    def mousedown(self, selector, btn=0):
         """
-        Click the targeted element.
+        Simulate a mousedown event on the targeted element.
 
         :param selector: A CSS3 selector to targeted element.
         :param btn: The number of mouse button.
@@ -50,8 +50,9 @@ class DOMWidget(WebView):
             (function () {{
                 var element = document.querySelector({0});
                 var evt = document.createEvent("MouseEvents");
-                evt.initMouseEvent("click", true, true, window, 1, 1, 1, 1, 1,
-                    false, false, false, false, {1}, element);
+                evt.initMouseEvent("mousedown", true, true, window,
+                                   1, 1, 1, 1, 1, false, false, false, false,
+                                   {1}, element);
                 return element.dispatchEvent(evt);
             }})();
         """.format(repr(selector), repr(btn)))
@@ -61,11 +62,3 @@ class DOMWidget(WebView):
         script = 'document.querySelector("%s").setAttribute("value", "%s")'
         script = script % (selector, value)
         self.evaluate(script)
-
-    def set_class_value(self, selector, classname):
-        """Set the class of element matched by the given selector."""
-        return self.evaluate("""
-            (function () {{
-            var element = document.querySelector({0});
-            element.className = {1};
-            }})();""".format(repr(selector), repr(classname)))
