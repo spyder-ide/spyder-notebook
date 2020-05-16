@@ -24,3 +24,8 @@ body {
 .notebookCommandPalette {
   min-width: 225px;
 }
+
+.notebookMenuBar {
+  border-bottom: 1px solid #bdbdbd;
+  min-height: 28px;
+}

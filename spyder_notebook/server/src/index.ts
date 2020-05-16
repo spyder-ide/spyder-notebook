@@ -13,7 +13,13 @@ import '../index.css';
 
 import { CommandRegistry } from '@phosphor/commands';
 
-import { CommandPalette, SplitPanel, Widget } from '@phosphor/widgets';
+import {
+  CommandPalette,
+  Menu,
+  MenuBar,
+  SplitPanel,
+  Widget
+} from '@phosphor/widgets';
 
 import { ServiceManager } from '@jupyterlab/services';
 import { MathJaxTypesetter } from '@jupyterlab/mathjax2';
@@ -107,6 +113,13 @@ function createApp(manager: ServiceManager.IManager): void {
   let palette = new CommandPalette({ commands });
   palette.addClass('notebookCommandPalette');
 
+  // create menu bar
+  let menuBar = new MenuBar();
+  let menu = new Menu({ commands });
+  menu.title.label = 'Ham';
+  menuBar.insertMenu(0, menu);
+  menuBar.addClass('notebookMenuBar');
+
   const editor =
     nbWidget.content.activeCell && nbWidget.content.activeCell.editor;
   const model = new CompleterModel();
@@ -125,14 +138,23 @@ function createApp(manager: ServiceManager.IManager): void {
   // Hide the widget when it first loads.
   completer.hide();
 
-  let panel = new SplitPanel();
-  panel.id = 'main';
-  panel.orientation = 'horizontal';
-  panel.spacing = 0;
+  let hpanel = new SplitPanel();
+  hpanel.id = 'subpanel';
+  hpanel.orientation = 'horizontal';
+  hpanel.spacing = 0;
   SplitPanel.setStretch(palette, 0);
   SplitPanel.setStretch(nbWidget, 1);
-  panel.addWidget(palette);
-  panel.addWidget(nbWidget);
+  hpanel.addWidget(palette);
+  hpanel.addWidget(nbWidget);
+
+  let panel = new SplitPanel();
+  panel.id = 'main';
+  panel.orientation = 'vertical';
+  panel.spacing = 0;
+  SplitPanel.setStretch(menuBar, 0);
+  SplitPanel.setStretch(hpanel, 1);
+  panel.addWidget(menuBar);
+  panel.addWidget(hpanel);
 
   // Attach the panel to the DOM.
   Widget.attach(panel, document.body);
