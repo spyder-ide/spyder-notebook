@@ -8,7 +8,6 @@ import {
   SearchInstance,
   NotebookSearchProvider
 } from '@jupyterlab/documentsearch';
-import { CommandPalette } from '@phosphor/widgets';
 
 /**
  * The map of command ids used by the notebook.
@@ -44,7 +43,6 @@ const cmdIds = {
 
 export const SetupCommands = (
   commands: CommandRegistry,
-  palette: CommandPalette,
   nbWidget: NotebookPanel,
   handler: CompletionHandler
 ) => {
@@ -206,32 +204,6 @@ export const SetupCommands = (
     label: 'Redo',
     execute: () => NotebookActions.redo(nbWidget.content)
   });
-
-  let category = 'Notebook Operations';
-  [
-    cmdIds.interrupt,
-    cmdIds.restart,
-    cmdIds.editMode,
-    cmdIds.commandMode,
-    cmdIds.switchKernel,
-    cmdIds.startSearch,
-    cmdIds.findNext,
-    cmdIds.findPrevious
-  ].forEach(command => palette.addItem({ command, category }));
-
-  category = 'Notebook Cell Operations';
-  [
-    cmdIds.runAndAdvance,
-    cmdIds.runAll,
-    cmdIds.split,
-    cmdIds.merge,
-    cmdIds.selectAbove,
-    cmdIds.selectBelow,
-    cmdIds.extendAbove,
-    cmdIds.extendBelow,
-    cmdIds.undo,
-    cmdIds.redo
-  ].forEach(command => palette.addItem({ command, category }));
 
   let bindings = [
     {

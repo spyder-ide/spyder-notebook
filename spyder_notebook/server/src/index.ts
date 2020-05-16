@@ -14,7 +14,6 @@ import '../index.css';
 import { CommandRegistry } from '@phosphor/commands';
 
 import {
-  CommandPalette,
   Menu,
   MenuBar,
   SplitPanel,
@@ -110,8 +109,6 @@ function createApp(manager: ServiceManager.IManager): void {
 
   let notebookPath = PageConfig.getOption('notebookPath');
   let nbWidget = docManager.open(notebookPath) as NotebookPanel;
-  let palette = new CommandPalette({ commands });
-  palette.addClass('notebookCommandPalette');
 
   // create menu bar
   let menuBar = new MenuBar();
@@ -138,23 +135,14 @@ function createApp(manager: ServiceManager.IManager): void {
   // Hide the widget when it first loads.
   completer.hide();
 
-  let hpanel = new SplitPanel();
-  hpanel.id = 'subpanel';
-  hpanel.orientation = 'horizontal';
-  hpanel.spacing = 0;
-  SplitPanel.setStretch(palette, 0);
-  SplitPanel.setStretch(nbWidget, 1);
-  hpanel.addWidget(palette);
-  hpanel.addWidget(nbWidget);
-
   let panel = new SplitPanel();
   panel.id = 'main';
   panel.orientation = 'vertical';
   panel.spacing = 0;
   SplitPanel.setStretch(menuBar, 0);
-  SplitPanel.setStretch(hpanel, 1);
+  SplitPanel.setStretch(nbWidget, 1);
   panel.addWidget(menuBar);
-  panel.addWidget(hpanel);
+  panel.addWidget(nbWidget);
 
   // Attach the panel to the DOM.
   Widget.attach(panel, document.body);
@@ -165,7 +153,7 @@ function createApp(manager: ServiceManager.IManager): void {
     panel.update();
   });
 
-  SetupCommands(commands, palette, nbWidget, handler);
+  SetupCommands(commands, nbWidget, handler);
 
   console.log('Example started!');
 }
