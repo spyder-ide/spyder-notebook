@@ -13,12 +13,7 @@ import '../index.css';
 
 import { CommandRegistry } from '@phosphor/commands';
 
-import {
-  Menu,
-  MenuBar,
-  SplitPanel,
-  Widget
-} from '@phosphor/widgets';
+import { MenuBar, SplitPanel, Widget } from '@phosphor/widgets';
 
 import { ServiceManager } from '@jupyterlab/services';
 import { MathJaxTypesetter } from '@jupyterlab/mathjax2';
@@ -110,11 +105,8 @@ function createApp(manager: ServiceManager.IManager): void {
   let notebookPath = PageConfig.getOption('notebookPath');
   let nbWidget = docManager.open(notebookPath) as NotebookPanel;
 
-  // create menu bar
+  // Create menu bar.
   let menuBar = new MenuBar();
-  let menu = new Menu({ commands });
-  menu.title.label = 'Ham';
-  menuBar.insertMenu(0, menu);
   menuBar.addClass('notebookMenuBar');
 
   const editor =
@@ -135,6 +127,7 @@ function createApp(manager: ServiceManager.IManager): void {
   // Hide the widget when it first loads.
   completer.hide();
 
+  // Create panel with menu bar above the notebook widget
   let panel = new SplitPanel();
   panel.id = 'main';
   panel.orientation = 'vertical';
@@ -153,9 +146,7 @@ function createApp(manager: ServiceManager.IManager): void {
     panel.update();
   });
 
-  SetupCommands(commands, nbWidget, handler);
-
-  console.log('Example started!');
+  SetupCommands(commands, menuBar, nbWidget, handler);
 }
 
 window.addEventListener('load', main);

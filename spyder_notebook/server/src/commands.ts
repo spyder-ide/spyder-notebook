@@ -2,6 +2,7 @@
  * Set up keyboard shortcuts & commands for notebook
  */
 import { CommandRegistry } from '@phosphor/commands';
+import { Menu, MenuBar } from '@phosphor/widgets';
 import { CompletionHandler } from '@jupyterlab/completer';
 import { NotebookPanel, NotebookActions } from '@jupyterlab/notebook';
 import {
@@ -43,6 +44,7 @@ const cmdIds = {
 
 export const SetupCommands = (
   commands: CommandRegistry,
+  menuBar: MenuBar,
   nbWidget: NotebookPanel,
   handler: CompletionHandler
 ) => {
@@ -313,4 +315,10 @@ export const SetupCommands = (
     }
   ];
   bindings.map(binding => commands.addKeyBinding(binding));
+
+  // Create Run menu.
+  let runMenu = new Menu({ commands });
+  runMenu.title.label = 'Run';
+  menuBar.insertMenu(0, runMenu);
+  runMenu.insertItem(0, { command: cmdIds.runAll });
 };
