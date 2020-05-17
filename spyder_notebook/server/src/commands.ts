@@ -26,7 +26,13 @@ const cmdIds = {
   restart: 'notebook:restart-kernel',
   switchKernel: 'notebook:switch-kernel',
   runAndAdvance: 'notebook-cells:run-and-advance',
+  run: 'notebook:run-cell',
+  runAndInsert: 'notebook-cells:run-cell-and-insert-below',
+  runAllAbove: 'notebook-cells:run-all-above',
+  runAllBelow: 'notebook-cells:run-all-below',
+  renderAllMarkdown: 'notebook-cells:render-all-markdown',
   runAll: 'notebook-cells:run-all-cells',
+  restartRunAll: 'notebook:restart-run-all',
   deleteCell: 'notebook-cells:delete',
   selectAbove: 'notebook-cells:select-above',
   selectBelow: 'notebook-cells:select-below',
@@ -136,8 +142,26 @@ export const SetupCommands = (
     label: 'Switch Kernel',
     execute: () => nbWidget.context.session.selectKernel()
   });
+
+  /**
+   * Whether notebook has a single selected cell.
+   */
+  function isSingleSelected(): boolean {
+    const content = nbWidget.content;
+    const index = content.activeCellIndex;
+    // If there are selections that are not the active cell,
+    // this command is confusing, so disable it.
+    for (let i = 0; i < content.widgets.length; ++i) {
+      if (content.isSelected(content.widgets[i]) && i !== index) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // Commands in Run menu.
   commands.addCommand(cmdIds.runAndAdvance, {
-    label: 'Run and Advance',
+    label: 'Run Selected Cells',
     execute: () => {
       return NotebookActions.runAndAdvance(
         nbWidget.content,
@@ -145,6 +169,71 @@ export const SetupCommands = (
       );
     }
   });
+
+  commands.addCommand(cmdIds.run, {
+    label: "Run Selected Cells and Don't Advance",
+    execute: () => {
+      return NotebookActions.run(
+        nbWidget.content,
+        nbWidget.context.session
+      );
+    }
+  });
+
+  commands.addCommand(cmdIds.runAndInsert, {
+    label: 'Run Selected Cells and Insert Below',
+    execute: () => {
+      return NotebookActions.runAndInsert(
+        nbWidget.content,
+        nbWidget.context.session
+      );
+    }
+  });
+
+  commands.addCommand(cmdIds.runAllAbove, {
+    label: 'Run All Above Selected Cell',
+    execute: () => {
+      return NotebookActions.runAllAbove(
+        nbWidget.content,
+        nbWidget.context.session
+      );
+    },
+    isEnabled: () => {
+      // Can't run above if there are multiple cells selected,
+      // or if we are at the top of the notebook.
+      return isSingleSelected() && nbWidget.content.activeCellIndex !== 0;
+    }
+  });
+
+  commands.addCommand(cmdIds.runAllBelow, {
+    label: 'Run Selected Cell and All Below',
+    execute: () => {
+      return NotebookActions.runAllBelow(
+        nbWidget.content,
+        nbWidget.context.session
+      );
+    },
+    isEnabled: () => {
+      // Can't run below if there are multiple cells selected,
+      // or if we are at the bottom of the notebook.
+      return (
+        isSingleSelected() &&
+        nbWidget.content.activeCellIndex !==
+          nbWidget.content.widgets.length - 1
+      );
+    }
+  });
+
+  commands.addCommand(cmdIds.renderAllMarkdown, {
+    label: 'Render All Markdown Cells',
+    execute: () => {
+      return NotebookActions.renderAllMarkdown(
+        nbWidget.content,
+        nbWidget.context.session
+      );
+    }
+  });
+
   commands.addCommand(cmdIds.runAll, {
     label: 'Run All Cells',
     execute: () => {
@@ -154,6 +243,22 @@ export const SetupCommands = (
       );
     }
   });
+
+  commands.addCommand(cmdIds.restartRunAll, {
+    label: 'Restart Kernel and Run All Cells…',
+    execute: () => {
+      return nbWidget.session.restart().then(restarted => {
+        if (restarted) {
+          void NotebookActions.runAll(
+            nbWidget.content,
+            nbWidget.context.session
+          );
+        }
+        return restarted;
+      });
+    }
+  });
+
   commands.addCommand(cmdIds.editMode, {
     label: 'Edit Mode',
     execute: () => {
@@ -320,5 +425,12 @@ export const SetupCommands = (
   let runMenu = new Menu({ commands });
   runMenu.title.label = 'Run';
   menuBar.insertMenu(0, runMenu);
-  runMenu.insertItem(0, { command: cmdIds.runAll });
+  runMenu.insertItem(0, { command: cmdIds.runAndAdvance });
+  runMenu.insertItem(1, { command: cmdIds.run });
+  runMenu.insertItem(2, { command: cmdIds.runAndInsert });
+  runMenu.insertItem(3, { command: cmdIds.runAllAbove });
+  runMenu.insertItem(4, { command: cmdIds.runAllBelow });
+  runMenu.insertItem(5, { command: cmdIds.renderAllMarkdown });
+  runMenu.insertItem(6, { command: cmdIds.runAll });
+  runMenu.insertItem(7, { command: cmdIds.restartRunAll });
 };
