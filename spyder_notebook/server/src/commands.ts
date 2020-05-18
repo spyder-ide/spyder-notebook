@@ -25,6 +25,22 @@ const cmdIds = {
   interrupt: 'notebook:interrupt-kernel',
   restart: 'notebook:restart-kernel',
   switchKernel: 'notebook:switch-kernel',
+  undo: 'notebook-cells:undo',
+  redo: 'notebook-cells:redo',
+  cut: 'notebook:cut-cell',
+  copy: 'notebook:copy-cell',
+  pasteAbove: 'notebook:paste-cell-above',
+  pasteBelow: 'notebook:paste-cell-below',
+  pasteAndReplace: 'notebook:paste-and-replace-cell',
+  deleteCell: 'notebook:delete-cell',
+  selectAll: 'notebook:select-all',
+  deselectAll: 'notebook:deselect-all',
+  moveUp: 'notebook:move-cell-up',
+  moveDown: 'notebook:move-cell-down',
+  split: 'notebook:split-cell-at-cursor',
+  merge: 'notebook:merge-cells',
+  clearOutputs: 'notebook:clear-cell-output',
+  clearAllOutputs: 'notebook:clear-all-cell-outputs',
   runAndAdvance: 'notebook-cells:run-and-advance',
   run: 'notebook:run-cell',
   runAndInsert: 'notebook-cells:run-cell-and-insert-below',
@@ -33,7 +49,6 @@ const cmdIds = {
   renderAllMarkdown: 'notebook-cells:render-all-markdown',
   runAll: 'notebook-cells:run-all-cells',
   restartRunAll: 'notebook:restart-run-all',
-  deleteCell: 'notebook-cells:delete',
   selectAbove: 'notebook-cells:select-above',
   selectBelow: 'notebook-cells:select-below',
   extendAbove: 'notebook-cells:extend-above',
@@ -41,11 +56,7 @@ const cmdIds = {
   extendBelow: 'notebook-cells:extend-below',
   extendBottom: 'notebook-cells:extend-bottom',
   editMode: 'notebook:edit-mode',
-  merge: 'notebook-cells:merge',
-  split: 'notebook-cells:split',
-  commandMode: 'notebook:command-mode',
-  undo: 'notebook-cells:undo',
-  redo: 'notebook-cells:redo'
+  commandMode: 'notebook:command-mode'
 };
 
 export const SetupCommands = (
@@ -158,6 +169,87 @@ export const SetupCommands = (
     }
     return true;
   }
+
+  // Commands in Edit menu.
+  commands.addCommand(cmdIds.undo, {
+    label: 'Undo',
+    execute: () => NotebookActions.undo(nbWidget.content)
+  });
+
+  commands.addCommand(cmdIds.redo, {
+    label: 'Redo',
+    execute: () => NotebookActions.redo(nbWidget.content)
+  });
+
+  commands.addCommand(cmdIds.cut, {
+    label: 'Cut Cells',
+    execute: () => NotebookActions.cut(nbWidget.content)
+  });
+
+  commands.addCommand(cmdIds.copy, {
+    label: 'Copy Cells',
+    execute: () => NotebookActions.copy(nbWidget.content)
+  });
+
+  commands.addCommand(cmdIds.pasteBelow, {
+    label: 'Paste Cells Below',
+    execute: () => NotebookActions.paste(nbWidget.content, 'below')
+  });
+
+  commands.addCommand(cmdIds.pasteAbove, {
+    label: 'Paste Cells Above',
+    execute: () => NotebookActions.paste(nbWidget.content, 'above')
+  });
+
+  commands.addCommand(cmdIds.pasteAndReplace, {
+    label: 'Paste Cells and Replace',
+    execute: () => NotebookActions.paste(nbWidget.content, 'replace')
+  });
+
+  commands.addCommand(cmdIds.deleteCell, {
+    label: 'Delete Cells',
+    execute: () => NotebookActions.deleteCells(nbWidget.content)
+  });
+
+  commands.addCommand(cmdIds.selectAll, {
+    label: 'Select All Cells',
+    execute: () => NotebookActions.selectAll(nbWidget.content)
+  });
+
+  commands.addCommand(cmdIds.deselectAll, {
+    label: 'Deselect All Cells',
+    execute: () => NotebookActions.deselectAll(nbWidget.content)
+  });
+
+  commands.addCommand(cmdIds.moveUp, {
+    label: 'Move Cells Up',
+    execute: () => NotebookActions.moveUp(nbWidget.content)
+  });
+
+  commands.addCommand(cmdIds.moveDown, {
+    label: 'Move Cells Down',
+    execute: () => NotebookActions.moveDown(nbWidget.content)
+  });
+
+  commands.addCommand(cmdIds.split, {
+    label: 'Split Cell',
+    execute: () => NotebookActions.splitCell(nbWidget.content)
+  });
+
+  commands.addCommand(cmdIds.merge, {
+    label: 'Merge Selected Cells',
+    execute: () => NotebookActions.mergeCells(nbWidget.content)
+  });
+
+  commands.addCommand(cmdIds.clearOutputs, {
+    label: 'Clear Outputs',
+    execute: () => NotebookActions.clearOutputs(nbWidget.content)
+  });
+
+  commands.addCommand(cmdIds.clearAllOutputs, {
+    label: 'Clear All Outputs',
+    execute: () => NotebookActions.clearAllOutputs(nbWidget.content)
+  });
 
   // Commands in Run menu.
   commands.addCommand(cmdIds.runAndAdvance, {
@@ -295,22 +387,6 @@ export const SetupCommands = (
     label: 'Extend to Bottom',
     execute: () => NotebookActions.extendSelectionBelow(nbWidget.content, true)
   });
-  commands.addCommand(cmdIds.merge, {
-    label: 'Merge Cells',
-    execute: () => NotebookActions.mergeCells(nbWidget.content)
-  });
-  commands.addCommand(cmdIds.split, {
-    label: 'Split Cell',
-    execute: () => NotebookActions.splitCell(nbWidget.content)
-  });
-  commands.addCommand(cmdIds.undo, {
-    label: 'Undo',
-    execute: () => NotebookActions.undo(nbWidget.content)
-  });
-  commands.addCommand(cmdIds.redo, {
-    label: 'Redo',
-    execute: () => NotebookActions.redo(nbWidget.content)
-  });
 
   let bindings = [
     {
@@ -421,10 +497,32 @@ export const SetupCommands = (
   ];
   bindings.map(binding => commands.addKeyBinding(binding));
 
+  // Create Edit menu.
+  let editMenu = new Menu({ commands });
+  editMenu.title.label = 'Edit';
+  editMenu.insertItem(0, { command: cmdIds.undo });
+  editMenu.insertItem(1, { command: cmdIds.redo });
+  editMenu.insertItem(2, { type: 'separator' });
+  editMenu.insertItem(3, { command: cmdIds.cut });
+  editMenu.insertItem(4, { command: cmdIds.copy });
+  editMenu.insertItem(5, { command: cmdIds.pasteAbove });
+  editMenu.insertItem(6, { command: cmdIds.pasteBelow});
+  editMenu.insertItem(7, { command: cmdIds.pasteAndReplace });
+  editMenu.insertItem(8, { type: 'separator' });
+  editMenu.insertItem(9, { command: cmdIds.deleteCell });
+  editMenu.insertItem(10, { type: 'separator' });
+  editMenu.insertItem(11, { command: cmdIds.moveUp });
+  editMenu.insertItem(12, { command: cmdIds.moveDown });
+  editMenu.insertItem(13, { type: 'separator' });
+  editMenu.insertItem(14, { command: cmdIds.split});
+  editMenu.insertItem(15, { command: cmdIds.merge});
+  editMenu.insertItem(16, { type: 'separator' });
+  editMenu.insertItem(17, { command: cmdIds.clearOutputs });
+  editMenu.insertItem(18, { command: cmdIds.clearAllOutputs });
+
   // Create Run menu.
   let runMenu = new Menu({ commands });
   runMenu.title.label = 'Run';
-  menuBar.insertMenu(0, runMenu);
   runMenu.insertItem(0, { command: cmdIds.runAndAdvance });
   runMenu.insertItem(1, { command: cmdIds.run });
   runMenu.insertItem(2, { command: cmdIds.runAndInsert });
@@ -433,4 +531,8 @@ export const SetupCommands = (
   runMenu.insertItem(5, { command: cmdIds.renderAllMarkdown });
   runMenu.insertItem(6, { command: cmdIds.runAll });
   runMenu.insertItem(7, { command: cmdIds.restartRunAll });
+
+  // Insert menus in menu bar.
+  menuBar.insertMenu(0, editMenu);
+  menuBar.insertMenu(1, runMenu);
 };
