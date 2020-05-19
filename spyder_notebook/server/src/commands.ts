@@ -22,9 +22,6 @@ const cmdIds = {
   findNext: 'documentsearch:find-next',
   findPrevious: 'documentsearch:find-previous',
   save: 'notebook:save',
-  interrupt: 'notebook:interrupt-kernel',
-  restart: 'notebook:restart-kernel',
-  switchKernel: 'notebook:switch-kernel',
   undo: 'notebook-cells:undo',
   redo: 'notebook-cells:redo',
   cut: 'notebook:cut-cell',
@@ -41,6 +38,14 @@ const cmdIds = {
   merge: 'notebook:merge-cells',
   clearOutputs: 'notebook:clear-cell-output',
   clearAllOutputs: 'notebook:clear-all-cell-outputs',
+  hideCode: 'notebook:hide-cell-code',
+  hideOutput: 'notebook:hide-cell-outputs',
+  hideAllCode: 'notebook:hide-all-cell-code',
+  hideAllOutputs: 'notebook:hide-all-cell-outputs',
+  showCode: 'notebook:show-cell-code',
+  showOutput: 'notebook:show-cell-outputs',
+  showAllCode: 'notebook:show-all-cell-code',
+  showAllOutputs: 'notebook:show-all-cell-outputs',
   runAndAdvance: 'notebook-cells:run-and-advance',
   run: 'notebook:run-cell',
   runAndInsert: 'notebook-cells:run-cell-and-insert-below',
@@ -49,6 +54,11 @@ const cmdIds = {
   renderAllMarkdown: 'notebook-cells:render-all-markdown',
   runAll: 'notebook-cells:run-all-cells',
   restartRunAll: 'notebook:restart-run-all',
+  interrupt: 'notebook:interrupt-kernel',
+  restart: 'notebook:restart-kernel',
+  restartClear: 'notebook:restart-clear-output',
+  shutdown: 'notebook:shutdown-kernel',
+  switchKernel: 'notebook:switch-kernel',
   selectAbove: 'notebook-cells:select-above',
   selectBelow: 'notebook-cells:select-below',
   extendAbove: 'notebook-cells:extend-above',
@@ -65,94 +75,6 @@ export const SetupCommands = (
   nbWidget: NotebookPanel,
   handler: CompletionHandler
 ) => {
-  // Add commands.
-  commands.addCommand(cmdIds.invoke, {
-    label: 'Completer: Invoke',
-    execute: () => handler.invoke()
-  });
-  commands.addCommand(cmdIds.select, {
-    label: 'Completer: Select',
-    execute: () => handler.completer.selectActive()
-  });
-  commands.addCommand(cmdIds.invokeNotebook, {
-    label: 'Invoke Notebook',
-    execute: () => {
-      if (nbWidget.content.activeCell.model.type === 'code') {
-        return commands.execute(cmdIds.invoke);
-      }
-    }
-  });
-  commands.addCommand(cmdIds.selectNotebook, {
-    label: 'Select Notebook',
-    execute: () => {
-      if (nbWidget.content.activeCell.model.type === 'code') {
-        return commands.execute(cmdIds.select);
-      }
-    }
-  });
-  commands.addCommand(cmdIds.save, {
-    label: 'Save',
-    execute: () => nbWidget.context.save()
-  });
-
-  let searchInstance: SearchInstance;
-  commands.addCommand(cmdIds.startSearch, {
-    label: 'Find...',
-    execute: () => {
-      if (searchInstance) {
-        searchInstance.focusInput();
-        return;
-      }
-      const provider = new NotebookSearchProvider();
-      searchInstance = new SearchInstance(nbWidget, provider);
-      searchInstance.disposed.connect(() => {
-        searchInstance = undefined;
-        // find next and previous are now not enabled
-        commands.notifyCommandChanged();
-      });
-      // find next and previous are now enabled
-      commands.notifyCommandChanged();
-      searchInstance.focusInput();
-    }
-  });
-  commands.addCommand(cmdIds.findNext, {
-    label: 'Find Next',
-    isEnabled: () => !!searchInstance,
-    execute: async () => {
-      if (!searchInstance) {
-        return;
-      }
-      await searchInstance.provider.highlightNext();
-      searchInstance.updateIndices();
-    }
-  });
-  commands.addCommand(cmdIds.findPrevious, {
-    label: 'Find Previous',
-    isEnabled: () => !!searchInstance,
-    execute: async () => {
-      if (!searchInstance) {
-        return;
-      }
-      await searchInstance.provider.highlightPrevious();
-      searchInstance.updateIndices();
-    }
-  });
-  commands.addCommand(cmdIds.interrupt, {
-    label: 'Interrupt',
-    execute: async () => {
-      if (nbWidget.context.session.kernel) {
-        await nbWidget.context.session.kernel.interrupt();
-      }
-    }
-  });
-  commands.addCommand(cmdIds.restart, {
-    label: 'Restart Kernel',
-    execute: () => nbWidget.context.session.restart()
-  });
-  commands.addCommand(cmdIds.switchKernel, {
-    label: 'Switch Kernel',
-    execute: () => nbWidget.context.session.selectKernel()
-  });
 
   /**
    * Whether notebook has a single selected cell.
@@ -249,6 +171,47 @@ export const SetupCommands = (
   commands.addCommand(cmdIds.clearAllOutputs, {
     label: 'Clear All Outputs',
     execute: () => NotebookActions.clearAllOutputs(nbWidget.content)
+  });
+
+  // Commands in View menu.
+  commands.addCommand(cmdIds.hideCode, {
+    label: 'Collapse Selected Code',
+    execute: () => NotebookActions.hideCode(nbWidget.content)
+  });
+
+  commands.addCommand(cmdIds.hideOutput, {
+    label: 'Collapse Selected Outputs',
+    execute: () => NotebookActions.hideOutput(nbWidget.content)
+  });
+
+  commands.addCommand(cmdIds.hideAllCode, {
+    label: 'Collapse All Code',
+    execute: () => NotebookActions.hideAllCode(nbWidget.content)
+  });
+
+  commands.addCommand(cmdIds.hideAllOutputs, {
+    label: 'Collapse All Outputs',
+    execute: () => NotebookActions.hideAllOutputs(nbWidget.content)
+  });
+
+  commands.addCommand(cmdIds.showCode, {
+    label: 'Expand Selected Code',
+    execute: () => NotebookActions.showCode(nbWidget.content)
+  });
+
+  commands.addCommand(cmdIds.showOutput, {
+    label: 'Expand Selected Outputs',
+    execute: () => NotebookActions.showOutput(nbWidget.content)
+  });
+
+  commands.addCommand(cmdIds.showAllCode, {
+    label: 'Expand All Code',
+    execute: () => NotebookActions.showAllCode(nbWidget.content)
+  });
+
+  commands.addCommand(cmdIds.showAllOutputs, {
+    label: 'Expand All Outputs',
+    execute: () => NotebookActions.showAllOutputs(nbWidget.content)
   });
 
   // Commands in Run menu.
@@ -351,6 +314,110 @@ export const SetupCommands = (
     }
   });
 
+  // Commands in Kernel menu.
+  commands.addCommand(cmdIds.interrupt, {
+    label: 'Interrupt Kernel',
+    execute: async () => {
+      if (nbWidget.context.session.kernel) {
+        await nbWidget.context.session.kernel.interrupt();
+      }
+    }
+  });
+
+  commands.addCommand(cmdIds.restart, {
+    label: 'Restart Kernel…',
+    execute: () => nbWidget.context.session.restart()
+  });
+
+  commands.addCommand(cmdIds.restartClear, {
+    label: 'Restart Kernel and Clear All Outputs…',
+    execute: () => nbWidget.context.session.restart().then(() => {
+      NotebookActions.clearAllOutputs(nbWidget.content);
+    })
+  });
+
+  commands.addCommand(cmdIds.shutdown, {
+    label: 'Shutdown Kernel',
+    execute: () => nbWidget.context.session.shutdown()
+  });
+
+  commands.addCommand(cmdIds.switchKernel, {
+    label: 'Change Kernel…',
+    execute: () => nbWidget.context.session.selectKernel()
+  });
+
+  // Add other commands.
+  commands.addCommand(cmdIds.invoke, {
+    label: 'Completer: Invoke',
+    execute: () => handler.invoke()
+  });
+  commands.addCommand(cmdIds.select, {
+    label: 'Completer: Select',
+    execute: () => handler.completer.selectActive()
+  });
+  commands.addCommand(cmdIds.invokeNotebook, {
+    label: 'Invoke Notebook',
+    execute: () => {
+      if (nbWidget.content.activeCell.model.type === 'code') {
+        return commands.execute(cmdIds.invoke);
+      }
+    }
+  });
+  commands.addCommand(cmdIds.selectNotebook, {
+    label: 'Select Notebook',
+    execute: () => {
+      if (nbWidget.content.activeCell.model.type === 'code') {
+        return commands.execute(cmdIds.select);
+      }
+    }
+  });
+  commands.addCommand(cmdIds.save, {
+    label: 'Save',
+    execute: () => nbWidget.context.save()
+  });
+
+  let searchInstance: SearchInstance;
+  commands.addCommand(cmdIds.startSearch, {
+    label: 'Find...',
+    execute: () => {
+      if (searchInstance) {
+        searchInstance.focusInput();
+        return;
+      }
+      const provider = new NotebookSearchProvider();
+      searchInstance = new SearchInstance(nbWidget, provider);
+      searchInstance.disposed.connect(() => {
+        searchInstance = undefined;
+        // find next and previous are now not enabled
+        commands.notifyCommandChanged();
+      });
+      // find next and previous are now enabled
+      commands.notifyCommandChanged();
+      searchInstance.focusInput();
+    }
+  });
+  commands.addCommand(cmdIds.findNext, {
+    label: 'Find Next',
+    isEnabled: () => !!searchInstance,
+    execute: async () => {
+      if (!searchInstance) {
+        return;
+      }
+      await searchInstance.provider.highlightNext();
+      searchInstance.updateIndices();
+    }
+  });
+  commands.addCommand(cmdIds.findPrevious, {
+    label: 'Find Previous',
+    isEnabled: () => !!searchInstance,
+    execute: async () => {
+      if (!searchInstance) {
+        return;
+      }
+      await searchInstance.provider.highlightPrevious();
+      searchInstance.updateIndices();
+    }
+  });
   commands.addCommand(cmdIds.editMode, {
     label: 'Edit Mode',
     execute: () => {
@@ -520,6 +587,19 @@ export const SetupCommands = (
   editMenu.insertItem(17, { command: cmdIds.clearOutputs });
   editMenu.insertItem(18, { command: cmdIds.clearAllOutputs });
 
+  // Create View menu.
+  let viewMenu = new Menu({ commands });
+  viewMenu.title.label = 'View';
+  viewMenu.insertItem(0, { command: cmdIds.hideCode });
+  viewMenu.insertItem(1, { command: cmdIds.hideOutput });
+  viewMenu.insertItem(2, { command: cmdIds.hideAllCode });
+  viewMenu.insertItem(3, { command: cmdIds.hideAllOutputs });
+  viewMenu.insertItem(4, { type: 'separator' });
+  viewMenu.insertItem(5, { command: cmdIds.showCode });
+  viewMenu.insertItem(6, { command: cmdIds.showOutput });
+  viewMenu.insertItem(7, { command: cmdIds.showAllCode });
+  viewMenu.insertItem(8, { command: cmdIds.showAllOutputs });
+
   // Create Run menu.
   let runMenu = new Menu({ commands });
   runMenu.title.label = 'Run';
@@ -532,7 +612,19 @@ export const SetupCommands = (
   runMenu.insertItem(6, { command: cmdIds.runAll });
   runMenu.insertItem(7, { command: cmdIds.restartRunAll });
 
+  // Create Kernel menu.
+  let kernelMenu = new Menu({ commands });
+  kernelMenu.title.label = 'Kernel';
+  kernelMenu.insertItem(0, { command: cmdIds.interrupt });
+  kernelMenu.insertItem(1, { command: cmdIds.restart });
+  kernelMenu.insertItem(2, { command: cmdIds.restartClear });
+  kernelMenu.insertItem(3, { command: cmdIds.restartRunAll});
+  kernelMenu.insertItem(4, { command: cmdIds.shutdown });
+  kernelMenu.insertItem(4, { command: cmdIds.switchKernel });
+
   // Insert menus in menu bar.
   menuBar.insertMenu(0, editMenu);
-  menuBar.insertMenu(1, runMenu);
+  menuBar.insertMenu(1, viewMenu);
+  menuBar.insertMenu(2, runMenu);
+  menuBar.insertMenu(3, kernelMenu);
 };
