@@ -13,7 +13,7 @@ import '../index.css';
 
 import { CommandRegistry } from '@phosphor/commands';
 
-import { CommandPalette, SplitPanel, Widget } from '@phosphor/widgets';
+import { MenuBar, SplitPanel, Widget } from '@phosphor/widgets';
 
 import { ServiceManager } from '@jupyterlab/services';
 import { MathJaxTypesetter } from '@jupyterlab/mathjax2';
@@ -104,8 +104,10 @@ function createApp(manager: ServiceManager.IManager): void {
 
   let notebookPath = PageConfig.getOption('notebookPath');
   let nbWidget = docManager.open(notebookPath) as NotebookPanel;
-  let palette = new CommandPalette({ commands });
-  palette.addClass('notebookCommandPalette');
+
+  // Create menu bar.
+  let menuBar = new MenuBar();
+  menuBar.addClass('notebookMenuBar');
 
   const editor =
     nbWidget.content.activeCell && nbWidget.content.activeCell.editor;
@@ -125,13 +127,14 @@ function createApp(manager: ServiceManager.IManager): void {
   // Hide the widget when it first loads.
   completer.hide();
 
+  // Create panel with menu bar above the notebook widget
   let panel = new SplitPanel();
   panel.id = 'main';
-  panel.orientation = 'horizontal';
+  panel.orientation = 'vertical';
   panel.spacing = 0;
-  SplitPanel.setStretch(palette, 0);
+  SplitPanel.setStretch(menuBar, 0);
   SplitPanel.setStretch(nbWidget, 1);
-  panel.addWidget(palette);
+  panel.addWidget(menuBar);
   panel.addWidget(nbWidget);
 
   // Attach the panel to the DOM.
@@ -143,9 +146,7 @@ function createApp(manager: ServiceManager.IManager): void {
     panel.update();
   });
 
-  SetupCommands(commands, palette, nbWidget, handler);
-
-  console.log('Example started!');
+  SetupCommands(commands, menuBar, nbWidget, handler);
 }
 
 window.addEventListener('load', main);
