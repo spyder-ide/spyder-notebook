@@ -26,7 +26,6 @@ import requests
 
 # Spyder imports
 from spyder.config.base import _, get_image_path, get_module_source_path
-from spyder.py3compat import is_text_string
 from spyder.utils.qthelpers import add_actions
 from spyder.utils import sourcecode
 from spyder.widgets.findreplace import FindReplace
@@ -182,7 +181,7 @@ class NotebookClient(QWidget):
 
     def go_to(self, url_or_text):
         """Go to page utl."""
-        if is_text_string(url_or_text):
+        if isinstance(url_or_text, str):
             url = QUrl(url_or_text)
         else:
             url = url_or_text
