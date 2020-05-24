@@ -126,7 +126,7 @@ class NotebookClient(QWidget):
 
     def __init__(self, plugin, filename, ini_message=None):
         """Constructor."""
-        super(NotebookClient, self).__init__(plugin)
+        super().__init__(plugin)
 
         if os.name == 'nt':
             filename = filename.replace('/', '\\')
