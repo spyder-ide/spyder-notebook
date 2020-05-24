@@ -42,6 +42,7 @@ setup(
     name='spyder-notebook',
     version=get_version(),
     keywords='spyder jupyter notebook',
+    python_requires='>=3.5',
     url='https://github.com/spyder-ide/spyder-notebook',
     license='MIT',
     author='Spyder Development Team',
@@ -56,6 +57,5 @@ setup(
                  'Intended Audience :: Developers',
                  'License :: OSI Approved :: MIT License',
                  'Operating System :: OS Independent',
-                 'Programming Language :: Python :: 2.7',
                  'Programming Language :: Python :: 3']
 )
