@@ -9,7 +9,6 @@
 import os
 import os.path as osp
 import subprocess
-import sys
 
 # Qt imports
 from qtpy import PYQT4, PYSIDE
@@ -29,12 +28,12 @@ from spyder.utils.programs import get_temp_dir
 from spyder.utils.qthelpers import (create_action, create_toolbutton,
                                     add_actions, MENU_SEPARATOR)
 from spyder.utils.switcher import shorten_paths
-from spyder.widgets.tabs import Tabs
 
 
 # Local imports
-from .utils.nbopen import nbopen, NBServerError
-from .widgets.client import NotebookClient
+from spyder_notebook.utils.nbopen import nbopen, NBServerError
+from spyder_notebook.widgets.client import NotebookClient
+from spyder_notebook.widgets.notebooktabwidget import NotebookTabWidget
 
 
 NOTEBOOK_TMPDIR = osp.join(get_temp_dir(), 'notebooks')
@@ -82,16 +81,10 @@ class NotebookPlugin(SpyderPluginWidget):
         menu_btn.setMenu(self._options_menu)
         menu_btn.setPopupMode(menu_btn.InstantPopup)
         corner_widgets = {Qt.TopRightCorner: [new_notebook_btn, menu_btn]}
-        self.tabwidget = Tabs(self, menu=self._options_menu,
-                              actions=self.menu_actions,
-                              corner_widgets=corner_widgets)
+        self.tabwidget = NotebookTabWidget(
+            self, menu=self._options_menu, actions=self.menu_actions,
+            corner_widgets=corner_widgets)
 
-        if hasattr(self.tabwidget, 'setDocumentMode') \
-           and not sys.platform == 'darwin':
-            # Don't set document mode to true on OSX because it generates
-            # a crash when the console is detached from the main window
-            # Fixes Issue 561
-            self.tabwidget.setDocumentMode(True)
         self.tabwidget.currentChanged.connect(self.refresh_plugin)
 
         self.tabwidget.set_close_function(self.close_client)
