@@ -64,7 +64,6 @@ class NotebookPlugin(SpyderPluginWidget):
 
         self.main = parent
 
-        self.clients = []
         self.untitled_num = 0
         self.recent_notebooks = self.get_option('recent_notebooks', default=[])
         self.recent_notebook_menu = QMenu(_("Open recent"), self)
@@ -121,7 +120,7 @@ class NotebookPlugin(SpyderPluginWidget):
 
     def closing_plugin(self, cancelable=False):
         """Perform actions before parent main window is closed."""
-        for cl in self.clients:
+        for cl in self.tabwidget.clients:
             cl.close()
         self.set_option('recent_notebooks', self.recent_notebooks)
         return True
@@ -251,7 +250,8 @@ class NotebookPlugin(SpyderPluginWidget):
 
     def get_clients(self):
         """Return notebooks list."""
-        return [cl for cl in self.clients if isinstance(cl, NotebookClient)]
+        return [cl for cl in self.tabwidget.clients
+                if isinstance(cl, NotebookClient)]
 
     def get_focus_client(self):
         """Return current notebook with focus, if any."""
@@ -365,7 +365,7 @@ class NotebookPlugin(SpyderPluginWidget):
 
         # Note: notebook index may have changed after closing related widgets
         self.tabwidget.removeTab(self.tabwidget.indexOf(client))
-        self.clients.remove(client)
+        self.tabwidget.clients.remove(client)
 
         self.create_welcome_client()
 
@@ -472,7 +472,7 @@ class NotebookPlugin(SpyderPluginWidget):
     # ------ Public API (for tabs) --------------------------------------------
     def add_tab(self, widget):
         """Add tab."""
-        self.clients.append(widget)
+        self.tabwidget.clients.append(widget)
         index = self.tabwidget.addTab(widget, widget.get_short_name())
         self.tabwidget.setCurrentIndex(index)
         self.tabwidget.setTabToolTip(index, widget.get_filename())
@@ -491,18 +491,19 @@ class NotebookPlugin(SpyderPluginWidget):
         if mode != '':
             return
 
-        paths = [client.get_filename() for client in self.clients]
-        is_unsaved = [False for client in self.clients]
+        paths = [client.get_filename() for client in self.tabwidget.clients]
+        is_unsaved = [False for client in self.tabwidget.clients]
         short_paths = shorten_paths(paths, is_unsaved)
         icon = QIcon(os.path.join(PACKAGE_PATH, 'images', 'icon.svg'))
         section = self.get_plugin_title()
 
-        for path, short_path, client in zip(paths, short_paths, self.clients):
+        for path, short_path, client in zip(
+                paths, short_paths, self.tabwidget.clients):
             title = osp.basename(path)
             description = osp.dirname(path)
             if len(path) > 75:
                 description = short_path
-            is_last_item = (client == self.clients[-1])
+            is_last_item = (client == self.tabwidget.clients[-1])
             self.switcher.add_item(
                 title=title, description=description, icon=icon,
                 section=section, data=client, last_item=is_last_item)
@@ -519,7 +520,7 @@ class NotebookPlugin(SpyderPluginWidget):
             return
 
         client = item.get_data()
-        index = self.clients.index(client)
+        index = self.tabwidget.clients.index(client)
         self.tabwidget.setCurrentIndex(index)
         self.switch_to_plugin()
         self.switcher.hide()

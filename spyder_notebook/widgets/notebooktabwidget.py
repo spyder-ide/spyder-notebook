@@ -13,7 +13,15 @@ from spyder.widgets.tabs import Tabs
 
 
 class NotebookTabWidget(Tabs):
-    """Tabbed widget whose tabs display notebooks."""
+    """
+    Tabbed widget whose tabs display notebooks.
+
+    This is the main widget of the notebook plugin.
+
+    Attributes
+    ----------
+    clients : list of NotebookClient
+    """
 
     def __init__(self, parent, actions, menu, corner_widgets):
         """
@@ -33,6 +41,8 @@ class NotebookTabWidget(Tabs):
             the top left corner.
         """
         super().__init__(parent, actions, menu, corner_widgets)
+
+        self.clients = []
 
         if not sys.platform == 'darwin':
             # Don't set document mode to true on OSX because it generates
