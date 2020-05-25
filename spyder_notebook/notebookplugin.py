@@ -93,7 +93,6 @@ class NotebookPlugin(SpyderPluginWidget):
             # Fixes Issue 561
             self.tabwidget.setDocumentMode(True)
         self.tabwidget.currentChanged.connect(self.refresh_plugin)
-        self.tabwidget.move_data.connect(self.move_tab)
 
         self.tabwidget.set_close_function(self.close_client)
 
@@ -487,11 +486,6 @@ class NotebookPlugin(SpyderPluginWidget):
         if self.dockwidget:
             self.switch_to_plugin()
         self.activateWindow()
-
-    def move_tab(self, index_from, index_to):
-        """Move tab."""
-        client = self.clients.pop(index_from)
-        self.clients.insert(index_to, client)
 
     # ------ Public API (for FileSwitcher) ------------------------------------
     def handle_switcher_modes(self, mode):
