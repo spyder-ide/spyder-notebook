@@ -59,9 +59,6 @@ class NotebookPlugin(SpyderPluginWidget):
         self.testing = testing
 
         self.fileswitcher_dlg = None
-        self.tabwidget = None
-        self.menu_actions = None
-
         self.main = parent
 
         self.untitled_num = 0
@@ -77,6 +74,7 @@ class NotebookPlugin(SpyderPluginWidget):
         menu_btn = create_toolbutton(self, icon=ima.icon('tooloptions'),
                                      tip=_('Options'))
 
+        self.menu_actions = self.get_plugin_actions()
         menu_btn.setMenu(self._options_menu)
         menu_btn.setPopupMode(menu_btn.InstantPopup)
         corner_widgets = {Qt.TopRightCorner: [new_notebook_btn, menu_btn]}
@@ -323,7 +321,7 @@ class NotebookPlugin(SpyderPluginWidget):
             return
 
         welcome_client = self.create_welcome_client()
-        client = NotebookClient(self, filename)
+        client = NotebookClient(self, filename, self.menu_actions)
         self.tabwidget.add_tab(client)
         if NOTEBOOK_TMPDIR not in filename:
             self.add_to_recent(filename)
@@ -373,7 +371,8 @@ class NotebookPlugin(SpyderPluginWidget):
         """Create a welcome client with some instructions."""
         if self.tabwidget.count() == 0:
             welcome = open(WELCOME).read()
-            client = NotebookClient(self, WELCOME, ini_message=welcome)
+            client = NotebookClient(
+                self, WELCOME, self.menu_actions, ini_message=welcome)
             self.tabwidget.add_tab(client)
             return client
 
