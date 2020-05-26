@@ -105,15 +105,6 @@ def notebook(qtbot):
     return notebook_plugin
 
 
-@pytest.fixture
-def tmpdir_under_home():
-    """Create a temporary directory under the home dir."""
-    tmpdir = tempfile.mkdtemp(dir=get_home_dir())
-    yield tmpdir
-    print('rmtree', tmpdir)
-    shutil.rmtree(tmpdir)
-
-
 # =============================================================================
 # Tests
 # =============================================================================
@@ -174,15 +165,12 @@ def test_close_nonexisting_notebook(notebook, qtbot):
 
 
 @flaky(max_runs=3)
-def test_open_notebook(notebook, qtbot, tmpdir_under_home):
+def test_open_notebook(notebook, qtbot, tmpdir):
     """Test that a notebook can be opened from a non-ascii directory."""
     # Move the test file to non-ascii directory
     test_notebook = osp.join(LOCATION, 'test.ipynb')
-
-    # For Python 2, non-ascii directory needs to be under home dir
-    test_notebook_non_ascii = osp.join(tmpdir_under_home,
-                                       u'äöüß', 'test.ipynb')
-    os.mkdir(os.path.join(tmpdir_under_home, u'äöüß'))
+    test_notebook_non_ascii = osp.join(str(tmpdir), u'äöüß', 'test.ipynb')
+    os.mkdir(os.path.join(str(tmpdir), u'äöüß'))
     shutil.copyfile(test_notebook, test_notebook_non_ascii)
 
     # Wait for prompt

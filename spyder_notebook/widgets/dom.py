@@ -19,7 +19,7 @@ class DOMWidget(WebView):
 
     def __init__(self, parent):
         """Constructor."""
-        super(DOMWidget, self).__init__(parent)
+        super().__init__(parent)
         if WEBENGINE:
             self.dom = self.page()
         else:

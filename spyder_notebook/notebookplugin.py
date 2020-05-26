@@ -178,7 +178,7 @@ class NotebookPlugin(SpyderPluginWidget):
 
     def register_plugin(self):
         """Register plugin in Spyder's main window."""
-        super(NotebookPlugin, self).register_plugin()
+        super().register_plugin()
         self.focus_changed.connect(self.main.plugin_focus_changed)
         self.ipyconsole = self.main.ipyconsole
         self.create_new_client(give_focus=False)

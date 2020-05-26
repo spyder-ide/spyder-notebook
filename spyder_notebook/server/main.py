@@ -57,7 +57,7 @@ class SpyderNotebookServer(NotebookApp):
     def init_webapp(self):
         """initialize tornado webapp and httpserver.
         """
-        super(SpyderNotebookServer, self).init_webapp()
+        super().init_webapp()
 
         default_handlers = [
             (ujoin(self.base_url, r'/notebook/(.*)'), NotebookHandler),
