@@ -49,3 +49,17 @@ class NotebookTabWidget(Tabs):
             # a crash when the console is detached from the main window
             # Fixes spyder-ide/spyder#561
             self.setDocumentMode(True)
+
+    def add_tab(self, widget):
+        """
+        Add tab containing some notebook widget to the tabbed widget.
+
+        Parameters
+        ----------
+        widget : NotebookClient
+            Notebook widget to display in new tab.
+        """
+        self.clients.append(widget)
+        index = self.addTab(widget, widget.get_short_name())
+        self.setCurrentIndex(index)
+        self.setTabToolTip(index, widget.get_filename())

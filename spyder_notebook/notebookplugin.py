@@ -324,7 +324,7 @@ class NotebookPlugin(SpyderPluginWidget):
 
         welcome_client = self.create_welcome_client()
         client = NotebookClient(self, filename)
-        self.add_tab(client)
+        self.tabwidget.add_tab(client)
         if NOTEBOOK_TMPDIR not in filename:
             self.add_to_recent(filename)
             self.setup_menu_actions()
@@ -374,7 +374,7 @@ class NotebookPlugin(SpyderPluginWidget):
         if self.tabwidget.count() == 0:
             welcome = open(WELCOME).read()
             client = NotebookClient(self, WELCOME, ini_message=welcome)
-            self.add_tab(client)
+            self.tabwidget.add_tab(client)
             return client
 
     def save_notebook(self, client):
@@ -468,17 +468,6 @@ class NotebookPlugin(SpyderPluginWidget):
             ipyclient.allow_rename = False
             self.ipyconsole.rename_client_tab(ipyclient,
                                               client.get_short_name())
-
-    # ------ Public API (for tabs) --------------------------------------------
-    def add_tab(self, widget):
-        """Add tab."""
-        self.tabwidget.clients.append(widget)
-        index = self.tabwidget.addTab(widget, widget.get_short_name())
-        self.tabwidget.setCurrentIndex(index)
-        self.tabwidget.setTabToolTip(index, widget.get_filename())
-        if self.dockwidget:
-            self.switch_to_plugin()
-        self.activateWindow()
 
     # ------ Public API (for FileSwitcher) ------------------------------------
     def handle_switcher_modes(self, mode):
