@@ -26,10 +26,6 @@ from spyder.config.base import get_home_dir
 # Local imports
 from spyder_notebook.notebookplugin import NotebookPlugin
 
-# Python 2 compatibility
-if sys.version_info[0] == 2:
-    PermissionError = OSError
-
 # =============================================================================
 # Constants
 # =============================================================================
