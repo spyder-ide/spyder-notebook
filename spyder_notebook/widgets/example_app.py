@@ -17,7 +17,7 @@ import sys
 # Qt import
 from qtpy.QtCore import QCoreApplication, Qt
 from qtpy.QtQuick import QQuickWindow, QSGRendererInterface
-from qtpy.QtWidgets import QApplication, QMainWindow
+from qtpy.QtWidgets import QAction, QApplication, QMainWindow
 
 # Plugin imports
 from spyder_notebook.widgets.notebooktabwidget import NotebookTabWidget
@@ -39,9 +39,21 @@ class NotebookAppMainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        widget = NotebookTabWidget(self, None, None, None)
-        widget.maybe_create_welcome_client()
-        self.setCentralWidget(widget)
+        self.tabwidget = NotebookTabWidget(self, None, None, None)
+        self.tabwidget.maybe_create_welcome_client()
+        self.setCentralWidget(self.tabwidget)
+        self._setup_menu()
+
+    def _setup_menu(self):
+        file_menu = self.menuBar().addMenu('File')
+
+        new_action = QAction('New Notebook', self)
+        new_action.triggered.connect(self.tabwidget.create_new_client)
+        file_menu.addAction(new_action)
+
+        open_action = QAction('Open Notebook', self)
+        open_action.triggered.connect(self.tabwidget.open_notebook)
+        file_menu.addAction(open_action)
 
 
 if __name__ == '__main__':

@@ -8,11 +8,10 @@
 # Stdlib imports
 import os
 import os.path as osp
-import subprocess
 
 # Qt imports
 from qtpy import PYQT4, PYSIDE
-from qtpy.compat import getsavefilename, getopenfilenames
+from qtpy.compat import getsavefilename
 from qtpy.QtCore import Qt, QEventLoop, QTimer, Signal
 from qtpy.QtGui import QIcon
 from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
@@ -31,7 +30,6 @@ from spyder.utils.switcher import shorten_paths
 
 
 # Local imports
-from spyder_notebook.utils.nbopen import nbopen, NBServerError
 from spyder_notebook.widgets.client import NotebookClient
 from spyder_notebook.widgets.notebooktabwidget import NotebookTabWidget
 
@@ -61,7 +59,6 @@ class NotebookPlugin(SpyderPluginWidget):
         self.fileswitcher_dlg = None
         self.main = parent
 
-        self.untitled_num = 0
         self.recent_notebooks = self.get_option('recent_notebooks', default=[])
         self.recent_notebook_menu = QMenu(_("Open recent"), self)
 
@@ -80,7 +77,7 @@ class NotebookPlugin(SpyderPluginWidget):
         corner_widgets = {Qt.TopRightCorner: [new_notebook_btn, menu_btn]}
         self.tabwidget = NotebookTabWidget(
             self, menu=self._options_menu, actions=self.menu_actions,
-            corner_widgets=corner_widgets)
+            corner_widgets=corner_widgets, testing=testing)
 
         self.tabwidget.currentChanged.connect(self.refresh_plugin)
 
@@ -284,52 +281,16 @@ class NotebookPlugin(SpyderPluginWidget):
 
     def create_new_client(self, filename=None, give_focus=True):
         """Create a new notebook or load a pre-existing one."""
-        # Generate the notebook name (in case of a new one)
-        if not filename:
-            if not osp.isdir(NOTEBOOK_TMPDIR):
-                os.makedirs(NOTEBOOK_TMPDIR)
-            nb_name = 'untitled' + str(self.untitled_num) + '.ipynb'
-            filename = osp.join(NOTEBOOK_TMPDIR, nb_name)
-            kernelspec = dict(display_name='Python 3 (Spyder)',
-                              name='python3')
-            metadata = dict(kernelspec=kernelspec)
-            nb_contents = nbformat.v4.new_notebook(metadata=metadata)
-            nbformat.write(nb_contents, filename)
-            self.untitled_num += 1
-
         # Save spyder_pythonpath before creating a client
         # because it's needed by our kernel spec.
         if not self.testing:
             self.set_option('main/spyder_pythonpath',
                             self.main.get_spyder_pythonpath())
 
-        # Open the notebook with nbopen and get the url we need to render
-        try:
-            server_info = nbopen(filename)
-        except (subprocess.CalledProcessError, NBServerError):
-            QMessageBox.critical(
-                self,
-                _("Server error"),
-                _("The Jupyter Notebook server failed to start or it is "
-                  "taking too much time to do it. Please start it in a "
-                  "system terminal with the command 'jupyter notebook' to "
-                  "check for errors."))
-            # Create a welcome widget
-            # See issue 93
-            self.untitled_num -= 1
-            self.maybe_create_welcome_client()
-            return
-
-        welcome_client = self.tabwidget.maybe_create_welcome_client()
-        client = NotebookClient(self, filename, self.menu_actions)
-        self.tabwidget.add_tab(client)
+        filename = self.tabwidget.create_new_client(filename, give_focus)
         if NOTEBOOK_TMPDIR not in filename:
             self.add_to_recent(filename)
             self.setup_menu_actions()
-        client.register(server_info)
-        client.load_notebook()
-        if welcome_client and not self.testing:
-            self.tabwidget.setCurrentIndex(0)
 
     def close_client(self, index=None, client=None, save=False):
         """
@@ -434,12 +395,13 @@ class NotebookPlugin(SpyderPluginWidget):
 
     def open_notebook(self, filenames=None):
         """Open a notebook from file."""
-        if not filenames:
-            filenames, _selfilter = getopenfilenames(self, _("Open notebook"),
-                                                     '', FILES_FILTER)
-        if filenames:
-            for filename in filenames:
-                self.create_new_client(filename=filename)
+        # Save spyder_pythonpath before creating a client
+        # because it's needed by our kernel spec.
+        if not self.testing:
+            self.set_option('main/spyder_pythonpath',
+                            self.main.get_spyder_pythonpath())
+
+        self.tabwidget.open_notebook(filenames)
 
     def open_console(self, client=None):
         """Open an IPython console for the given client or the current one."""
