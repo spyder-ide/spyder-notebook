@@ -20,7 +20,6 @@ from qtpy.QtQuick import QQuickWindow, QSGRendererInterface
 from qtpy.QtWidgets import QApplication, QMainWindow
 
 # Plugin imports
-from spyder_notebook.widgets.client import NotebookClient
 from spyder_notebook.widgets.notebooktabwidget import NotebookTabWidget
 
 
@@ -41,9 +40,7 @@ class NotebookAppMainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         widget = NotebookTabWidget(self, None, None, None)
-        client = NotebookClient(parent=self, filename='Google')
-        client.go_to('http://google.com')
-        widget.add_tab(client)
+        widget.maybe_create_welcome_client()
         self.setCentralWidget(widget)
 
 

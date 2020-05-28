@@ -317,10 +317,10 @@ class NotebookPlugin(SpyderPluginWidget):
             # Create a welcome widget
             # See issue 93
             self.untitled_num -= 1
-            self.create_welcome_client()
+            self.maybe_create_welcome_client()
             return
 
-        welcome_client = self.create_welcome_client()
+        welcome_client = self.tabwidget.maybe_create_welcome_client()
         client = NotebookClient(self, filename, self.menu_actions)
         self.tabwidget.add_tab(client)
         if NOTEBOOK_TMPDIR not in filename:
@@ -365,16 +365,7 @@ class NotebookPlugin(SpyderPluginWidget):
         self.tabwidget.removeTab(self.tabwidget.indexOf(client))
         self.tabwidget.clients.remove(client)
 
-        self.create_welcome_client()
-
-    def create_welcome_client(self):
-        """Create a welcome client with some instructions."""
-        if self.tabwidget.count() == 0:
-            welcome = open(WELCOME).read()
-            client = NotebookClient(
-                self, WELCOME, self.menu_actions, ini_message=welcome)
-            self.tabwidget.add_tab(client)
-            return client
+        self.tabwidget.maybe_create_welcome_client()
 
     def save_notebook(self, client):
         """

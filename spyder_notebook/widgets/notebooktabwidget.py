@@ -6,10 +6,19 @@
 """File implementing NotebookTabWidget."""
 
 # Standard library imports
+import os.path as osp
 import sys
 
 # Spyder imports
 from spyder.widgets.tabs import Tabs
+
+# Local imports
+from spyder_notebook.widgets.client import NotebookClient
+
+
+# Path to HTML file with welcome message
+PACKAGE_PATH = osp.join(osp.dirname(__file__), '..')
+WELCOME = osp.join(PACKAGE_PATH, 'utils', 'templates', 'welcome.html')
 
 
 class NotebookTabWidget(Tabs):
@@ -20,6 +29,7 @@ class NotebookTabWidget(Tabs):
 
     Attributes
     ----------
+    actions : list of (QAction or QMenu or None) or None
     clients : list of NotebookClient
     """
 
@@ -42,6 +52,7 @@ class NotebookTabWidget(Tabs):
         """
         super().__init__(parent, actions, menu, corner_widgets)
 
+        self.actions = actions
         self.clients = []
 
         if not sys.platform == 'darwin':
@@ -49,6 +60,22 @@ class NotebookTabWidget(Tabs):
             # a crash when the console is detached from the main window
             # Fixes spyder-ide/spyder#561
             self.setDocumentMode(True)
+
+    def maybe_create_welcome_client(self):
+        """
+        Create a welcome tab if there are no tabs.
+
+        Returns
+        -------
+        client : NotebookClient or None
+            The client in the created tab, or None if no tab is created.
+        """
+        if self.count() == 0:
+            welcome = open(WELCOME).read()
+            client = NotebookClient(
+                self, WELCOME, self.actions, ini_message=welcome)
+            self.add_tab(client)
+            return client
 
     def add_tab(self, widget):
         """
