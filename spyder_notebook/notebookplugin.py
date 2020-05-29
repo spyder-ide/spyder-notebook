@@ -11,13 +11,9 @@ import os.path as osp
 
 # Qt imports
 from qtpy import PYQT4, PYSIDE
-from qtpy.compat import getsavefilename
-from qtpy.QtCore import Qt, QEventLoop, QTimer, Signal
+from qtpy.QtCore import Qt, Signal
 from qtpy.QtGui import QIcon
 from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
-
-# Third-party imports
-import nbformat
 
 # Spyder imports
 from spyder.api.plugins import SpyderPluginWidget
@@ -80,8 +76,6 @@ class NotebookPlugin(SpyderPluginWidget):
             corner_widgets=corner_widgets)
 
         self.tabwidget.currentChanged.connect(self.refresh_plugin)
-
-        self.tabwidget.set_close_function(self.close_client)
 
         layout.addWidget(self.tabwidget)
         self.setLayout(layout)
@@ -219,7 +213,10 @@ class NotebookPlugin(SpyderPluginWidget):
             self.clear_recent_notebooks_action.setEnabled(True)
         else:
             self.clear_recent_notebooks_action.setEnabled(False)
-        client = self.get_current_client()
+        try:
+            client = self.tabwidget.get_current_client()
+        except AttributeError:  # tabwidget is not yet constructed
+            client = None
         if client:
             if client.get_filename() != WELCOME:
                 self.save_as_action.setEnabled(True)
@@ -255,24 +252,15 @@ class NotebookPlugin(SpyderPluginWidget):
             if widget is client or widget is client.notebookwidget:
                 return client
 
-    def get_current_client(self):
-        """Return the currently selected notebook."""
-        try:
-            client = self.tabwidget.currentWidget()
-        except AttributeError:
-            client = None
-        if client is not None:
-            return client
-
     def get_current_nbwidget(self):
         """Return the notebookwidget of the current client."""
-        client = self.get_current_client()
+        client = self.tabwidget.get_current_client()
         if client is not None:
             return client.notebookwidget
 
     def get_current_client_name(self, short=False):
         """Get the current client name."""
-        client = self.get_current_client()
+        client = self.tabwidget.get_current_client()
         if client:
             if short:
                 return client.get_short_name()
@@ -292,107 +280,6 @@ class NotebookPlugin(SpyderPluginWidget):
             self.add_to_recent(filename)
             self.setup_menu_actions()
 
-    def close_client(self, index=None, client=None, save=False):
-        """
-        Close client tab from index or widget (or close current tab).
-
-        The notebook is saved if `save` is `False`.
-        """
-        if not self.tabwidget.count():
-            return
-        if client is not None:
-            index = self.tabwidget.indexOf(client)
-        if index is None and client is None:
-            index = self.tabwidget.currentIndex()
-        if index is not None:
-            client = self.tabwidget.widget(index)
-
-        is_welcome = client.get_filename() == WELCOME
-        if not save and not is_welcome:
-            self.save_notebook(client)
-        if not is_welcome:
-            client.shutdown_kernel()
-        client.close()
-
-        # Delete notebook file if it is in temporary directory
-        filename = client.get_filename()
-        if filename.startswith(get_temp_dir()):
-            try:
-                os.remove(filename)
-            except EnvironmentError:
-                pass
-
-        # Note: notebook index may have changed after closing related widgets
-        self.tabwidget.removeTab(self.tabwidget.indexOf(client))
-        self.tabwidget.clients.remove(client)
-
-        self.tabwidget.maybe_create_welcome_client()
-
-    def save_notebook(self, client):
-        """
-        Save notebook corresponding to given client.
-
-        If the notebook is newly created and not empty, then ask the user for
-        a new filename and save under that name.
-
-        This function is called when the user closes a tab.
-        """
-        client.save()
-
-        # Check filename to find out whether notebook is newly created
-        path = client.get_filename()
-        dirname, basename = osp.split(path)
-        if dirname != NOTEBOOK_TMPDIR or not basename.startswith('untitled'):
-            return
-
-        # Read file to see whether notebook is empty
-        wait_save = QEventLoop()
-        QTimer.singleShot(1000, wait_save.quit)
-        wait_save.exec_()
-        nb_contents = nbformat.read(path, as_version=4)
-        if (len(nb_contents['cells']) == 0
-                or len(nb_contents['cells'][0]['source']) == 0):
-            return
-
-        # Ask user to save notebook with new filename
-        buttons = QMessageBox.Yes | QMessageBox.No
-        text = _("<b>{0}</b> has been modified.<br>"
-                 "Do you want to save changes?").format(basename)
-        answer = QMessageBox.question(
-            self, self.get_plugin_title(), text, buttons)
-        if answer == QMessageBox.Yes:
-            self.save_as(close=True)
-
-    def save_as(self, name=None, close=False):
-        """Save notebook as."""
-        current_client = self.get_current_client()
-        current_client.save()
-        original_path = current_client.get_filename()
-        if not name:
-            original_name = osp.basename(original_path)
-        else:
-            original_name = name
-        filename, _selfilter = getsavefilename(self, _("Save notebook"),
-                                               original_name, FILES_FILTER)
-        if filename:
-            try:
-                nb_contents = nbformat.read(original_path, as_version=4)
-            except EnvironmentError as error:
-                txt = (_("Error while reading {}<p>{}")
-                       .format(original_path, str(error)))
-                QMessageBox.critical(self, _("File Error"), txt)
-                return
-            try:
-                nbformat.write(nb_contents, filename)
-            except EnvironmentError as error:
-                txt = (_("Error while writing {}<p>{}")
-                       .format(filename, str(error)))
-                QMessageBox.critical(self, _("File Error"), txt)
-                return
-            if not close:
-                self.close_client(save=True)
-            self.create_new_client(filename=filename)
-
     def open_notebook(self, filenames=None):
         """Open a notebook from file."""
         # Save spyder_pythonpath before creating a client
@@ -403,10 +290,14 @@ class NotebookPlugin(SpyderPluginWidget):
 
         self.tabwidget.open_notebook(filenames)
 
+    def save_as(self):
+        """Save current notebook to different file."""
+        self.tabwidget.save_as()
+
     def open_console(self, client=None):
         """Open an IPython console for the given client or the current one."""
         if not client:
-            client = self.get_current_client()
+            client = self.tabwidget.get_current_client()
         if self.ipyconsole is not None:
             kernel_id = client.get_kernel_id()
             if not kernel_id:

@@ -51,9 +51,25 @@ class NotebookAppMainWindow(QMainWindow):
         new_action.triggered.connect(self.tabwidget.create_new_client)
         file_menu.addAction(new_action)
 
-        open_action = QAction('Open Notebook', self)
+        open_action = QAction('Open Notebook...', self)
         open_action.triggered.connect(self.tabwidget.open_notebook)
         file_menu.addAction(open_action)
+
+        save_action = QAction('Save Notebook', self)
+        save_action.triggered.connect(
+            lambda checked: self.tabwidget.save_notebook(
+                self.tabwidget.currentWidget()))
+        file_menu.addAction(save_action)
+
+        saveas_action = QAction('Save As...', self)
+        saveas_action.triggered.connect(self.tabwidget.save_as)
+        file_menu.addAction(saveas_action)
+
+        close_action = QAction('Close Notebook', self)
+        close_action.triggered.connect(
+            lambda checked: self.tabwidget.close_client(
+                self.tabwidget.currentIndex()))
+        file_menu.addAction(close_action)
 
 
 if __name__ == '__main__':
