@@ -77,7 +77,7 @@ class NotebookPlugin(SpyderPluginWidget):
         corner_widgets = {Qt.TopRightCorner: [new_notebook_btn, menu_btn]}
         self.tabwidget = NotebookTabWidget(
             self, menu=self._options_menu, actions=self.menu_actions,
-            corner_widgets=corner_widgets, testing=testing)
+            corner_widgets=corner_widgets)
 
         self.tabwidget.currentChanged.connect(self.refresh_plugin)
 

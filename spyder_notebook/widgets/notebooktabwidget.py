@@ -55,7 +55,7 @@ class NotebookTabWidget(Tabs):
         Number used in file name of newly created notebooks.
     """
 
-    def __init__(self, parent, actions, menu, corner_widgets, testing=False):
+    def __init__(self, parent, actions, menu, corner_widgets):
         """
         Constructor.
 
@@ -76,7 +76,6 @@ class NotebookTabWidget(Tabs):
 
         self.actions = actions
         self.clients = []
-        self.testing = testing
         self.untitled_num = 0
 
         if not sys.platform == 'darwin':
@@ -105,6 +104,9 @@ class NotebookTabWidget(Tabs):
     def create_new_client(self, filename=None):
         """
         Create a new notebook or load a pre-existing one.
+
+        This function also creates and selects a welcome tab, if no tabs are
+        present.
 
         Parameters
         ----------
@@ -152,7 +154,7 @@ class NotebookTabWidget(Tabs):
         self.add_tab(client)
         client.register(server_info)
         client.load_notebook()
-        if welcome_client and not self.testing:
+        if welcome_client:
             self.setCurrentIndex(0)
         return filename
 

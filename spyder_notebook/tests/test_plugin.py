@@ -94,10 +94,12 @@ def is_kernel_up(kernel_id, sessions_url):
 # =============================================================================
 @pytest.fixture
 def notebook(qtbot):
-    """Set up the Notebook plugin."""
+    """Set up the Notebook plugin with a welcome tab and a tab with a new
+    notebook. The latter tab is selected."""
     notebook_plugin = NotebookPlugin(None, testing=True)
     qtbot.addWidget(notebook_plugin)
     notebook_plugin.create_new_client()
+    notebook_plugin.tabwidget.setCurrentIndex(1)
     return notebook_plugin
 
 
