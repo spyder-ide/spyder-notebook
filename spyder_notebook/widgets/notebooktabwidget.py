@@ -102,7 +102,7 @@ class NotebookTabWidget(Tabs):
             for filename in filenames:
                 self.create_new_client(filename=filename)
 
-    def create_new_client(self, filename=None, give_focus=True):
+    def create_new_client(self, filename=None):
         """
         Create a new notebook or load a pre-existing one.
 
@@ -111,8 +111,6 @@ class NotebookTabWidget(Tabs):
         filename : str, optional
             File name of the notebook to load in the new client. The default
             is None, meaning that a new notebook should be created.
-        give_focus : bool, optional
-            Not used. The default is True.
 
         Returns
         -------

@@ -167,7 +167,7 @@ class NotebookPlugin(SpyderPluginWidget):
         super().register_plugin()
         self.focus_changed.connect(self.main.plugin_focus_changed)
         self.ipyconsole = self.main.ipyconsole
-        self.create_new_client(give_focus=False)
+        self.create_new_client()
 
         # Connect to switcher
         self.switcher = self.main.switcher
@@ -279,7 +279,7 @@ class NotebookPlugin(SpyderPluginWidget):
             else:
                 return client.get_filename()
 
-    def create_new_client(self, filename=None, give_focus=True):
+    def create_new_client(self, filename=None):
         """Create a new notebook or load a pre-existing one."""
         # Save spyder_pythonpath before creating a client
         # because it's needed by our kernel spec.
@@ -287,7 +287,7 @@ class NotebookPlugin(SpyderPluginWidget):
             self.set_option('main/spyder_pythonpath',
                             self.main.get_spyder_pythonpath())
 
-        filename = self.tabwidget.create_new_client(filename, give_focus)
+        filename = self.tabwidget.create_new_client(filename)
         if NOTEBOOK_TMPDIR not in filename:
             self.add_to_recent(filename)
             self.setup_menu_actions()
