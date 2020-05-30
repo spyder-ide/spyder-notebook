@@ -286,7 +286,7 @@ class NotebookTabWidget(Tabs):
             The default is False, meaning that the tab should be closed
             after saving the notebook.
         """
-        current_client = self.get_current_client()
+        current_client = self.currentWidget()
         current_client.save()
         original_path = current_client.get_filename()
         if not name:
@@ -327,18 +327,3 @@ class NotebookTabWidget(Tabs):
         index = self.addTab(widget, widget.get_short_name())
         self.setCurrentIndex(index)
         self.setTabToolTip(index, widget.get_filename())
-
-    def get_current_client(self):
-        """
-        Return the currently selected notebook.
-
-        Returns
-        -------
-        client : NotebookClient
-        """
-        try:
-            client = self.currentWidget()
-        except AttributeError:
-            client = None
-        if client is not None:
-            return client

@@ -214,7 +214,7 @@ class NotebookPlugin(SpyderPluginWidget):
         else:
             self.clear_recent_notebooks_action.setEnabled(False)
         try:
-            client = self.tabwidget.get_current_client()
+            client = self.tabwidget.currentWidget()
         except AttributeError:  # tabwidget is not yet constructed
             client = None
         if client:
@@ -254,13 +254,13 @@ class NotebookPlugin(SpyderPluginWidget):
 
     def get_current_nbwidget(self):
         """Return the notebookwidget of the current client."""
-        client = self.tabwidget.get_current_client()
+        client = self.tabwidget.currentWidget()
         if client is not None:
             return client.notebookwidget
 
     def get_current_client_name(self, short=False):
         """Get the current client name."""
-        client = self.tabwidget.get_current_client()
+        client = self.tabwidget.currentWidget()
         if client:
             if short:
                 return client.get_short_name()
@@ -297,7 +297,7 @@ class NotebookPlugin(SpyderPluginWidget):
     def open_console(self, client=None):
         """Open an IPython console for the given client or the current one."""
         if not client:
-            client = self.tabwidget.get_current_client()
+            client = self.tabwidget.currentWidget()
         if self.ipyconsole is not None:
             kernel_id = client.get_kernel_id()
             if not kernel_id:

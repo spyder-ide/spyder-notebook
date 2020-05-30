@@ -114,7 +114,7 @@ def test_shutdown_notebook_kernel(notebook, qtbot):
     qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
 
     # Get kernel id for the client
-    client = notebook.tabwidget.get_current_client()
+    client = notebook.tabwidget.currentWidget()
     qtbot.waitUntil(lambda: client.get_kernel_id() is not None,
                     timeout=NOTEBOOK_UP)
     kernel_id = client.get_kernel_id()
@@ -135,7 +135,7 @@ def test_file_in_temp_dir_deleted_after_notebook_closed(notebook, qtbot):
     qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
 
     # Get file name
-    client = notebook.tabwidget.get_current_client()
+    client = notebook.tabwidget.currentWidget()
     filename = client.get_filename()
 
     # Close the current client
@@ -153,7 +153,7 @@ def test_close_nonexisting_notebook(notebook, qtbot):
     notebook.open_notebook(filenames=[filename])
     nbwidget = notebook.get_current_nbwidget()
     qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
-    client = notebook.tabwidget.get_current_client()
+    client = notebook.tabwidget.currentWidget()
 
     # Close tab
     notebook.tabwidget.close_client()
@@ -180,7 +180,7 @@ def test_open_notebook(notebook, qtbot, tmpdir):
     # and the client has the correct name
     qtbot.waitUntil(lambda: text_present(nbwidget), timeout=NOTEBOOK_UP)
     assert text_present(nbwidget)
-    assert notebook.tabwidget.get_current_client().get_short_name() == "test"
+    assert notebook.tabwidget.currentWidget().get_short_name() == "test"
 
 
 @flaky(max_runs=3)
@@ -218,7 +218,7 @@ def test_save_notebook(notebook, qtbot, tmpdir):
     qtbot.waitUntil(lambda: text_present(nbwidget, text="test"),
                     timeout=NOTEBOOK_UP)
     assert text_present(nbwidget, text="test")
-    assert notebook.tabwidget.get_current_client().get_short_name() == "save"
+    assert notebook.tabwidget.currentWidget().get_short_name() == "save"
 
 
 def test_save_notebook_as_with_error(mocker, notebook, qtbot, tmpdir):
@@ -265,7 +265,7 @@ def test_open_console_when_no_kernel(notebook, qtbot, mocker):
     qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
 
     # Shut the kernel down and check that this is successful
-    client = notebook.tabwidget.get_current_client()
+    client = notebook.tabwidget.currentWidget()
     kernel_id = client.get_kernel_id()
     sessions_url = client.get_session_url()
     client.shutdown_kernel()
