@@ -177,23 +177,23 @@ class NotebookTabWidget(Tabs):
             self.add_tab(client)
             return client
 
-    def close_client(self, index=None, save=False):
+    def close_client(self, index=None, save_before_close=True):
         """
         Close client tab with given index (or close current tab).
 
-        First save the note book (unless this is the welcome client or `save`
-        is True). Then delete the note book if it is in `get_temp_dir()`.
-        Then shutdown the kernel of the notebook and close the tab. Finally,
-        create a welcome tab if there are no tabs.
+        First save the notebook (unless this is the welcome client or
+        `save_before_close` is False). Then delete the notebook if it is in
+        `get_temp_dir()`. Then shutdown the kernel of the notebook and close
+        the tab. Finally, create a welcome tab if there are no tabs.
 
         Parameters
         ----------
         index : int or None, optional
             Index of tab to be closed. The default is None, meaning that the
             current tab is closed.
-        save : bool, optional
-            The default is False, meaning that the notebook is saved before
-            the tab is closed.
+        save_before_close : bool, optional
+            Whether to save the notebook before closing the tab. The default
+            is True.
         """
         if not self.count():
             return
@@ -202,7 +202,7 @@ class NotebookTabWidget(Tabs):
         client = self.widget(index)
 
         is_welcome = client.get_filename() == WELCOME
-        if not save and not is_welcome:
+        if save_before_close and not is_welcome:
             self.save_notebook(client)
         if not is_welcome:
             client.shutdown_kernel()
@@ -258,27 +258,27 @@ class NotebookTabWidget(Tabs):
         answer = QMessageBox.question(
             self, _('Save changes'), text, buttons)
         if answer == QMessageBox.Yes:
-            self.save_as(close=True)
+            self.save_as(close_after_save=False)
 
-    def save_as(self, name=None, close=False):
+    def save_as(self, name=None, close_after_save=True):
         """
         Save current notebook under a different file name.
 
-        First, save the note book under the original file name. Then ask user
+        First, save the notebook under the original file name. Then ask user
         for a new file name (if `name` is not set), and return if no new name
-        is given. Then, read the contents of the note book that was just saved
+        is given. Then, read the contents of the notebook that was just saved
         and write them under the new file name. Finally. close the original
-        tab (unless `close` is True) and open a new tab with the note book
-        loaded from the new file name.
+        tab (unless `close_after_save` is False) and open a new tab with the
+        notebook loaded from the new file name.
 
         Parameters
         ----------
         name : str or None, optional
             File name under which the notebook is to be saved. The default is
             None, meaning that the user should be asked for the file name.
-        close : bool
-            The default is False, meaning that the tab should be closed
-            after saving the notebook.
+        close_after_save : bool, optional
+            Whether to close the original tab after saving the notebook and
+            before opening it under the new name. The default is True.
         """
         current_client = self.currentWidget()
         current_client.save()
@@ -304,8 +304,8 @@ class NotebookTabWidget(Tabs):
                        .format(filename, str(error)))
                 QMessageBox.critical(self, _("File Error"), txt)
                 return
-            if not close:
-                self.close_client(save=True)
+            if close_after_save:
+                self.close_client(save_before_close=False)
             self.create_new_client(filename=filename)
 
     def add_tab(self, widget):
