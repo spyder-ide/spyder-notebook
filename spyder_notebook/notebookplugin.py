@@ -13,7 +13,7 @@ import os.path as osp
 from qtpy import PYQT4, PYSIDE
 from qtpy.QtCore import Qt, Signal
 from qtpy.QtGui import QIcon
-from qtpy.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QMenu
+from qtpy.QtWidgets import QMessageBox, QVBoxLayout, QMenu
 
 # Spyder imports
 from spyder.api.plugins import SpyderPluginWidget
@@ -26,7 +26,6 @@ from spyder.utils.switcher import shorten_paths
 
 
 # Local imports
-from spyder_notebook.widgets.client import NotebookClient
 from spyder_notebook.widgets.notebooktabwidget import NotebookTabWidget
 
 
@@ -239,33 +238,6 @@ class NotebookPlugin(SpyderPluginWidget):
         """Clear the list of recent notebooks."""
         self.recent_notebooks = []
         self.setup_menu_actions()
-
-    def get_clients(self):
-        """Return notebooks list."""
-        return [cl for cl in self.tabwidget.clients
-                if isinstance(cl, NotebookClient)]
-
-    def get_focus_client(self):
-        """Return current notebook with focus, if any."""
-        widget = QApplication.focusWidget()
-        for client in self.get_clients():
-            if widget is client or widget is client.notebookwidget:
-                return client
-
-    def get_current_nbwidget(self):
-        """Return the notebookwidget of the current client."""
-        client = self.tabwidget.currentWidget()
-        if client is not None:
-            return client.notebookwidget
-
-    def get_current_client_name(self, short=False):
-        """Get the current client name."""
-        client = self.tabwidget.currentWidget()
-        if client:
-            if short:
-                return client.get_short_name()
-            else:
-                return client.get_filename()
 
     def create_new_client(self, filename=None):
         """Create a new notebook or load a pre-existing one."""
