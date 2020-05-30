@@ -177,9 +177,9 @@ class NotebookTabWidget(Tabs):
             self.add_tab(client)
             return client
 
-    def close_client(self, index=None, client=None, save=False):
+    def close_client(self, index=None, save=False):
         """
-        Close client tab from index or widget (or close current tab).
+        Close client tab with given index (or close current tab).
 
         First save the note book (unless this is the welcome client or `save`
         is True). Then delete the note book if it is in `get_temp_dir()`.
@@ -190,22 +190,16 @@ class NotebookTabWidget(Tabs):
         ----------
         index : int or None, optional
             Index of tab to be closed. The default is None, meaning that the
-            value of `client` determines the tab to be closed.
-        client : NotebookClient or None, optional
-            Client of tab to be closed. The default is None, meaning that
-            the current tab is closed (assuming that `index` is also None).
+            current tab is closed.
         save : bool, optional
             The default is False, meaning that the notebook is saved before
             the tab is closed.
         """
         if not self.count():
             return
-        if client is not None:
-            index = self.indexOf(client)
-        if index is None and client is None:
+        if index is None:
             index = self.currentIndex()
-        if index is not None:
-            client = self.widget(index)
+        client = self.widget(index)
 
         is_welcome = client.get_filename() == WELCOME
         if not save and not is_welcome:
