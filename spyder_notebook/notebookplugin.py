@@ -108,8 +108,8 @@ class NotebookPlugin(SpyderPluginWidget):
 
     def closing_plugin(self, cancelable=False):
         """Perform actions before parent main window is closed."""
-        for cl in self.tabwidget.clients:
-            cl.close()
+        for client_index in range(self.tabwidget.count()):
+            self.tabwidget.widget(client_index).close()
         self.set_option('recent_notebooks', self.recent_notebooks)
         return True
 
@@ -295,19 +295,20 @@ class NotebookPlugin(SpyderPluginWidget):
         if mode != '':
             return
 
-        paths = [client.get_filename() for client in self.tabwidget.clients]
-        is_unsaved = [False for client in self.tabwidget.clients]
+        clients = [self.tabwidget.widget(i)
+                   for i in range(self.tabwidget.count())]
+        paths = [client.get_filename() for client in clients]
+        is_unsaved = [False for client in clients]
         short_paths = shorten_paths(paths, is_unsaved)
         icon = QIcon(os.path.join(PACKAGE_PATH, 'images', 'icon.svg'))
         section = self.get_plugin_title()
 
-        for path, short_path, client in zip(
-                paths, short_paths, self.tabwidget.clients):
+        for path, short_path, client in zip(paths, short_paths, clients):
             title = osp.basename(path)
             description = osp.dirname(path)
             if len(path) > 75:
                 description = short_path
-            is_last_item = (client == self.tabwidget.clients[-1])
+            is_last_item = (client == clients[-1])
             self.switcher.add_item(
                 title=title, description=description, icon=icon,
                 section=section, data=client, last_item=is_last_item)
@@ -324,7 +325,7 @@ class NotebookPlugin(SpyderPluginWidget):
             return
 
         client = item.get_data()
-        index = self.tabwidget.clients.index(client)
+        index = self.tabwidget.indexOf(client)
         self.tabwidget.setCurrentIndex(index)
         self.switch_to_plugin()
         self.switcher.hide()

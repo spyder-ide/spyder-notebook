@@ -159,7 +159,8 @@ def test_close_nonexisting_notebook(notebook, qtbot):
     notebook.tabwidget.close_client()
 
     # Assert tab is closed (without raising an exception)
-    assert client not in notebook.tabwidget.clients
+    for client_index in range(notebook.tabwidget.count()):
+        assert client != notebook.tabwidget.widget(client_index)
 
 
 @flaky(max_runs=3)
@@ -251,7 +252,7 @@ def test_new_notebook(notebook, qtbot):
     qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
 
     # Assert that we have one notebook and the welcome page
-    assert len(notebook.tabwidget.clients) == 2
+    assert notebook.tabwidget.count() == 2
 
 
 def test_open_console_when_no_kernel(notebook, qtbot, mocker):

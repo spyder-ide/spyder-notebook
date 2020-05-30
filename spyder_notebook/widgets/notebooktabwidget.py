@@ -50,8 +50,6 @@ class NotebookTabWidget(Tabs):
     ----------
     actions : list of (QAction or QMenu or None) or None
         Items to be added to the context menu.
-    clients : list of NotebookClient
-        List of notebook clients displayed in tabs in this widget.
     untitled_num : int
         Number used in file name of newly created notebooks.
     """
@@ -76,7 +74,6 @@ class NotebookTabWidget(Tabs):
         super().__init__(parent, actions, menu, corner_widgets)
 
         self.actions = actions
-        self.clients = []
         self.untitled_num = 0
 
         if not sys.platform == 'darwin':
@@ -218,8 +215,6 @@ class NotebookTabWidget(Tabs):
 
         # Note: notebook index may have changed after closing related widgets
         self.removeTab(self.indexOf(client))
-        self.clients.remove(client)
-
         self.maybe_create_welcome_client()
 
     def save_notebook(self, client):
@@ -317,7 +312,6 @@ class NotebookTabWidget(Tabs):
         widget : NotebookClient
             Notebook widget to display in new tab.
         """
-        self.clients.append(widget)
         index = self.addTab(widget, widget.get_short_name())
         self.setCurrentIndex(index)
         self.setTabToolTip(index, widget.get_filename())
