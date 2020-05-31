@@ -9,6 +9,7 @@
 """Open notebooks using the best available server."""
 
 import atexit
+import logging
 import os
 import os.path as osp
 import subprocess
@@ -23,6 +24,8 @@ from spyder.config.base import DEV, get_home_dir, get_module_path
 
 # Kernel specification to use in notebook server
 KERNELSPEC = 'spyder.plugins.ipythonconsole.utils.kernelspec.SpyderKernelSpec'
+
+logger = logging.getLogger(__name__)
 
 
 class NBServerError(Exception):
@@ -50,7 +53,8 @@ def nbopen(filename):
     server_info = find_best_server(filename)
 
     if server_info is not None:
-        print("Using existing server at", server_info['notebook_dir'])
+        logger.debug('Using existing server at %s',
+                     server_info['notebook_dir'])
         return server_info
     else:
         if filename.startswith(home_dir):
@@ -58,7 +62,7 @@ def nbopen(filename):
         else:
             nbdir = osp.dirname(filename)
 
-        print("Starting new server")
+        logger.debug("Starting new server")
         serverscript = osp.join(osp.dirname(__file__), '../server/main.py')
         command = [sys.executable, serverscript, '--no-browser',
                    '--notebook-dir={}'.format(nbdir),
