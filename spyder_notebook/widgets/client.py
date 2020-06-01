@@ -31,7 +31,7 @@ from spyder.utils import sourcecode
 from spyder.widgets.findreplace import FindReplace
 
 # Local imports
-from ..widgets.dom import DOMWidget
+from spyder_notebook.widgets.dom import DOMWidget
 
 # -----------------------------------------------------------------------------
 # Templates
@@ -56,19 +56,54 @@ KERNEL_ERROR = open(osp.join(TEMPLATES_PATH, 'kernel_error.html')).read()
 class NotebookWidget(DOMWidget):
     """WebView widget for notebooks."""
 
+    def __init__(self, parent, actions=None):
+        """
+        Constructor.
+
+        Parameters
+        ----------
+        parent : QWidget
+            Parent of the widget under construction.
+        actions : list of (QAction or QMenu or None) or None, optional
+            Actions to be added to the context menu of the widget under
+            construction. The default is None, meaning that no actions
+            will be added.
+        """
+        super().__init__(parent)
+        self.actions = actions
+
     def contextMenuEvent(self, event):
-        """Don't show some actions which have no meaning for the notebook."""
-        menu = QMenu(self)
-        plugin_actions = self.parent().plugin_actions
-        actions = plugin_actions + [None,
-                                    self.pageAction(QWebEnginePage.SelectAll),
-                                    self.pageAction(QWebEnginePage.Copy), None,
-                                    self.zoom_in_action, self.zoom_out_action]
+        """
+        Handle context menu events.
+
+        This overrides WebView.contextMenuEvent() in order to add the
+        actions in `self.actions` and remove the Back and Forward actions
+        which have no meaning for the notebook widget.
+
+        Parameters
+        ----------
+        event : QContextMenuEvent
+            The context menu event that needs to be handled.
+        """
+        if self.actions is None:
+            actions = []
+        else:
+            actions = self.actions + [None]
+
+        actions += [
+            self.pageAction(QWebEnginePage.SelectAll),
+            self.pageAction(QWebEnginePage.Copy),
+            None,
+            self.zoom_in_action,
+            self.zoom_out_action]
+
         if not WEBENGINE:
             settings = self.page().settings()
             settings.setAttribute(QWebEngineSettings.DeveloperExtrasEnabled,
                                   True)
             actions += [None, self.pageAction(QWebEnginePage.InspectElement)]
+
+        menu = QMenu(self)
         add_actions(menu, actions)
         menu.popup(event.globalPos())
         event.accept()
@@ -119,9 +154,25 @@ class NotebookClient(QWidget):
     render notebooks.
     """
 
-    def __init__(self, plugin, filename, ini_message=None):
-        """Constructor."""
-        super().__init__(plugin)
+    def __init__(self, parent, filename, actions=None, ini_message=None):
+        """
+        Constructor.
+
+        Parameters
+        ----------
+        parent : QWidget
+            Parent of the widget under construction.
+        filename : str
+            File name of the notebook.
+        actions : list of (QAction or QMenu or None) or None, optional
+            Actions to be added to the context menu of the widget under
+            construction. The default is None, meaning that no actions
+            will be added.
+        ini_message : str or None, optional
+            HTML to be initially displayed in the widget. The default is
+            None, meaning that an empty page is displayed initially.
+        """
+        super().__init__(parent)
 
         if os.name == 'nt':
             filename = filename.replace('/', '\\')
@@ -131,8 +182,7 @@ class NotebookClient(QWidget):
         self.server_url = None
         self.path = None
 
-        self.plugin_actions = plugin.get_plugin_actions()
-        self.notebookwidget = NotebookWidget(self)
+        self.notebookwidget = NotebookWidget(self, actions)
         if ini_message:
             self.notebookwidget.show_message(ini_message)
         else:
@@ -278,12 +328,12 @@ class NotebookClient(QWidget):
 # Tests
 # -----------------------------------------------------------------------------
 def main():
-    """Simple test."""
+    """Execute a simple test."""
     from spyder.utils.qthelpers import qapplication
     app = qapplication()
-    widget = NotebookClient(plugin=None, name='')
+    widget = NotebookClient(parent=None, filename='')
     widget.show()
-    widget.set_url('http://google.com')
+    widget.go_to('http://google.com')
     sys.exit(app.exec_())
 
 

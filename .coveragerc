@@ -1,5 +1,7 @@
 [run]
-omit = */tests/*
+omit =
+    */tests/*
+    spyder_notebook/widgets/example_app.py
 
 [report]
 fail_under=0
