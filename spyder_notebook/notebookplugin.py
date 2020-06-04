@@ -247,7 +247,8 @@ class NotebookPlugin(SpyderPluginWidget):
             self.set_option('main/spyder_pythonpath',
                             self.main.get_spyder_pythonpath())
 
-        filename = self.tabwidget.create_new_client(filename)
+        client = self.tabwidget.create_new_client(filename)
+        filename = client.filename
         if NOTEBOOK_TMPDIR not in filename:
             self.add_to_recent(filename)
             self.setup_menu_actions()

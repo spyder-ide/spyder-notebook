@@ -116,8 +116,8 @@ class NotebookTabWidget(Tabs):
 
         Returns
         -------
-        filename : str or None
-            File name of notebook that is opened, or None if unsuccessful.
+        client : NotebookClient or None
+            Notebook client that is opened, or None if unsuccessful.
         """
         # Generate the notebook name (in case of a new one)
         if not filename:
@@ -147,7 +147,7 @@ class NotebookTabWidget(Tabs):
             # See issue 93
             self.untitled_num -= 1
             self.maybe_create_welcome_client()
-            return
+            return None
 
         welcome_client = self.maybe_create_welcome_client()
         client = NotebookClient(self, filename, self.actions)
@@ -156,7 +156,7 @@ class NotebookTabWidget(Tabs):
         client.load_notebook()
         if welcome_client:
             self.setCurrentIndex(0)
-        return filename
+        return client
 
     def maybe_create_welcome_client(self):
         """
