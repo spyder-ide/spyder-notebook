@@ -54,7 +54,7 @@ class NotebookTabWidget(Tabs):
         Number used in file name of newly created notebooks.
     """
 
-    def __init__(self, parent, actions, menu, corner_widgets):
+    def __init__(self, parent, actions=None, menu=None, corner_widgets=None):
         """
         Constructor.
 
