@@ -93,6 +93,11 @@ class NotebookTabWidget(Tabs):
         filenames : list of str or None, optional
             List of file names of notebooks to open. The default is None,
             meaning that the user should be asked.
+
+        Returns
+        -------
+        filenames : list of str
+            List of file names of notebooks that were opened.
         """
         if not filenames:
             filenames, _selfilter = getopenfilenames(
@@ -100,6 +105,7 @@ class NotebookTabWidget(Tabs):
         if filenames:
             for filename in filenames:
                 self.create_new_client(filename=filename)
+        return filenames
 
     def create_new_client(self, filename=None):
         """
