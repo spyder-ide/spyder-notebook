@@ -19,7 +19,6 @@ from qtpy.QtWidgets import QMessageBox, QVBoxLayout, QMenu
 from spyder.api.plugins import SpyderPluginWidget
 from spyder.config.base import _
 from spyder.utils import icon_manager as ima
-from spyder.utils.programs import get_temp_dir
 from spyder.utils.qthelpers import (create_action, create_toolbutton,
                                     add_actions, MENU_SEPARATOR)
 from spyder.utils.switcher import shorten_paths
@@ -29,7 +28,6 @@ from spyder.utils.switcher import shorten_paths
 from spyder_notebook.widgets.notebooktabwidget import NotebookTabWidget
 
 
-NOTEBOOK_TMPDIR = osp.join(get_temp_dir(), 'notebooks')
 FILTER_TITLE = _("Jupyter notebooks")
 FILES_FILTER = "{} (*.ipynb)".format(FILTER_TITLE)
 PACKAGE_PATH = osp.dirname(__file__)
@@ -250,8 +248,7 @@ class NotebookPlugin(SpyderPluginWidget):
                             self.main.get_spyder_pythonpath())
 
         client = self.tabwidget.create_new_client(filename)
-        filename = client.filename
-        if NOTEBOOK_TMPDIR not in filename:
+        if not self.tabwidget.is_newly_created(client):
             self.add_to_recent(filename)
             self.setup_menu_actions()
 

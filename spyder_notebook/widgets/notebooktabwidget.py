@@ -224,14 +224,11 @@ class NotebookTabWidget(Tabs):
             Client of notebook to be saved.
         """
         client.save()
-
-        # Check filename to find out whether notebook is newly created
-        path = client.get_filename()
-        dirname, basename = osp.split(path)
-        if dirname != NOTEBOOK_TMPDIR or not basename.startswith('untitled'):
+        if not self.is_newly_created(client):
             return
 
         # Read file to see whether notebook is empty
+        path = client.get_filename()
         wait_save = QEventLoop()
         QTimer.singleShot(1000, wait_save.quit)
         wait_save.exec_()
@@ -243,7 +240,7 @@ class NotebookTabWidget(Tabs):
         # Ask user to save notebook with new filename
         buttons = QMessageBox.Yes | QMessageBox.No
         text = _("<b>{0}</b> has been modified.<br>"
-                 "Do you want to save changes?").format(basename)
+                 "Do you want to save changes?").format(osp.basename(path))
         answer = QMessageBox.question(
             self, _('Save changes'), text, buttons)
         if answer == QMessageBox.Yes:
@@ -296,6 +293,27 @@ class NotebookTabWidget(Tabs):
             if reopen_after_save:
                 self.close_client(save_before_close=False)
                 self.create_new_client(filename=filename)
+
+    @staticmethod
+    def is_newly_created(client):
+        """
+        Return whether client has a newly created notebook.
+
+        This only looks at the file name of the notebook. If it has the form
+        of file names of newly created notebooks, the function returns True.
+
+        Parameters
+        ----------
+        client : NotebookClient
+            Client under consideration.
+
+        Returns
+        -------
+        True if notebook is newly created, False otherwise.
+        """
+        path = client.get_filename()
+        dirname, basename = osp.split(path)
+        return dirname == NOTEBOOK_TMPDIR and basename.startswith('untitled')
 
     def add_tab(self, widget):
         """
