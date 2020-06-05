@@ -12,6 +12,7 @@ but it can also serve as an example.
 """
 
 # Standard library imports
+import logging
 import sys
 
 # Qt import
@@ -74,6 +75,7 @@ class NotebookAppMainWindow(QMainWindow):
 
 if __name__ == '__main__':
     use_software_rendering()
+    logging.basicConfig(level=logging.DEBUG)
     app = QApplication([])
     window = NotebookAppMainWindow()
     window.show()

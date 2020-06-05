@@ -9,6 +9,7 @@
 """Open notebooks using the best available server."""
 
 import atexit
+import logging
 import os
 import os.path as osp
 import subprocess
@@ -16,13 +17,14 @@ import sys
 import time
 
 from notebook import notebookapp
-import psutil
 
 from spyder.config.base import DEV, get_home_dir, get_module_path
 
 
 # Kernel specification to use in notebook server
 KERNELSPEC = 'spyder.plugins.ipythonconsole.utils.kernelspec.SpyderKernelSpec'
+
+logger = logging.getLogger(__name__)
 
 
 class NBServerError(Exception):
@@ -50,7 +52,8 @@ def nbopen(filename):
     server_info = find_best_server(filename)
 
     if server_info is not None:
-        print("Using existing server at", server_info['notebook_dir'])
+        logger.debug('Using existing server at %s',
+                     server_info['notebook_dir'])
         return server_info
     else:
         if filename.startswith(home_dir):
@@ -58,7 +61,7 @@ def nbopen(filename):
         else:
             nbdir = osp.dirname(filename)
 
-        print("Starting new server")
+        logger.debug("Starting new server")
         serverscript = osp.join(osp.dirname(__file__), '../server/main.py')
         command = [sys.executable, serverscript, '--no-browser',
                    '--notebook-dir={}'.format(nbdir),
@@ -74,21 +77,9 @@ def nbopen(filename):
         if DEV:
             env = os.environ.copy()
             env["PYTHONPATH"] = osp.dirname(get_module_path('spyder'))
-            proc = subprocess.Popen(command, creationflags=creation_flag,
-                                    env=env)
+            subprocess.Popen(command, creationflags=creation_flag, env=env)
         else:
-            proc = subprocess.Popen(command, creationflags=creation_flag)
-
-        # Kill the server at exit. We need to use psutil for this because
-        # Popen.terminate doesn't work when creationflags or shell=True
-        # are used.
-        def kill_server_and_childs(pid):
-            ps_proc = psutil.Process(pid)
-            for child in ps_proc.children(recursive=True):
-                child.kill()
-            ps_proc.kill()
-
-        atexit.register(kill_server_and_childs, proc.pid)
+            subprocess.Popen(command, creationflags=creation_flag)
 
         # Wait ~25 secs for the server to be up
         for _x in range(100):
@@ -100,5 +91,8 @@ def nbopen(filename):
 
         if server_info is None:
             raise NBServerError()
+
+        # Kill the server at exit
+        atexit.register(notebookapp.shutdown_server, server_info, log=logger)
 
         return server_info
