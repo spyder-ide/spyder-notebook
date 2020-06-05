@@ -31,7 +31,6 @@ from spyder_notebook.widgets.notebooktabwidget import NotebookTabWidget
 FILTER_TITLE = _("Jupyter notebooks")
 FILES_FILTER = "{} (*.ipynb)".format(FILTER_TITLE)
 PACKAGE_PATH = osp.dirname(__file__)
-WELCOME = osp.join(PACKAGE_PATH, 'utils', 'templates', 'welcome.html')
 
 
 class NotebookPlugin(SpyderPluginWidget):
@@ -216,13 +215,12 @@ class NotebookPlugin(SpyderPluginWidget):
             client = self.tabwidget.currentWidget()
         except AttributeError:  # tabwidget is not yet constructed
             client = None
-        if client:
-            if client.get_filename() != WELCOME:
-                self.save_as_action.setEnabled(True)
-                self.open_console_action.setEnabled(True)
-                return
-        self.save_as_action.setEnabled(False)
-        self.open_console_action.setEnabled(False)
+        if client and not self.tabwidget.is_welcome_client(client):
+            self.save_as_action.setEnabled(True)
+            self.open_console_action.setEnabled(True)
+        else:
+            self.save_as_action.setEnabled(False)
+            self.open_console_action.setEnabled(False)
 
     def add_to_recent(self, notebook):
         """

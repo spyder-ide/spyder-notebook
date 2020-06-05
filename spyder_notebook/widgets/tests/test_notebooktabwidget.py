@@ -42,3 +42,24 @@ def test_is_newly_created_with_welcome_tab(tabwidget):
     client."""
     client = tabwidget.maybe_create_welcome_client()
     assert not tabwidget.is_newly_created(client)
+
+
+def test_is_welcome_client_with_new_notebook(tabwidget):
+    """Test that .is_welcome_client() returns False if passed a client that is
+    indeed newly created."""
+    client = tabwidget.create_new_client()
+    assert not tabwidget.is_welcome_client(client)
+
+
+def test_is_welcome_client_with_opened_notebook(tabwidget):
+    """Test that .is_welcome_client() returns False if passed a client that
+    contains a notebook opened from a file."""
+    client = tabwidget.create_new_client('ham.ipynb')
+    assert not tabwidget.is_welcome_client(client)
+
+
+def test_is_welcome_client_with_welcome_tab(tabwidget):
+    """Test that .is_welcome_client() returns True if passed a welcome
+    client."""
+    client = tabwidget.maybe_create_welcome_client()
+    assert tabwidget.is_welcome_client(client)

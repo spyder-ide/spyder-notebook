@@ -198,10 +198,9 @@ class NotebookTabWidget(Tabs):
             index = self.currentIndex()
         client = self.widget(index)
 
-        is_welcome = client.get_filename() == WELCOME
-        if save_before_close and not is_welcome:
-            self.save_notebook(client)
-        if not is_welcome:
+        if not self.is_welcome_client(client):
+            if save_before_close:
+                self.save_notebook(client)
             client.shutdown_kernel()
         client.close()
 
@@ -320,6 +319,22 @@ class NotebookTabWidget(Tabs):
         path = client.get_filename()
         dirname, basename = osp.split(path)
         return dirname == NOTEBOOK_TMPDIR and basename.startswith('untitled')
+
+    @staticmethod
+    def is_welcome_client(client):
+        """
+        Return whether some client is a newly created notebook.
+
+        Parameters
+        ----------
+        client : NotebookClient
+            Client under consideration.
+
+        Returns
+        -------
+        True if `client` is a welcome client, False otherwise.
+        """
+        return client.get_filename() == WELCOME
 
     def add_tab(self, widget):
         """
