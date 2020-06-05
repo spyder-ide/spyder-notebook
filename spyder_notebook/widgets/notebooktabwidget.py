@@ -191,21 +191,25 @@ class NotebookTabWidget(Tabs):
         save_before_close : bool, optional
             Whether to save the notebook before closing the tab. The default
             is True.
+
+        Returns
+        -------
+        The file name of the notebook, or None if no tab was closed.
         """
         if not self.count():
-            return
+            return None
         if index is None:
             index = self.currentIndex()
         client = self.widget(index)
 
+        filename = client.filename
         if not self.is_welcome_client(client):
             if save_before_close:
-                self.save_notebook(client)
+                filename = self.save_notebook(client)
             client.shutdown_kernel()
         client.close()
 
         # Delete notebook file if it is in temporary directory
-        filename = client.get_filename()
         if filename.startswith(get_temp_dir()):
             try:
                 os.remove(filename)
@@ -215,6 +219,7 @@ class NotebookTabWidget(Tabs):
         # Note: notebook index may have changed after closing related widgets
         self.removeTab(self.indexOf(client))
         self.maybe_create_welcome_client()
+        return filename
 
     def save_notebook(self, client):
         """
@@ -227,29 +232,35 @@ class NotebookTabWidget(Tabs):
         ----------
         client : NotebookClient
             Client of notebook to be saved.
+
+        Returns
+        -------
+        The file name of the notebook.
         """
         client.save()
+        filename = client.filename
         if not self.is_newly_created(client):
-            return
+            return filename
 
         # Read file to see whether notebook is empty
-        path = client.get_filename()
         wait_save = QEventLoop()
         QTimer.singleShot(1000, wait_save.quit)
         wait_save.exec_()
-        nb_contents = nbformat.read(path, as_version=4)
+        nb_contents = nbformat.read(filename, as_version=4)
         if (len(nb_contents['cells']) == 0
                 or len(nb_contents['cells'][0]['source']) == 0):
-            return
+            return filename
 
         # Ask user to save notebook with new filename
         buttons = QMessageBox.Yes | QMessageBox.No
         text = _("<b>{0}</b> has been modified.<br>"
-                 "Do you want to save changes?").format(osp.basename(path))
+                 "Do you want to save changes?").format(osp.basename(filename))
         answer = QMessageBox.question(
             self, _('Save changes'), text, buttons)
         if answer == QMessageBox.Yes:
-            self.save_as(reopen_after_save=False)
+            return self.save_as(reopen_after_save=False)
+        else:
+            return filename
 
     def save_as(self, name=None, reopen_after_save=True):
         """
@@ -270,6 +281,10 @@ class NotebookTabWidget(Tabs):
         reopen_after_save : bool, optional
             Whether to close the original tab and re-open it under the new
             file name after saving the notebook. The default is True.
+
+        Returns
+        -------
+        The file name of the notebook.
         """
         current_client = self.currentWidget()
         current_client.save()
@@ -280,24 +295,27 @@ class NotebookTabWidget(Tabs):
             original_name = name
         filename, _selfilter = getsavefilename(self, _("Save notebook"),
                                                original_name, FILES_FILTER)
-        if filename:
-            try:
-                nb_contents = nbformat.read(original_path, as_version=4)
-            except EnvironmentError as error:
-                txt = (_("Error while reading {}<p>{}")
-                       .format(original_path, str(error)))
-                QMessageBox.critical(self, _("File Error"), txt)
-                return
-            try:
-                nbformat.write(nb_contents, filename)
-            except EnvironmentError as error:
-                txt = (_("Error while writing {}<p>{}")
-                       .format(filename, str(error)))
-                QMessageBox.critical(self, _("File Error"), txt)
-                return
-            if reopen_after_save:
-                self.close_client(save_before_close=False)
-                self.create_new_client(filename=filename)
+        if not filename:
+            return original_path
+
+        try:
+            nb_contents = nbformat.read(original_path, as_version=4)
+        except EnvironmentError as error:
+            txt = (_("Error while reading {}<p>{}")
+                   .format(original_path, str(error)))
+            QMessageBox.critical(self, _("File Error"), txt)
+            return original_path
+        try:
+            nbformat.write(nb_contents, filename)
+        except EnvironmentError as error:
+            txt = (_("Error while writing {}<p>{}")
+                   .format(filename, str(error)))
+            QMessageBox.critical(self, _("File Error"), txt)
+            return original_path
+        if reopen_after_save:
+            self.close_client(save_before_close=False)
+            self.create_new_client(filename=filename)
+        return filename
 
     @staticmethod
     def is_newly_created(client):
