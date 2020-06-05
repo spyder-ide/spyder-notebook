@@ -105,9 +105,6 @@ class NotebookTabWidget(Tabs):
         """
         Create a new notebook or load a pre-existing one.
 
-        This function also creates and selects a welcome tab, if no tabs are
-        present.
-
         Parameters
         ----------
         filename : str, optional
@@ -149,13 +146,10 @@ class NotebookTabWidget(Tabs):
             self.maybe_create_welcome_client()
             return None
 
-        welcome_client = self.maybe_create_welcome_client()
         client = NotebookClient(self, filename, self.actions)
         self.add_tab(client)
         client.register(server_info)
         client.load_notebook()
-        if welcome_client:
-            self.setCurrentIndex(0)
         return client
 
     def maybe_create_welcome_client(self):

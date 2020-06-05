@@ -160,7 +160,9 @@ class NotebookPlugin(SpyderPluginWidget):
         super().register_plugin()
         self.focus_changed.connect(self.main.plugin_focus_changed)
         self.ipyconsole = self.main.ipyconsole
+        self.tabwidget.maybe_create_welcome_client()
         self.create_new_client()
+        self.tabwidget.setCurrentIndex(0)  # bring welcome tab to top
 
         # Connect to switcher
         self.switcher = self.main.switcher

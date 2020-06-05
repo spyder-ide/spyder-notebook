@@ -12,7 +12,6 @@ import os
 import os.path as osp
 import shutil
 import sys
-import tempfile
 
 # Third-party library imports
 from flaky import flaky
@@ -21,7 +20,6 @@ import requests
 from qtpy.QtWebEngineWidgets import WEBENGINE
 from qtpy.QtCore import Qt, QTimer
 from qtpy.QtWidgets import QFileDialog, QApplication, QLineEdit
-from spyder.config.base import get_home_dir
 
 # Local imports
 from spyder_notebook.notebookplugin import NotebookPlugin
@@ -98,8 +96,8 @@ def notebook(qtbot):
     notebook. The latter tab is selected."""
     notebook_plugin = NotebookPlugin(None, testing=True)
     qtbot.addWidget(notebook_plugin)
+    notebook_plugin.tabwidget.maybe_create_welcome_client()
     notebook_plugin.create_new_client()
-    notebook_plugin.tabwidget.setCurrentIndex(1)
     return notebook_plugin
 
 
