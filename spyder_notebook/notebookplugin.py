@@ -37,7 +37,9 @@ class NotebookPlugin(SpyderPluginWidget):
     """IPython Notebook plugin."""
 
     CONF_SECTION = 'notebook'
-    CONF_DEFAULTS = [(CONF_SECTION, {'recent_notebooks': []})]
+    CONF_DEFAULTS = [(CONF_SECTION, {
+        'recent_notebooks': [],    # Items in "Open recent" menu
+        'opened_notebooks': []})]  # Notebooks to open at start
     focus_changed = Signal()
 
     def __init__(self, parent, testing=False):
@@ -104,10 +106,23 @@ class NotebookPlugin(SpyderPluginWidget):
             return client.notebookwidget
 
     def closing_plugin(self, cancelable=False):
-        """Perform actions before parent main window is closed."""
+        """
+        Perform actions before parent main window is closed.
+
+        This function closes all tabs. It stores the file names of all opened
+        notebooks that are not temporary and all notebooks in the 'Open recent'
+        menu in the config.
+        """
+        opened_notebooks = []
         for client_index in range(self.tabwidget.count()):
-            self.tabwidget.widget(client_index).close()
+            client = self.tabwidget.widget(client_index)
+            if (not self.tabwidget.is_welcome_client(client)
+                    and not self.tabwidget.is_newly_created(client)):
+                opened_notebooks.append(client.filename)
+            client.close()
+
         self.set_option('recent_notebooks', self.recent_notebooks)
+        self.set_option('opened_notebooks', opened_notebooks)
         return True
 
     def refresh_plugin(self):

@@ -7,6 +7,7 @@
 """Tests for the plugin."""
 
 # Standard library imports
+import collections
 import json
 import os
 import os.path as osp
@@ -276,6 +277,27 @@ def test_open_console_when_no_kernel(notebook, qtbot, mocker):
     # Assert that a dialog is displayed and no console was opened
     MockMessageBox.critical.assert_called()
     notebook.ipyconsole._create_client_for_kernel.assert_not_called()
+
+
+def test_closing_plugin(mocker, qtbot):
+    """Close a plugin with a welcome tab, a new notebooks and a notebook
+    opened from a file. Check that config variables `recent_notebooks` and
+    `opened_notebook` are correctly set."""
+    def fake_nbopen(filename):
+        return collections.defaultdict(str, filename=filename)
+    mocker.patch('spyder_notebook.widgets.notebooktabwidget.nbopen',
+                 fake_nbopen)
+    plugin = NotebookPlugin(None, testing=True)
+    mock_set_option = mocker.patch.object(plugin, 'set_option')
+    plugin.tabwidget.maybe_create_welcome_client()
+    plugin.create_new_client()
+    plugin.open_notebook(['ham.ipynb'])
+
+    plugin.closing_plugin()
+
+    expected = [mocker.call('recent_notebooks', ['ham.ipynb']),
+                mocker.call('opened_notebooks', ['ham.ipynb'])]
+    assert mock_set_option.call_args_list == expected
 
 
 if __name__ == "__main__":
