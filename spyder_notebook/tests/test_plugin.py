@@ -102,6 +102,19 @@ def notebook(qtbot):
     return notebook_plugin
 
 
+@pytest.fixture
+def plugin_no_server(mocker, qtbot):
+    """Set up the Notebook plugin with a fake nbopen which does not start
+    a notebook server."""
+    def fake_nbopen(filename):
+        return collections.defaultdict(str, filename=filename)
+    mocker.patch('spyder_notebook.widgets.notebooktabwidget.nbopen',
+                 fake_nbopen)
+    plugin = NotebookPlugin(None, testing=True)
+    qtbot.addWidget(plugin)
+    mocker.patch.object(plugin, 'main')
+    return plugin
+
 # =============================================================================
 # Tests
 # =============================================================================
@@ -279,15 +292,41 @@ def test_open_console_when_no_kernel(notebook, qtbot, mocker):
     notebook.ipyconsole._create_client_for_kernel.assert_not_called()
 
 
-def test_closing_plugin(mocker, qtbot):
+def test_register_plugin_with_opened_notebooks(mocker, plugin_no_server):
+    """Run .register_plugin() with the `opened_notebooks` conf option set to
+    a non-empty list. Check that plugin opens those notebooks."""
+    plugin = plugin_no_server
+    plugin.set_option('opened_notebooks', ['ham.ipynb', 'spam.ipynb'])
+
+    plugin.register_plugin()
+
+    tabwidget = plugin.tabwidget
+    assert tabwidget.count() == 2
+    assert tabwidget.widget(0).filename == 'ham.ipynb'
+    assert tabwidget.widget(1).filename == 'spam.ipynb'
+
+
+def test_register_plugin_with_opened_notebooks_empty(mocker, plugin_no_server):
+    """Run .register_plugin() with the `opened_notebooks` conf option set to
+    an empty list. Check that plugin opens a welcome tab and a new notebook,
+    and that the welcome tab is on top."""
+    plugin = plugin_no_server
+    plugin.set_option('opened_notebooks', [])
+
+    plugin.register_plugin()
+
+    tabwidget = plugin.tabwidget
+    assert tabwidget.count() == 2
+    assert tabwidget.is_welcome_client(tabwidget.widget(0))
+    assert tabwidget.is_newly_created(tabwidget.widget(1))
+    assert tabwidget.currentIndex() == 0
+
+
+def test_closing_plugin(mocker, plugin_no_server):
     """Close a plugin with a welcome tab, a new notebooks and a notebook
     opened from a file. Check that config variables `recent_notebooks` and
     `opened_notebook` are correctly set."""
-    def fake_nbopen(filename):
-        return collections.defaultdict(str, filename=filename)
-    mocker.patch('spyder_notebook.widgets.notebooktabwidget.nbopen',
-                 fake_nbopen)
-    plugin = NotebookPlugin(None, testing=True)
+    plugin = plugin_no_server
     mock_set_option = mocker.patch.object(plugin, 'set_option')
     plugin.tabwidget.maybe_create_welcome_client()
     plugin.create_new_client()
