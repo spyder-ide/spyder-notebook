@@ -107,7 +107,8 @@ def plugin_no_server(mocker, qtbot):
     """Set up the Notebook plugin with a fake nbopen which does not start
     a notebook server."""
     def fake_nbopen(filename):
-        return collections.defaultdict(str, filename=filename)
+        return collections.defaultdict(
+            str, filename=filename, notebook_dir=osp.dirname(filename))
     mocker.patch('spyder_notebook.widgets.notebooktabwidget.nbopen',
                  fake_nbopen)
     plugin = NotebookPlugin(None, testing=True)

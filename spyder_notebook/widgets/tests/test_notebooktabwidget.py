@@ -5,6 +5,7 @@
 
 # Standard library imports
 import collections
+import os.path as osp
 
 # Third party imports
 import pytest
@@ -16,8 +17,11 @@ from spyder_notebook.widgets.notebooktabwidget import NotebookTabWidget
 @pytest.fixture
 def tabwidget(mocker, qtbot):
     """Create an empty NotebookTabWidget which does not start up servers."""
+    def fake_nbopen(filename):
+        return collections.defaultdict(
+            str, filename=filename, notebook_dir=osp.dirname(filename))
     mocker.patch('spyder_notebook.widgets.notebooktabwidget.nbopen',
-                 return_value=collections.defaultdict(str))
+                 fake_nbopen)
     widget = NotebookTabWidget(None)
     qtbot.addWidget(widget)
     return widget
