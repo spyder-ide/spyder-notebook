@@ -40,7 +40,7 @@ class NotebookAppMainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.tabwidget = NotebookTabWidget(self, None, None, None)
+        self.tabwidget = NotebookTabWidget(self)
         self.tabwidget.maybe_create_welcome_client()
         self.setCentralWidget(self.tabwidget)
         self._setup_menu()

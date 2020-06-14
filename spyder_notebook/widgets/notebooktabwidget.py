@@ -54,7 +54,7 @@ class NotebookTabWidget(Tabs):
         Number used in file name of newly created notebooks.
     """
 
-    def __init__(self, parent, actions, menu, corner_widgets):
+    def __init__(self, parent, actions=None, menu=None, corner_widgets=None):
         """
         Constructor.
 
@@ -93,6 +93,11 @@ class NotebookTabWidget(Tabs):
         filenames : list of str or None, optional
             List of file names of notebooks to open. The default is None,
             meaning that the user should be asked.
+
+        Returns
+        -------
+        filenames : list of str
+            List of file names of notebooks that were opened.
         """
         if not filenames:
             filenames, _selfilter = getopenfilenames(
@@ -100,13 +105,11 @@ class NotebookTabWidget(Tabs):
         if filenames:
             for filename in filenames:
                 self.create_new_client(filename=filename)
+        return filenames
 
     def create_new_client(self, filename=None):
         """
         Create a new notebook or load a pre-existing one.
-
-        This function also creates and selects a welcome tab, if no tabs are
-        present.
 
         Parameters
         ----------
@@ -116,8 +119,8 @@ class NotebookTabWidget(Tabs):
 
         Returns
         -------
-        filename : str or None
-            File name of notebook that is opened, or None if unsuccessful.
+        client : NotebookClient or None
+            Notebook client that is opened, or None if unsuccessful.
         """
         # Generate the notebook name (in case of a new one)
         if not filename:
@@ -147,16 +150,13 @@ class NotebookTabWidget(Tabs):
             # See issue 93
             self.untitled_num -= 1
             self.maybe_create_welcome_client()
-            return
+            return None
 
-        welcome_client = self.maybe_create_welcome_client()
         client = NotebookClient(self, filename, self.actions)
         self.add_tab(client)
         client.register(server_info)
         client.load_notebook()
-        if welcome_client:
-            self.setCurrentIndex(0)
-        return filename
+        return client
 
     def maybe_create_welcome_client(self):
         """
@@ -191,22 +191,25 @@ class NotebookTabWidget(Tabs):
         save_before_close : bool, optional
             Whether to save the notebook before closing the tab. The default
             is True.
+
+        Returns
+        -------
+        The file name of the notebook, or None if no tab was closed.
         """
         if not self.count():
-            return
+            return None
         if index is None:
             index = self.currentIndex()
         client = self.widget(index)
 
-        is_welcome = client.get_filename() == WELCOME
-        if save_before_close and not is_welcome:
-            self.save_notebook(client)
-        if not is_welcome:
+        filename = client.filename
+        if not self.is_welcome_client(client):
+            if save_before_close:
+                filename = self.save_notebook(client)
             client.shutdown_kernel()
         client.close()
 
         # Delete notebook file if it is in temporary directory
-        filename = client.get_filename()
         if filename.startswith(get_temp_dir()):
             try:
                 os.remove(filename)
@@ -216,6 +219,7 @@ class NotebookTabWidget(Tabs):
         # Note: notebook index may have changed after closing related widgets
         self.removeTab(self.indexOf(client))
         self.maybe_create_welcome_client()
+        return filename
 
     def save_notebook(self, client):
         """
@@ -228,32 +232,35 @@ class NotebookTabWidget(Tabs):
         ----------
         client : NotebookClient
             Client of notebook to be saved.
+
+        Returns
+        -------
+        The file name of the notebook.
         """
         client.save()
-
-        # Check filename to find out whether notebook is newly created
-        path = client.get_filename()
-        dirname, basename = osp.split(path)
-        if dirname != NOTEBOOK_TMPDIR or not basename.startswith('untitled'):
-            return
+        filename = client.filename
+        if not self.is_newly_created(client):
+            return filename
 
         # Read file to see whether notebook is empty
         wait_save = QEventLoop()
         QTimer.singleShot(1000, wait_save.quit)
         wait_save.exec_()
-        nb_contents = nbformat.read(path, as_version=4)
+        nb_contents = nbformat.read(filename, as_version=4)
         if (len(nb_contents['cells']) == 0
                 or len(nb_contents['cells'][0]['source']) == 0):
-            return
+            return filename
 
         # Ask user to save notebook with new filename
         buttons = QMessageBox.Yes | QMessageBox.No
         text = _("<b>{0}</b> has been modified.<br>"
-                 "Do you want to save changes?").format(basename)
+                 "Do you want to save changes?").format(osp.basename(filename))
         answer = QMessageBox.question(
             self, _('Save changes'), text, buttons)
         if answer == QMessageBox.Yes:
-            self.save_as(reopen_after_save=False)
+            return self.save_as(reopen_after_save=False)
+        else:
+            return filename
 
     def save_as(self, name=None, reopen_after_save=True):
         """
@@ -274,6 +281,10 @@ class NotebookTabWidget(Tabs):
         reopen_after_save : bool, optional
             Whether to close the original tab and re-open it under the new
             file name after saving the notebook. The default is True.
+
+        Returns
+        -------
+        The file name of the notebook.
         """
         current_client = self.currentWidget()
         current_client.save()
@@ -284,24 +295,64 @@ class NotebookTabWidget(Tabs):
             original_name = name
         filename, _selfilter = getsavefilename(self, _("Save notebook"),
                                                original_name, FILES_FILTER)
-        if filename:
-            try:
-                nb_contents = nbformat.read(original_path, as_version=4)
-            except EnvironmentError as error:
-                txt = (_("Error while reading {}<p>{}")
-                       .format(original_path, str(error)))
-                QMessageBox.critical(self, _("File Error"), txt)
-                return
-            try:
-                nbformat.write(nb_contents, filename)
-            except EnvironmentError as error:
-                txt = (_("Error while writing {}<p>{}")
-                       .format(filename, str(error)))
-                QMessageBox.critical(self, _("File Error"), txt)
-                return
-            if reopen_after_save:
-                self.close_client(save_before_close=False)
-                self.create_new_client(filename=filename)
+        if not filename:
+            return original_path
+
+        try:
+            nb_contents = nbformat.read(original_path, as_version=4)
+        except EnvironmentError as error:
+            txt = (_("Error while reading {}<p>{}")
+                   .format(original_path, str(error)))
+            QMessageBox.critical(self, _("File Error"), txt)
+            return original_path
+        try:
+            nbformat.write(nb_contents, filename)
+        except EnvironmentError as error:
+            txt = (_("Error while writing {}<p>{}")
+                   .format(filename, str(error)))
+            QMessageBox.critical(self, _("File Error"), txt)
+            return original_path
+        if reopen_after_save:
+            self.close_client(save_before_close=False)
+            self.create_new_client(filename=filename)
+        return filename
+
+    @staticmethod
+    def is_newly_created(client):
+        """
+        Return whether client has a newly created notebook.
+
+        This only looks at the file name of the notebook. If it has the form
+        of file names of newly created notebooks, the function returns True.
+
+        Parameters
+        ----------
+        client : NotebookClient
+            Client under consideration.
+
+        Returns
+        -------
+        True if notebook is newly created, False otherwise.
+        """
+        path = client.get_filename()
+        dirname, basename = osp.split(path)
+        return dirname == NOTEBOOK_TMPDIR and basename.startswith('untitled')
+
+    @staticmethod
+    def is_welcome_client(client):
+        """
+        Return whether some client is a newly created notebook.
+
+        Parameters
+        ----------
+        client : NotebookClient
+            Client under consideration.
+
+        Returns
+        -------
+        True if `client` is a welcome client, False otherwise.
+        """
+        return client.get_filename() == WELCOME
 
     def add_tab(self, widget):
         """

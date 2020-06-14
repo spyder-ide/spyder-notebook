@@ -19,7 +19,6 @@ from qtpy.QtWidgets import QMessageBox, QVBoxLayout, QMenu
 from spyder.api.plugins import SpyderPluginWidget
 from spyder.config.base import _
 from spyder.utils import icon_manager as ima
-from spyder.utils.programs import get_temp_dir
 from spyder.utils.qthelpers import (create_action, create_toolbutton,
                                     add_actions, MENU_SEPARATOR)
 from spyder.utils.switcher import shorten_paths
@@ -29,18 +28,18 @@ from spyder.utils.switcher import shorten_paths
 from spyder_notebook.widgets.notebooktabwidget import NotebookTabWidget
 
 
-NOTEBOOK_TMPDIR = osp.join(get_temp_dir(), 'notebooks')
 FILTER_TITLE = _("Jupyter notebooks")
 FILES_FILTER = "{} (*.ipynb)".format(FILTER_TITLE)
 PACKAGE_PATH = osp.dirname(__file__)
-WELCOME = osp.join(PACKAGE_PATH, 'utils', 'templates', 'welcome.html')
 
 
 class NotebookPlugin(SpyderPluginWidget):
     """IPython Notebook plugin."""
 
     CONF_SECTION = 'notebook'
-    CONF_DEFAULTS = [(CONF_SECTION, {'recent_notebooks': []})]
+    CONF_DEFAULTS = [(CONF_SECTION, {
+        'recent_notebooks': [],    # Items in "Open recent" menu
+        'opened_notebooks': []})]  # Notebooks to open at start
     focus_changed = Signal()
 
     def __init__(self, parent, testing=False):
@@ -107,10 +106,23 @@ class NotebookPlugin(SpyderPluginWidget):
             return client.notebookwidget
 
     def closing_plugin(self, cancelable=False):
-        """Perform actions before parent main window is closed."""
+        """
+        Perform actions before parent main window is closed.
+
+        This function closes all tabs. It stores the file names of all opened
+        notebooks that are not temporary and all notebooks in the 'Open recent'
+        menu in the config.
+        """
+        opened_notebooks = []
         for client_index in range(self.tabwidget.count()):
-            self.tabwidget.widget(client_index).close()
+            client = self.tabwidget.widget(client_index)
+            if (not self.tabwidget.is_welcome_client(client)
+                    and not self.tabwidget.is_newly_created(client)):
+                opened_notebooks.append(client.filename)
+            client.close()
+
         self.set_option('recent_notebooks', self.recent_notebooks)
+        self.set_option('opened_notebooks', opened_notebooks)
         return True
 
     def refresh_plugin(self):
@@ -160,7 +172,15 @@ class NotebookPlugin(SpyderPluginWidget):
         super().register_plugin()
         self.focus_changed.connect(self.main.plugin_focus_changed)
         self.ipyconsole = self.main.ipyconsole
-        self.create_new_client()
+
+        # Open initial tabs
+        filenames = self.get_option('opened_notebooks')
+        if filenames:
+            self.open_notebook(filenames)
+        else:
+            self.tabwidget.maybe_create_welcome_client()
+            self.create_new_client()
+            self.tabwidget.setCurrentIndex(0)  # bring welcome tab to top
 
         # Connect to switcher
         self.switcher = self.main.switcher
@@ -216,13 +236,12 @@ class NotebookPlugin(SpyderPluginWidget):
             client = self.tabwidget.currentWidget()
         except AttributeError:  # tabwidget is not yet constructed
             client = None
-        if client:
-            if client.get_filename() != WELCOME:
-                self.save_as_action.setEnabled(True)
-                self.open_console_action.setEnabled(True)
-                return
-        self.save_as_action.setEnabled(False)
-        self.open_console_action.setEnabled(False)
+        if client and not self.tabwidget.is_welcome_client(client):
+            self.save_as_action.setEnabled(True)
+            self.open_console_action.setEnabled(True)
+        else:
+            self.save_as_action.setEnabled(False)
+            self.open_console_action.setEnabled(False)
 
     def add_to_recent(self, notebook):
         """
@@ -247,8 +266,8 @@ class NotebookPlugin(SpyderPluginWidget):
             self.set_option('main/spyder_pythonpath',
                             self.main.get_spyder_pythonpath())
 
-        filename = self.tabwidget.create_new_client(filename)
-        if NOTEBOOK_TMPDIR not in filename:
+        client = self.tabwidget.create_new_client(filename)
+        if not self.tabwidget.is_newly_created(client):
             self.add_to_recent(filename)
             self.setup_menu_actions()
 
@@ -260,7 +279,10 @@ class NotebookPlugin(SpyderPluginWidget):
             self.set_option('main/spyder_pythonpath',
                             self.main.get_spyder_pythonpath())
 
-        self.tabwidget.open_notebook(filenames)
+        filenames = self.tabwidget.open_notebook(filenames)
+        for filename in filenames:
+            self.add_to_recent(filename)
+        self.setup_menu_actions()
 
     def save_as(self):
         """Save current notebook to different file."""
