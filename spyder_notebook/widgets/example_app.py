@@ -12,10 +12,12 @@ but it can also serve as an example.
 """
 
 # Standard library imports
+import argparse
 import logging
 import sys
 
-# Qt import
+# Qt imports
+import qdarkstyle
 from qtpy.QtCore import QCoreApplication, Qt
 from qtpy.QtQuick import QQuickWindow, QSGRendererInterface
 from qtpy.QtWidgets import QAction, QApplication, QMainWindow
@@ -38,8 +40,12 @@ def use_software_rendering():
 class NotebookAppMainWindow(QMainWindow):
     """Main window for stand-alone notebook application."""
 
-    def __init__(self):
+    def __init__(self, dark_theme=False):
         super().__init__()
+
+        if dark_theme:
+            self.setStyleSheet(qdarkstyle.load_stylesheet_from_environment())
+
         self.tabwidget = NotebookTabWidget(self)
         self.tabwidget.maybe_create_welcome_client()
         self.setCentralWidget(self.tabwidget)
@@ -73,10 +79,19 @@ class NotebookAppMainWindow(QMainWindow):
         file_menu.addAction(close_action)
 
 
-if __name__ == '__main__':
+def main():
+    """Execute example application."""
     use_software_rendering()
     logging.basicConfig(level=logging.DEBUG)
-    app = QApplication([])
-    window = NotebookAppMainWindow()
+    app = QApplication(sys.argv)
+    arguments = app.arguments()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dark', action='store_true')
+    result = parser.parse_args(arguments[1:])  # arguments[0] = program name
+    window = NotebookAppMainWindow(dark_theme=result.dark)
     window.show()
     sys.exit(app.exec_())
+
+
+if __name__ == '__main__':
+    main()
