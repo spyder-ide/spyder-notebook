@@ -46,7 +46,7 @@ class NotebookAppMainWindow(QMainWindow):
         if dark_theme:
             self.setStyleSheet(qdarkstyle.load_stylesheet_from_environment())
 
-        self.tabwidget = NotebookTabWidget(self)
+        self.tabwidget = NotebookTabWidget(self, dark_theme=dark_theme)
         self.tabwidget.maybe_create_welcome_client()
         self.setCentralWidget(self.tabwidget)
         self._setup_menu()
