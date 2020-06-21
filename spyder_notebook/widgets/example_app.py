@@ -40,14 +40,19 @@ def use_software_rendering():
 class NotebookAppMainWindow(QMainWindow):
     """Main window for stand-alone notebook application."""
 
-    def __init__(self, dark_theme=False):
+    def __init__(self, options):
         super().__init__()
 
-        if dark_theme:
+        if options.dark:
             self.setStyleSheet(qdarkstyle.load_stylesheet_from_environment())
 
-        self.tabwidget = NotebookTabWidget(self, dark_theme=dark_theme)
-        self.tabwidget.maybe_create_welcome_client()
+        self.tabwidget = NotebookTabWidget(self, dark_theme=options.dark)
+
+        if options.notebook:
+            self.tabwidget.open_notebook(options.notebook)
+        else:
+            self.tabwidget.maybe_create_welcome_client()
+
         self.setCentralWidget(self.tabwidget)
         self._setup_menu()
 
@@ -86,9 +91,10 @@ def main():
     app = QApplication(sys.argv)
     arguments = app.arguments()
     parser = argparse.ArgumentParser()
+    parser.add_argument('notebook', nargs='*')
     parser.add_argument('--dark', action='store_true')
     result = parser.parse_args(arguments[1:])  # arguments[0] = program name
-    window = NotebookAppMainWindow(dark_theme=result.dark)
+    window = NotebookAppMainWindow(result)
     window.show()
     sys.exit(app.exec_())
 
