@@ -17,7 +17,7 @@ from spyder_notebook.widgets.notebooktabwidget import NotebookTabWidget
 @pytest.fixture
 def tabwidget(mocker, qtbot):
     """Create an empty NotebookTabWidget which does not start up servers."""
-    def fake_nbopen(filename):
+    def fake_nbopen(filename, dark_theme):
         return collections.defaultdict(
             str, filename=filename, notebook_dir=osp.dirname(filename))
     mocker.patch('spyder_notebook.widgets.notebooktabwidget.nbopen',

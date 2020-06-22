@@ -143,7 +143,7 @@ class NotebookTabWidget(Tabs):
 
         # Open the notebook with nbopen and get the url we need to render
         try:
-            server_info = nbopen(filename)
+            server_info = nbopen(filename, self.dark_theme)
         except (subprocess.CalledProcessError, NBServerError):
             QMessageBox.critical(
                 self,

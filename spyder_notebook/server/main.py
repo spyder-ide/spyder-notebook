@@ -14,10 +14,16 @@ run ``python main.py``.
 import os
 from jinja2 import FileSystemLoader
 from notebook.base.handlers import IPythonHandler, FileFindHandler
-from notebook.notebookapp import NotebookApp
+from notebook.notebookapp import flags, NotebookApp
 from notebook.utils import url_path_join as ujoin
+from traitlets import Bool
 
 HERE = os.path.dirname(__file__)
+
+flags['dark'] = (
+    {'SpyderNotebookServer': {'dark_theme': True}},
+    'Use dark theme when rendering notebooks'
+)
 
 
 class NotebookHandler(IPythonHandler):
@@ -32,6 +38,7 @@ class NotebookHandler(IPythonHandler):
             # Use camelCase here, since that's what the lab components expect
             'baseUrl': self.base_url,
             'token': self.settings['token'],
+            'darkTheme': self.settings['dark_theme'],
             'notebookPath': filename,
             'frontendUrl': ujoin(self.base_url, 'static/'),
             # FIXME: Don't use a CDN here
@@ -54,9 +61,18 @@ class NotebookHandler(IPythonHandler):
 
 
 class SpyderNotebookServer(NotebookApp):
+    """Server rendering notebooks in HTML and serving them over HTTP."""
+
+    flags = flags
+
+    dark_theme = Bool(
+        False, config=True,
+        help='Whether to use dark theme when rendering notebooks')
+
     def init_webapp(self):
-        """initialize tornado webapp and httpserver.
-        """
+        """Initialize tornado webapp and httpserver."""
+        self.tornado_settings['dark_theme'] = self.dark_theme
+
         super().init_webapp()
 
         default_handlers = [
