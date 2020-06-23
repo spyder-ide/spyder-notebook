@@ -1,3 +1,6 @@
+// Copyright (c) Jupyter Development Team, Spyder Project Contributors.
+// Distributed under the terms of the Modified BSD License.
+
 /**
  * Set up keyboard shortcuts & commands for notebook
  */

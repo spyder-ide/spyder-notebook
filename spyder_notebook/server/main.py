@@ -1,16 +1,8 @@
-"""
-An example demonstrating a stand-alone "notebook".
+# Copyright (c) Jupyter Development Team, Spyder Project Contributors.
+# Distributed under the terms of the Modified BSD License.
 
-Copyright (c) Jupyter Development Team.
-Distributed under the terms of the Modified BSD License.
+"""Entry point for server rendering notebooks for Spyder."""
 
-Example
--------
-
-To run the example, see the instructions in the README to build it. Then
-run ``python main.py``.
-
-"""
 import os
 from jinja2 import FileSystemLoader
 from notebook.base.handlers import IPythonHandler, FileFindHandler
