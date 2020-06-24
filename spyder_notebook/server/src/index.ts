@@ -1,14 +1,23 @@
-// Copyright (c) Jupyter Development Team.
+// Copyright (c) Jupyter Development Team, Spyder Project Contributors.
 // Distributed under the terms of the Modified BSD License.
 
 import { PageConfig, URLExt } from '@jupyterlab/coreutils';
 // @ts-ignore
 __webpack_public_path__ = URLExt.join(PageConfig.getBaseUrl(), 'example/');
 
+// Stub for the require function.
+declare var require: any;
+
 import '@jupyterlab/application/style/index.css';
 import '@jupyterlab/codemirror/style/index.css';
 import '@jupyterlab/notebook/style/index.css';
-import '@jupyterlab/theme-light-extension/style/index.css';
+
+if (PageConfig.getOption('darkTheme') == 'true') {
+  require('@jupyterlab/theme-dark-extension/style/index.css');
+} else {
+  require('@jupyterlab/theme-light-extension/style/index.css');
+}
+
 import '../index.css';
 
 import { CommandRegistry } from '@phosphor/commands';
@@ -145,7 +154,6 @@ function createApp(manager: ServiceManager.IManager): void {
   window.addEventListener('resize', () => {
     panel.update();
   });
-
   SetupCommands(commands, menuBar, nbWidget, handler);
 }
 

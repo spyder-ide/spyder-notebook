@@ -41,7 +41,7 @@ def find_best_server(filename):
         return None
 
 
-def nbopen(filename):
+def nbopen(filename, dark_theme=False):
     """
     Open a notebook using the best available server.
 
@@ -68,6 +68,8 @@ def nbopen(filename):
                    '--NotebookApp.password=',
                    "--KernelSpecManager.kernel_spec_class='{}'".format(
                            KERNELSPEC)]
+        if dark_theme:
+            command.append('--dark')
 
         if os.name == 'nt':
             creation_flag = 0x08000000  # CREATE_NO_WINDOW

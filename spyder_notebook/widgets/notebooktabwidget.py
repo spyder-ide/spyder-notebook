@@ -35,6 +35,8 @@ NOTEBOOK_TMPDIR = osp.join(get_temp_dir(), 'notebooks')
 # Path to HTML file with welcome message
 PACKAGE_PATH = osp.join(osp.dirname(__file__), '..')
 WELCOME = osp.join(PACKAGE_PATH, 'utils', 'templates', 'welcome.html')
+WELCOME_DARK = osp.join(PACKAGE_PATH, 'utils', 'templates',
+                        'welcome-dark.html')
 
 # Filter to use in file dialogs
 FILES_FILTER = '{} (*.ipynb)'.format(_('Jupyter notebooks'))
@@ -50,11 +52,14 @@ class NotebookTabWidget(Tabs):
     ----------
     actions : list of (QAction or QMenu or None) or None
         Items to be added to the context menu.
+    dark_theme : bool
+        Whether to display notebooks in a dark theme. The default is False.
     untitled_num : int
         Number used in file name of newly created notebooks.
     """
 
-    def __init__(self, parent, actions=None, menu=None, corner_widgets=None):
+    def __init__(self, parent, actions=None, menu=None, corner_widgets=None,
+                 dark_theme=False):
         """
         Constructor.
 
@@ -74,6 +79,7 @@ class NotebookTabWidget(Tabs):
         super().__init__(parent, actions, menu, corner_widgets)
 
         self.actions = actions
+        self.dark_theme = dark_theme
         self.untitled_num = 0
 
         if not sys.platform == 'darwin':
@@ -137,7 +143,7 @@ class NotebookTabWidget(Tabs):
 
         # Open the notebook with nbopen and get the url we need to render
         try:
-            server_info = nbopen(filename)
+            server_info = nbopen(filename, self.dark_theme)
         except (subprocess.CalledProcessError, NBServerError):
             QMessageBox.critical(
                 self,
@@ -168,7 +174,10 @@ class NotebookTabWidget(Tabs):
             The client in the created tab, or None if no tab is created.
         """
         if self.count() == 0:
-            welcome = open(WELCOME).read()
+            if self.dark_theme:
+                welcome = open(WELCOME_DARK).read()
+            else:
+                welcome = open(WELCOME).read()
             client = NotebookClient(
                 self, WELCOME, self.actions, ini_message=welcome)
             self.add_tab(client)
@@ -352,7 +361,7 @@ class NotebookTabWidget(Tabs):
         -------
         True if `client` is a welcome client, False otherwise.
         """
-        return client.get_filename() == WELCOME
+        return client.get_filename() in [WELCOME, WELCOME_DARK]
 
     def add_tab(self, widget):
         """

@@ -18,6 +18,7 @@ from qtpy.QtWidgets import QMessageBox, QVBoxLayout, QMenu
 # Spyder imports
 from spyder.api.plugins import SpyderPluginWidget
 from spyder.config.base import _
+from spyder.config.gui import is_dark_interface
 from spyder.utils import icon_manager as ima
 from spyder.utils.qthelpers import (create_action, create_toolbutton,
                                     add_actions, MENU_SEPARATOR)
@@ -69,9 +70,10 @@ class NotebookPlugin(SpyderPluginWidget):
         menu_btn.setMenu(self._options_menu)
         menu_btn.setPopupMode(menu_btn.InstantPopup)
         corner_widgets = {Qt.TopRightCorner: [new_notebook_btn, menu_btn]}
+        dark_theme = is_dark_interface()
         self.tabwidget = NotebookTabWidget(
             self, menu=self._options_menu, actions=self.menu_actions,
-            corner_widgets=corner_widgets)
+            corner_widgets=corner_widgets, dark_theme=dark_theme)
 
         self.tabwidget.currentChanged.connect(self.refresh_plugin)
 
