@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+#
 # Copyright © Spyder Project Contributors
 # Licensed under the terms of the MIT License
 
@@ -11,18 +13,19 @@ import os.path as osp
 import pytest
 
 # Local imports
+from spyder_notebook.utils.servermanager import ServerManager
 from spyder_notebook.widgets.notebooktabwidget import NotebookTabWidget
 
 
 @pytest.fixture
 def tabwidget(mocker, qtbot):
     """Create an empty NotebookTabWidget which does not start up servers."""
-    def fake_nbopen(filename, dark_theme):
+    def fake_get_server(filename, start):
         return collections.defaultdict(
             str, filename=filename, notebook_dir=osp.dirname(filename))
-    mocker.patch('spyder_notebook.widgets.notebooktabwidget.nbopen',
-                 fake_nbopen)
-    widget = NotebookTabWidget(None)
+    fake_server_manager = mocker.Mock(
+        spec=ServerManager, get_server=fake_get_server)
+    widget = NotebookTabWidget(None, fake_server_manager)
     qtbot.addWidget(widget)
     return widget
 

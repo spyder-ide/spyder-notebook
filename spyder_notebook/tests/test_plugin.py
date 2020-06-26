@@ -36,22 +36,17 @@ LOCATION = osp.realpath(osp.join(os.getcwd(), osp.dirname(__file__)))
 # =============================================================================
 # Utility functions
 # =============================================================================
-def prompt_present(nbwidget):
+def prompt_present(nbwidget, qtbot):
     """Check if an In prompt is present in the notebook."""
-    return text_present(nbwidget, '[ ]:')
+    return text_present(nbwidget, qtbot, '[ ]:')
 
 
-def text_present(nbwidget, text="Test"):
+def text_present(nbwidget, qtbot, text="Test"):
     """Check if a text is present in the notebook."""
     if WEBENGINE:
-        def callback(data):
-            global html
-            html = data
-        nbwidget.dom.toHtml(callback)
-        try:
-            return text in html
-        except NameError:
-            return False
+        with qtbot.waitCallback() as cb:
+            nbwidget.dom.toHtml(cb)
+        return text in cb.args[0]
     else:
         return text in nbwidget.dom.toHtml()
 
@@ -99,22 +94,25 @@ def notebook(qtbot):
     qtbot.addWidget(notebook_plugin)
     notebook_plugin.tabwidget.maybe_create_welcome_client()
     notebook_plugin.create_new_client()
-    return notebook_plugin
+    yield notebook_plugin
+    notebook_plugin.closing_plugin()
 
 
 @pytest.fixture
 def plugin_no_server(mocker, qtbot):
     """Set up the Notebook plugin with a fake nbopen which does not start
     a notebook server."""
-    def fake_nbopen(filename, dark_theme):
+    def fake_get_server(filename, start):
         return collections.defaultdict(
             str, filename=filename, notebook_dir=osp.dirname(filename))
-    mocker.patch('spyder_notebook.widgets.notebooktabwidget.nbopen',
-                 fake_nbopen)
+    fake_server_manager = mocker.Mock(get_server=fake_get_server)
+    mocker.patch('spyder_notebook.notebookplugin.ServerManager',
+                 return_value=fake_server_manager)
     plugin = NotebookPlugin(None, testing=True)
+    plugin.main = mocker.Mock()
     qtbot.addWidget(plugin)
-    mocker.patch.object(plugin, 'main')
-    return plugin
+    yield plugin
+    plugin.closing_plugin()
 
 # =============================================================================
 # Tests
@@ -124,7 +122,8 @@ def test_shutdown_notebook_kernel(notebook, qtbot):
     """Test that kernel is shutdown from server when closing a notebook."""
     # Wait for prompt
     nbwidget = notebook.tabwidget.currentWidget().notebookwidget
-    qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
+    qtbot.waitUntil(lambda: prompt_present(nbwidget, qtbot),
+                    timeout=NOTEBOOK_UP)
 
     # Get kernel id for the client
     client = notebook.tabwidget.currentWidget()
@@ -145,7 +144,8 @@ def test_file_in_temp_dir_deleted_after_notebook_closed(notebook, qtbot):
     notebook is closed."""
     # Wait for prompt
     nbwidget = notebook.tabwidget.currentWidget().notebookwidget
-    qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
+    qtbot.waitUntil(lambda: prompt_present(nbwidget, qtbot),
+                    timeout=NOTEBOOK_UP)
 
     # Get file name
     client = notebook.tabwidget.currentWidget()
@@ -165,7 +165,8 @@ def test_close_nonexisting_notebook(notebook, qtbot):
     filename = osp.join(LOCATION, 'does-not-exist.ipynb')
     notebook.open_notebook(filenames=[filename])
     nbwidget = notebook.tabwidget.currentWidget().notebookwidget
-    qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
+    qtbot.waitUntil(lambda: prompt_present(nbwidget, qtbot),
+                    timeout=NOTEBOOK_UP)
     client = notebook.tabwidget.currentWidget()
 
     # Close tab
@@ -188,12 +189,14 @@ def test_open_notebook(notebook, qtbot, tmpdir):
     # Wait for prompt
     notebook.open_notebook(filenames=[test_notebook_non_ascii])
     nbwidget = notebook.tabwidget.currentWidget().notebookwidget
-    qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
+    qtbot.waitUntil(lambda: prompt_present(nbwidget, qtbot),
+                    timeout=NOTEBOOK_UP)
 
     # Assert that the In prompt has "Test" in it
     # and the client has the correct name
-    qtbot.waitUntil(lambda: text_present(nbwidget), timeout=NOTEBOOK_UP)
-    assert text_present(nbwidget)
+    qtbot.waitUntil(lambda: text_present(nbwidget, qtbot),
+                    timeout=NOTEBOOK_UP)
+    assert text_present(nbwidget, qtbot)
     assert notebook.tabwidget.currentWidget().get_short_name() == "test"
 
 
@@ -204,7 +207,8 @@ def test_save_notebook(notebook, qtbot, tmpdir):
     """Test that a notebook can be saved."""
     # Wait for prompt
     nbwidget = notebook.tabwidget.currentWidget().notebookwidget
-    qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
+    qtbot.waitUntil(lambda: prompt_present(nbwidget, qtbot),
+                    timeout=NOTEBOOK_UP)
 
     # Writes: a = "test"
     qtbot.keyClick(nbwidget, Qt.Key_A, delay=INTERACTION_CLICK)
@@ -225,13 +229,14 @@ def test_save_notebook(notebook, qtbot, tmpdir):
 
     # Wait for prompt
     nbwidget = notebook.tabwidget.currentWidget().notebookwidget
-    qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
+    qtbot.waitUntil(lambda: prompt_present(nbwidget, qtbot),
+                    timeout=NOTEBOOK_UP)
 
     # Assert that the In prompt has "test" in it
     # and the client has the correct name
-    qtbot.waitUntil(lambda: text_present(nbwidget, text="test"),
+    qtbot.waitUntil(lambda: text_present(nbwidget, qtbot, text="test"),
                     timeout=NOTEBOOK_UP)
-    assert text_present(nbwidget, text="test")
+    assert text_present(nbwidget, qtbot, text="test")
     assert notebook.tabwidget.currentWidget().get_short_name() == "save"
 
 
@@ -248,7 +253,8 @@ def test_save_notebook_as_with_error(mocker, notebook, qtbot, tmpdir):
 
     # Wait for prompt
     nbwidget = notebook.tabwidget.currentWidget().notebookwidget
-    qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
+    qtbot.waitUntil(lambda: prompt_present(nbwidget, qtbot),
+                    timeout=NOTEBOOK_UP)
 
     # Save the notebook
     notebook.save_as()
@@ -262,7 +268,8 @@ def test_new_notebook(notebook, qtbot):
     """Test that a new client is really a notebook."""
     # Wait for prompt
     nbwidget = notebook.tabwidget.currentWidget().notebookwidget
-    qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
+    qtbot.waitUntil(lambda: prompt_present(nbwidget, qtbot),
+                    timeout=NOTEBOOK_UP)
 
     # Assert that we have one notebook and the welcome page
     assert notebook.tabwidget.count() == 2
@@ -276,7 +283,8 @@ def test_open_console_when_no_kernel(notebook, qtbot, mocker):
 
     # Wait for prompt
     nbwidget = notebook.tabwidget.currentWidget().notebookwidget
-    qtbot.waitUntil(lambda: prompt_present(nbwidget), timeout=NOTEBOOK_UP)
+    qtbot.waitUntil(lambda: prompt_present(nbwidget, qtbot),
+                    timeout=NOTEBOOK_UP)
 
     # Shut the kernel down and check that this is successful
     client = notebook.tabwidget.currentWidget()
@@ -328,6 +336,7 @@ def test_closing_plugin(mocker, plugin_no_server):
     opened from a file. Check that config variables `recent_notebooks` and
     `opened_notebook` are correctly set."""
     plugin = plugin_no_server
+    plugin.clear_recent_notebooks()
     mock_set_option = mocker.patch.object(plugin, 'set_option')
     plugin.tabwidget.maybe_create_welcome_client()
     plugin.create_new_client()

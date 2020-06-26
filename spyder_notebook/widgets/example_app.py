@@ -22,7 +22,8 @@ from qtpy.QtCore import QCoreApplication, Qt
 from qtpy.QtQuick import QQuickWindow, QSGRendererInterface
 from qtpy.QtWidgets import QAction, QApplication, QMainWindow
 
-# Plugin imports
+# Local imports
+from spyder_notebook.utils.servermanager import ServerManager
 from spyder_notebook.widgets.notebooktabwidget import NotebookTabWidget
 
 
@@ -46,7 +47,12 @@ class NotebookAppMainWindow(QMainWindow):
         if options.dark:
             self.setStyleSheet(qdarkstyle.load_stylesheet_from_environment())
 
-        self.tabwidget = NotebookTabWidget(self, dark_theme=options.dark)
+        self.server_manager = ServerManager(options.dark)
+        QApplication.instance().aboutToQuit.connect(
+            self.server_manager.shutdown_all_servers)
+
+        self.tabwidget = NotebookTabWidget(
+            self, self.server_manager, dark_theme=options.dark)
 
         if options.notebook:
             self.tabwidget.open_notebook(options.notebook)

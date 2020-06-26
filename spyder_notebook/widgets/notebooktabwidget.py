@@ -6,9 +6,9 @@
 """File implementing NotebookTabWidget."""
 
 # Standard library imports
+import logging
 import os
 import os.path as osp
-import subprocess
 import sys
 
 # Qt imports
@@ -25,7 +25,6 @@ from spyder.utils.programs import get_temp_dir
 from spyder.widgets.tabs import Tabs
 
 # Local imports
-from spyder_notebook.utils.nbopen import nbopen, NBServerError
 from spyder_notebook.widgets.client import NotebookClient
 
 
@@ -40,6 +39,8 @@ WELCOME_DARK = osp.join(PACKAGE_PATH, 'utils', 'templates',
 
 # Filter to use in file dialogs
 FILES_FILTER = '{} (*.ipynb)'.format(_('Jupyter notebooks'))
+
+logger = logging.getLogger(__name__)
 
 
 class NotebookTabWidget(Tabs):
@@ -58,10 +59,10 @@ class NotebookTabWidget(Tabs):
         Number used in file name of newly created notebooks.
     """
 
-    def __init__(self, parent, actions=None, menu=None, corner_widgets=None,
-                 dark_theme=False):
+    def __init__(self, parent, server_manager, actions=None, menu=None,
+                 corner_widgets=None, dark_theme=False):
         """
-        Constructor.
+        Construct a NotebookTabWidget.
 
         Parameters
         ----------
@@ -81,6 +82,12 @@ class NotebookTabWidget(Tabs):
         self.actions = actions
         self.dark_theme = dark_theme
         self.untitled_num = 0
+
+        self.server_manager = server_manager
+        self.server_manager.sig_server_started.connect(
+            self.handle_server_started)
+        self.server_manager.sig_server_timed_out.connect(
+            self.handle_server_timed_out)
 
         if not sys.platform == 'darwin':
             # Don't set document mode to true on OSX because it generates
@@ -141,27 +148,14 @@ class NotebookTabWidget(Tabs):
             nbformat.write(nb_contents, filename)
             self.untitled_num += 1
 
-        # Open the notebook with nbopen and get the url we need to render
-        try:
-            server_info = nbopen(filename, self.dark_theme)
-        except (subprocess.CalledProcessError, NBServerError):
-            QMessageBox.critical(
-                self,
-                _("Server error"),
-                _("The Jupyter Notebook server failed to start or it is "
-                  "taking too much time to do it. Please start it in a "
-                  "system terminal with the command 'jupyter notebook' to "
-                  "check for errors."))
-            # Create a welcome widget
-            # See issue 93
-            self.untitled_num -= 1
-            self.maybe_create_welcome_client()
-            return None
-
         client = NotebookClient(self, filename, self.actions)
         self.add_tab(client)
-        client.register(server_info)
-        client.load_notebook()
+        server_info = self.server_manager.get_server(filename, start=True)
+        if server_info:
+            logger.debug('Using existing server at %s',
+                         server_info['notebook_dir'])
+            client.register(server_info)
+            client.load_notebook()
         return client
 
     def maybe_create_welcome_client(self):
@@ -375,3 +369,36 @@ class NotebookTabWidget(Tabs):
         index = self.addTab(widget, widget.get_short_name())
         self.setCurrentIndex(index)
         self.setTabToolTip(index, widget.get_filename())
+
+    def handle_server_started(self):
+        """
+        Handle signal that a notebook server has started.
+
+        Go through all notebook tabs which do not have server info and try
+        getting the server info for them.
+        """
+        for client_index in range(self.count()):
+            client = self.widget(client_index)
+            if not client.static and not client.server_url:
+                logger.debug('Getting server for %s', client.filename)
+                server_info = self.server_manager.get_server(
+                    client.filename, start=False)
+                if server_info:
+                    logger.debug('Success')
+                    client.register(server_info)
+                    client.load_notebook()
+
+    def handle_server_timed_out(self):
+        """Display message box that server failed to start."""
+        QMessageBox.critical(
+            self,
+            _("Server error"),
+            _("The Jupyter Notebook server failed to start or it is "
+              "taking too much time to do it. Please start it in a "
+              "system terminal with the command 'jupyter notebook' to "
+              "check for errors."))
+        # Create a welcome widget
+        # See issue 93
+        self.untitled_num -= 1
+        self.maybe_create_welcome_client()
+        return None

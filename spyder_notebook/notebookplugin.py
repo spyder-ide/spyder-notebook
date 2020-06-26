@@ -24,8 +24,8 @@ from spyder.utils.qthelpers import (create_action, create_toolbutton,
                                     add_actions, MENU_SEPARATOR)
 from spyder.utils.switcher import shorten_paths
 
-
 # Local imports
+from spyder_notebook.utils.servermanager import ServerManager
 from spyder_notebook.widgets.notebooktabwidget import NotebookTabWidget
 
 
@@ -70,10 +70,13 @@ class NotebookPlugin(SpyderPluginWidget):
         menu_btn.setMenu(self._options_menu)
         menu_btn.setPopupMode(menu_btn.InstantPopup)
         corner_widgets = {Qt.TopRightCorner: [new_notebook_btn, menu_btn]}
+
         dark_theme = is_dark_interface()
+        self.server_manager = ServerManager(dark_theme)
         self.tabwidget = NotebookTabWidget(
-            self, menu=self._options_menu, actions=self.menu_actions,
-            corner_widgets=corner_widgets, dark_theme=dark_theme)
+            self, self.server_manager, menu=self._options_menu,
+            actions=self.menu_actions, corner_widgets=corner_widgets,
+            dark_theme=dark_theme)
 
         self.tabwidget.currentChanged.connect(self.refresh_plugin)
 
@@ -125,6 +128,7 @@ class NotebookPlugin(SpyderPluginWidget):
 
         self.set_option('recent_notebooks', self.recent_notebooks)
         self.set_option('opened_notebooks', opened_notebooks)
+        self.server_manager.shutdown_all_servers()
         return True
 
     def refresh_plugin(self):

@@ -185,8 +185,10 @@ class NotebookClient(QWidget):
         self.notebookwidget = NotebookWidget(self, actions)
         if ini_message:
             self.notebookwidget.show_message(ini_message)
+            self.static = True
         else:
             self.notebookwidget.show_blank()
+            self.static = False
 
         self.find_widget = FindReplace(self)
         self.find_widget.set_editor(self.notebookwidget)
