@@ -164,6 +164,24 @@ def test_check_server_started_if_timed_out(mocker, qtbot):
     assert server_process.state == ServerState.TIMED_OUT
 
 
+def test_check_server_started_if_errored(mocker, qtbot):
+    """Test that .check_server_started() does not do anything if server state
+    is ERROR."""
+    fake_open = mocker.patch('spyder_notebook.utils.servermanager.open')
+    mock_QTimer = mocker.patch('spyder_notebook.utils.servermanager.QTimer',
+                               spec=QTimer)
+    mock_process = mocker.Mock(spec=QProcess, processId=lambda: 7)
+    server_process = ServerProcess(mock_process, 'notebookdir',
+                                   state=ServerState.ERROR)
+    serverManager = ServerManager()
+
+    serverManager._check_server_started(server_process)
+
+    fake_open.assert_not_called()
+    mock_QTimer.assert_not_called()
+    assert server_process.state == ServerState.ERROR
+
+
 def test_shutdown_all_servers(mocker):
     """Test that .shutdown_all_servers() does shutdown all running servers,
     but not servers in another state."""
@@ -183,3 +201,24 @@ def test_shutdown_all_servers(mocker):
     assert mock_shutdown.called_once_with(server1.server_info)
     assert server1.state == ServerState.FINISHED
     assert server2.state == ServerState.ERROR
+
+
+def test_handle_error(mocker, qtbot):
+    """Test that .handle_error() changes the state and emits signal."""
+    server = ServerProcess(mocker.Mock(spec=QProcess), '')
+    serverManager = ServerManager()
+
+    with qtbot.waitSignal(serverManager.sig_server_errored):
+        serverManager.handle_error(server, mocker.Mock())
+
+    assert server.state == ServerState.ERROR
+
+
+def test_handle_finished(mocker, qtbot):
+    """Test that .handle_finished() changes the state."""
+    server = ServerProcess(mocker.Mock(spec=QProcess), '')
+    serverManager = ServerManager()
+
+    serverManager.handle_finished(server, mocker.Mock(), mocker.Mock())
+
+    assert server.state == ServerState.FINISHED

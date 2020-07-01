@@ -87,7 +87,9 @@ class NotebookTabWidget(Tabs):
         self.server_manager.sig_server_started.connect(
             self.handle_server_started)
         self.server_manager.sig_server_timed_out.connect(
-            self.handle_server_timed_out)
+            self.handle_server_timed_out_or_error)
+        self.server_manager.sig_server_errored.connect(
+            self.handle_server_timed_out_or_error)
 
         if not sys.platform == 'darwin':
             # Don't set document mode to true on OSX because it generates
@@ -388,7 +390,7 @@ class NotebookTabWidget(Tabs):
                     client.register(server_info)
                     client.load_notebook()
 
-    def handle_server_timed_out(self):
+    def handle_server_timed_out_or_error(self):
         """Display message box that server failed to start."""
         QMessageBox.critical(
             self,

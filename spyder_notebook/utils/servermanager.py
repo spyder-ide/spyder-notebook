@@ -103,6 +103,9 @@ class ServerManager(QObject):
     # We tried to start a server but it took too long to start up
     sig_server_timed_out = Signal()
 
+    # We tried to start a server but an error occurred
+    sig_server_errored = Signal()
+
     def __init__(self, dark_theme=False):
         """
         Construct a ServerManager.
@@ -184,14 +187,21 @@ class ServerManager(QObject):
                            KERNELSPEC)]
         if self.dark_theme:
             arguments.append('--dark')
+        logger.debug('Arguments: %s', repr(arguments))
 
         if DEV:
             env = QProcessEnvironment.systemEnvironment()
             env.insert('PYTHONPATH', osp.dirname(get_module_path('spyder')))
             process.setProcessEnvironment(env)
 
-        process.start(sys.executable, arguments)
         server_process = ServerProcess(process, notebook_dir=nbdir)
+        process.errorOccurred.connect(
+            lambda error: self.handle_error(server_process, error))
+        process.finished.connect(
+            lambda code, status:
+                self.handle_finished(server_process, code, status))
+
+        process.start(sys.executable, arguments)
         self.servers.append(server_process)
 
         self._check_server_started(server_process)
@@ -200,18 +210,26 @@ class ServerManager(QObject):
         """
         Check whether a notebook server has started up.
 
-        Look for a json file in the Jupyter runtime dir to check whether the
-        notebook server has started up. If so, then emit `sig_server_started`
-        and fill the server info with the contents of the json file. If not,
-        then schedule another check after a short delay (CHECK_SERVER_UP_DELAY)
-        unless the server is taken too long (SERVER_TIMEOUT_DELAY). In the
-        latter case, emit `sig_server_timed_out`.
+        If the server state is no longer in the "starting" state (probably
+        because an error occurred or the server exited prematurely) then
+        do nothing.
+
+        Otherwise, look for a json file in the Jupyter runtime dir to check
+        whether the notebook server has started up. If so, then emit
+        `sig_server_started` and fill the server info with the contents of the
+        json file. If not, then schedule another check after a short delay
+        (as set in CHECK_SERVER_UP_DELAY) unless the server is taken too long
+        (as specified by SERVER_TIMEOUT_DELAY). In the latter case, emit
+        sig_server_timed_out`.
 
         Parameters
         ----------
         server_process : ServerProcess
             The server process to be checked.
         """
+        if server_process.state != ServerState.STARTING:
+            return
+
         pid = server_process.process.processId()
         runtime_dir = jupyter_runtime_dir()
         filename = osp.join(runtime_dir, 'nbserver-{}.json'.format(pid))
@@ -232,7 +250,7 @@ class ServerManager(QObject):
                     lambda: self._check_server_started(server_process))
             return None
 
-        logger.debug('server started')
+        logger.debug('Server for %s started', server_process.notebook_dir)
         server_process.state = ServerState.RUNNING
         server_process.server_info = server_info
         self.sig_server_started.emit()
@@ -243,5 +261,46 @@ class ServerManager(QObject):
             if server.state == ServerState.RUNNING:
                 logger.debug('Shutting down notebook server for %s',
                              server.notebook_dir)
+                server.process.errorOccurred.disconnect()
+                server.process.finished.disconnect()
                 notebookapp.shutdown_server(server.server_info)
                 server.state = ServerState.FINISHED
+
+    def handle_error(self, server_process, error):
+        """
+        Handle errors that occurred in the notebook server process.
+
+        This function is connected to the QProcess.errorOccurred signal.
+        It changes the state of the process and emits `sig_server_errored`.
+
+        Parameters
+        ----------
+        server_process : ServerProcess
+            The server process that encountered an error
+        error : QProcess.ProcessError
+            Error as determined by Qt.
+        """
+        logger.debug('Server for %s encountered error %s',
+                     server_process.notebook_dir, str(error))
+        server_process.state = ServerState.ERROR
+        self.sig_server_errored.emit()
+
+    def handle_finished(self, server_process, code, status):
+        """
+        Handle signal that notebook server process has finished.
+
+        This function is connected to the QProcess.finished signal.
+        It changes the state of the process.
+
+        Parameters
+        ----------
+        server_process : ServerProcess
+            The server process that encountered an error.
+        code : int
+            Exit code as reported by Qt.
+        status : QProcess.ExitStatus
+            Exit status as reported by Qt.
+        """
+        logger.debug('Server for %s finished with code = %d, status = %s',
+                     server_process.notebook_dir, code, str(status))
+        server_process.state = ServerState.FINISHED
