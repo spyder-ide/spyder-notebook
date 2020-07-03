@@ -14,7 +14,7 @@ import os.path as osp
 import pytest
 
 # Qt imports
-from qtpy.QtCore import QProcess, QTimer
+from qtpy.QtCore import QByteArray, QProcess, QTimer
 
 # Local imports
 from spyder_notebook.utils.servermanager import (
@@ -201,6 +201,22 @@ def test_shutdown_all_servers(mocker):
     assert mock_shutdown.called_once_with(server1.server_info)
     assert server1.state == ServerState.FINISHED
     assert server2.state == ServerState.ERROR
+
+
+def test_read_standard_output(mocker):
+    """Test that .read_standard_output() stores the output."""
+    before = 'before\n'
+    output = 'Αθήνα\n'  # check that we can handle non-ascii
+    mock_read = mocker.Mock(return_value=QByteArray(output.encode()))
+    mock_process = mocker.Mock(spec=QProcess, readAllStandardOutput=mock_read)
+    server = ServerProcess(mock_process, '', output=before)
+    serverManager = ServerManager()
+    serverManager.servers = [server]
+
+    serverManager.read_server_output(server)
+
+    mock_read.assert_called_once()
+    assert server.output == before + output
 
 
 def test_handle_error(mocker, qtbot):

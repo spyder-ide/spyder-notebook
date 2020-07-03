@@ -54,7 +54,7 @@ class ServerProcess():
     """
 
     def __init__(self, process, notebook_dir, starttime=None,
-                 state=ServerState.STARTING, server_info=None):
+                 state=ServerState.STARTING, server_info=None, output=''):
         """
         Construct a ServerProcess.
 
@@ -73,12 +73,16 @@ class ServerProcess():
             If set, this is a dict with information given by the server in
             a JSON file in jupyter_runtime_dir(). It has keys like 'url' and
             'token'. The default is None.
+        output : str
+            Output of the server process from stdout and stderr. The default
+            is ''.
         """
         self.process = process
         self.notebook_dir = notebook_dir
         self.starttime = starttime or datetime.datetime.now()
         self.state = state
         self.server_info = server_info
+        self.output = output
 
 
 class ServerManager(QObject):
@@ -177,7 +181,6 @@ class ServerManager(QObject):
 
         logger.debug('Starting new notebook server for %s', nbdir)
         process = QProcess(None)
-        process.setProcessChannelMode(QProcess.ForwardedChannels)
         serverscript = osp.join(osp.dirname(__file__), '../server/main.py')
         serverscript = osp.normpath(serverscript)
         arguments = [serverscript, '--no-browser',
@@ -195,6 +198,9 @@ class ServerManager(QObject):
             process.setProcessEnvironment(env)
 
         server_process = ServerProcess(process, notebook_dir=nbdir)
+        process.setProcessChannelMode(QProcess.MergedChannels)
+        process.readyReadStandardOutput.connect(
+            lambda: self.read_server_output(server_process))
         process.errorOccurred.connect(
             lambda error: self.handle_error(server_process, error))
         process.finished.connect(
@@ -265,6 +271,24 @@ class ServerManager(QObject):
                 server.process.finished.disconnect()
                 notebookapp.shutdown_server(server.server_info)
                 server.state = ServerState.FINISHED
+
+    def read_server_output(self, server_process):
+        """
+        Read the output of the notebook server process.
+
+        This function is connected to the QProcess.readyReadStandardOutput
+        signal. It reads the contents of the standard output channel of the
+        server process and stores it in `server_process.output`. The standard
+        error channel is merged into the standard output channel.
+
+        Parameters
+        ----------
+        server_process : ServerProcess
+            The server process whose output is to be read.
+        """
+        byte_array = server_process.process.readAllStandardOutput()
+        output = byte_array.data().decode(errors='backslashreplace')
+        server_process.output += output
 
     def handle_error(self, server_process, error):
         """

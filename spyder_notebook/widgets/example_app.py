@@ -62,6 +62,16 @@ class NotebookAppMainWindow(QMainWindow):
         self.setCentralWidget(self.tabwidget)
         self._setup_menu()
 
+    def view_servers(self):
+        """Display server info."""
+        for server in self.server_manager.servers:
+            print(f'pid = {server.process.processId}')
+            print(f'notebook dir = {server.notebook_dir}')
+            print(f'state = {server.state}')
+            print('output = ')
+            print(server.output)
+            print()
+
     def _setup_menu(self):
         file_menu = self.menuBar().addMenu('File')
 
@@ -88,6 +98,12 @@ class NotebookAppMainWindow(QMainWindow):
             lambda checked: self.tabwidget.close_client(
                 self.tabwidget.currentIndex()))
         file_menu.addAction(close_action)
+
+        misc_menu = self.menuBar().addMenu('Misc')
+
+        servers_action = QAction('View Servers...', self)
+        servers_action.triggered.connect(self.view_servers)
+        misc_menu.addAction(servers_action)
 
 
 def main():
