@@ -25,6 +25,7 @@ from qtpy.QtWidgets import QAction, QApplication, QMainWindow
 # Local imports
 from spyder_notebook.utils.servermanager import ServerManager
 from spyder_notebook.widgets.notebooktabwidget import NotebookTabWidget
+from spyder_notebook.widgets.serverinfo import ServerInfoDialog
 
 
 def use_software_rendering():
@@ -64,13 +65,8 @@ class NotebookAppMainWindow(QMainWindow):
 
     def view_servers(self):
         """Display server info."""
-        for server in self.server_manager.servers:
-            print(f'pid = {server.process.processId}')
-            print(f'notebook dir = {server.notebook_dir}')
-            print(f'state = {server.state}')
-            print('output = ')
-            print(server.output)
-            print()
+        dialog = ServerInfoDialog(self.server_manager.servers, parent=self)
+        dialog.show()
 
     def _setup_menu(self):
         file_menu = self.menuBar().addMenu('File')

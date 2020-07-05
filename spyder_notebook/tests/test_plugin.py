@@ -349,5 +349,19 @@ def test_closing_plugin(mocker, plugin_no_server):
     assert mock_set_option.call_args_list == expected
 
 
+def test_view_server_info(mocker, plugin_no_server):
+    """Check that the "server info" action shows a dialog window with the
+    server data."""
+    plugin = plugin_no_server
+    mock_ServerInfoDialog = mocker.patch(
+        'spyder_notebook.notebookplugin.ServerInfoDialog')
+
+    plugin.server_info_action.trigger()
+
+    mock_ServerInfoDialog.assert_called_once_with(
+        plugin.server_manager.servers, parent=plugin)
+    mock_ServerInfoDialog.return_value.show.assert_called_once()
+
+
 if __name__ == "__main__":
     pytest.main()
