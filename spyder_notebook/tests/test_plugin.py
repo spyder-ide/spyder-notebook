@@ -29,6 +29,7 @@ from spyder_notebook.notebookplugin import NotebookPlugin
 # Constants
 # =============================================================================
 NOTEBOOK_UP = 40000
+CALLBACK_TIMEOUT = 10000
 INTERACTION_CLICK = 100
 LOCATION = osp.realpath(osp.join(os.getcwd(), osp.dirname(__file__)))
 
@@ -44,7 +45,7 @@ def prompt_present(nbwidget, qtbot):
 def text_present(nbwidget, qtbot, text="Test"):
     """Check if a text is present in the notebook."""
     if WEBENGINE:
-        with qtbot.waitCallback() as cb:
+        with qtbot.waitCallback(timeout=CALLBACK_TIMEOUT) as cb:
             nbwidget.dom.toHtml(cb)
         return text in cb.args[0]
     else:
