@@ -1,2 +1,2 @@
 jupyterlab
-spyder >=4.0.0b5
+spyder >=4.1
