@@ -24,9 +24,10 @@ from spyder.utils.qthelpers import (create_action, create_toolbutton,
                                     add_actions, MENU_SEPARATOR)
 from spyder.utils.switcher import shorten_paths
 
-
 # Local imports
+from spyder_notebook.utils.servermanager import ServerManager
 from spyder_notebook.widgets.notebooktabwidget import NotebookTabWidget
+from spyder_notebook.widgets.serverinfo import ServerInfoDialog
 
 
 FILTER_TITLE = _("Jupyter notebooks")
@@ -70,10 +71,13 @@ class NotebookPlugin(SpyderPluginWidget):
         menu_btn.setMenu(self._options_menu)
         menu_btn.setPopupMode(menu_btn.InstantPopup)
         corner_widgets = {Qt.TopRightCorner: [new_notebook_btn, menu_btn]}
+
         dark_theme = is_dark_interface()
+        self.server_manager = ServerManager(dark_theme)
         self.tabwidget = NotebookTabWidget(
-            self, menu=self._options_menu, actions=self.menu_actions,
-            corner_widgets=corner_widgets, dark_theme=dark_theme)
+            self, self.server_manager, menu=self._options_menu,
+            actions=self.menu_actions, corner_widgets=corner_widgets,
+            dark_theme=dark_theme)
 
         self.tabwidget.currentChanged.connect(self.refresh_plugin)
 
@@ -125,6 +129,7 @@ class NotebookPlugin(SpyderPluginWidget):
 
         self.set_option('recent_notebooks', self.recent_notebooks)
         self.set_option('opened_notebooks', opened_notebooks)
+        self.server_manager.shutdown_all_servers()
         return True
 
     def refresh_plugin(self):
@@ -140,31 +145,30 @@ class NotebookPlugin(SpyderPluginWidget):
 
     def get_plugin_actions(self):
         """Return a list of actions related to plugin."""
-        create_nb_action = create_action(self,
-                                         _("New notebook"),
-                                         icon=ima.icon('filenew'),
-                                         triggered=self.create_new_client)
-        self.save_as_action = create_action(self,
-                                            _("Save as..."),
-                                            icon=ima.icon('filesaveas'),
-                                            triggered=self.save_as)
-        open_action = create_action(self,
-                                    _("Open..."),
-                                    icon=ima.icon('fileopen'),
-                                    triggered=self.open_notebook)
-        self.open_console_action = create_action(self,
-                                                 _("Open console"),
-                                                 icon=ima.icon(
-                                                         'ipython_console'),
-                                                 triggered=self.open_console)
-        self.clear_recent_notebooks_action =\
-            create_action(self, _("Clear this list"),
-                          triggered=self.clear_recent_notebooks)
+        create_nb_action = create_action(
+            self, _("New notebook"), icon=ima.icon('filenew'),
+            triggered=self.create_new_client)
+        self.save_as_action = create_action(
+            self, _("Save as..."), icon=ima.icon('filesaveas'),
+            triggered=self.save_as)
+        open_action = create_action(
+            self, _("Open..."), icon=ima.icon('fileopen'),
+            triggered=self.open_notebook)
+        self.open_console_action = create_action(
+            self, _("Open console"), icon=ima.icon('ipython_console'),
+            triggered=self.open_console)
+        self.server_info_action = create_action(
+            self, _('Server info...'), icon=ima.icon('log'),
+            triggered=self.view_servers)
+        self.clear_recent_notebooks_action = create_action(
+            self, _("Clear this list"), triggered=self.clear_recent_notebooks)
+
         # Plugin actions
-        self.menu_actions = [create_nb_action, open_action,
-                             self.recent_notebook_menu, MENU_SEPARATOR,
-                             self.save_as_action, MENU_SEPARATOR,
-                             self.open_console_action]
+        self.menu_actions = [
+            create_nb_action, open_action, self.recent_notebook_menu,
+            MENU_SEPARATOR, self.save_as_action, MENU_SEPARATOR,
+            self.open_console_action, MENU_SEPARATOR,
+            self.server_info_action]
         self.setup_menu_actions()
 
         return self.menu_actions
@@ -307,6 +311,11 @@ class NotebookPlugin(SpyderPluginWidget):
             ipyclient.allow_rename = False
             self.ipyconsole.rename_client_tab(ipyclient,
                                               client.get_short_name())
+
+    def view_servers(self):
+        """Display server info."""
+        dialog = ServerInfoDialog(self.server_manager.servers, parent=self)
+        dialog.show()
 
     # ------ Public API (for FileSwitcher) ------------------------------------
     def handle_switcher_modes(self, mode):

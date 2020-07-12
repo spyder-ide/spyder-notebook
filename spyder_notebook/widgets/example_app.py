@@ -22,8 +22,10 @@ from qtpy.QtCore import QCoreApplication, Qt
 from qtpy.QtQuick import QQuickWindow, QSGRendererInterface
 from qtpy.QtWidgets import QAction, QApplication, QMainWindow
 
-# Plugin imports
+# Local imports
+from spyder_notebook.utils.servermanager import ServerManager
 from spyder_notebook.widgets.notebooktabwidget import NotebookTabWidget
+from spyder_notebook.widgets.serverinfo import ServerInfoDialog
 
 
 def use_software_rendering():
@@ -46,7 +48,12 @@ class NotebookAppMainWindow(QMainWindow):
         if options.dark:
             self.setStyleSheet(qdarkstyle.load_stylesheet_from_environment())
 
-        self.tabwidget = NotebookTabWidget(self, dark_theme=options.dark)
+        self.server_manager = ServerManager(options.dark)
+        QApplication.instance().aboutToQuit.connect(
+            self.server_manager.shutdown_all_servers)
+
+        self.tabwidget = NotebookTabWidget(
+            self, self.server_manager, dark_theme=options.dark)
 
         if options.notebook:
             self.tabwidget.open_notebook(options.notebook)
@@ -55,6 +62,11 @@ class NotebookAppMainWindow(QMainWindow):
 
         self.setCentralWidget(self.tabwidget)
         self._setup_menu()
+
+    def view_servers(self):
+        """Display server info."""
+        dialog = ServerInfoDialog(self.server_manager.servers, parent=self)
+        dialog.show()
 
     def _setup_menu(self):
         file_menu = self.menuBar().addMenu('File')
@@ -82,6 +94,12 @@ class NotebookAppMainWindow(QMainWindow):
             lambda checked: self.tabwidget.close_client(
                 self.tabwidget.currentIndex()))
         file_menu.addAction(close_action)
+
+        misc_menu = self.menuBar().addMenu('Misc')
+
+        servers_action = QAction('View Servers...', self)
+        servers_action.triggered.connect(self.view_servers)
+        misc_menu.addAction(servers_action)
 
 
 def main():
