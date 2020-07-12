@@ -85,7 +85,7 @@ setup(
     description='Jupyter notebook integration with Spyder',
     long_description="This package allows the Jupyter notebook "
                      "to run inside Spyder as a plugin.",
-    packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
+    packages=find_packages(),
     install_requires=REQUIREMENTS,
     include_package_data=True,
     classifiers=['Development Status :: 4 - Beta',
