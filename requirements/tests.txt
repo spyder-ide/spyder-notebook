@@ -1,5 +1,6 @@
 codecov
 flaky
+jupyterlab
 pytest
 pytest-cov
 pytest-mock

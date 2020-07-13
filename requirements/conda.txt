@@ -1,2 +1,9 @@
-jupyterlab
-spyder >=4.1
+spyder >=4.1,<5
+jinja2
+jupyter_core
+nbformat
+notebook >=4.3
+qtpy
+qdarkstyle
+requests
+traitlets
