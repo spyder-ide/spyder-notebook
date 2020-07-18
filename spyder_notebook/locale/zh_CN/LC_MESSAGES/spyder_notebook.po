@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR ORGANIZATION
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
