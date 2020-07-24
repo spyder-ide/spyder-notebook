@@ -69,7 +69,19 @@ const cmdIds = {
   extendBelow: 'notebook-cells:extend-below',
   extendBottom: 'notebook-cells:extend-bottom',
   editMode: 'notebook:edit-mode',
-  commandMode: 'notebook:command-mode'
+  commandMode: 'notebook:command-mode',
+  toCode: 'notebook:change-cell-to-code',
+  markdown1: 'notebook:change-cell-to-heading-1',
+  markdown2: 'notebook:change-cell-to-heading-2',
+  markdown3: 'notebook:change-cell-to-heading-3',
+  markdown4: 'notebook:change-cell-to-heading-4',
+  markdown5: 'notebook:change-cell-to-heading-5',
+  markdown6: 'notebook:change-cell-to-heading-6',
+  toMarkdown: 'notebook:change-cell-to-markdown',
+  toRaw: 'notebook:change-cell-to-raw',
+  insertAbove: 'notebook:insert-cell-above',
+  insertBelow: 'notebook:insert-cell-below',
+  toggleAllLines: 'notebook:toggle-all-cell-line-numbers'
 };
 
 export const SetupCommands = (
@@ -354,10 +366,12 @@ export const SetupCommands = (
     label: 'Completer: Invoke',
     execute: () => handler.invoke()
   });
+
   commands.addCommand(cmdIds.select, {
     label: 'Completer: Select',
     execute: () => handler.completer.selectActive()
   });
+
   commands.addCommand(cmdIds.invokeNotebook, {
     label: 'Invoke Notebook',
     execute: () => {
@@ -366,6 +380,7 @@ export const SetupCommands = (
       }
     }
   });
+
   commands.addCommand(cmdIds.selectNotebook, {
     label: 'Select Notebook',
     execute: () => {
@@ -374,6 +389,7 @@ export const SetupCommands = (
       }
     }
   });
+
   commands.addCommand(cmdIds.save, {
     label: 'Save',
     execute: () => nbWidget.context.save()
@@ -399,6 +415,7 @@ export const SetupCommands = (
       searchInstance.focusInput();
     }
   });
+
   commands.addCommand(cmdIds.findNext, {
     label: 'Find Next',
     isEnabled: () => !!searchInstance,
@@ -410,6 +427,7 @@ export const SetupCommands = (
       searchInstance.updateIndices();
     }
   });
+
   commands.addCommand(cmdIds.findPrevious, {
     label: 'Find Previous',
     isEnabled: () => !!searchInstance,
@@ -421,12 +439,14 @@ export const SetupCommands = (
       searchInstance.updateIndices();
     }
   });
+
   commands.addCommand(cmdIds.editMode, {
     label: 'Edit Mode',
     execute: () => {
       nbWidget.content.mode = 'edit';
     }
   });
+
   commands.addCommand(cmdIds.commandMode, {
     label: 'Command Mode',
     execute: () => {
@@ -437,25 +457,90 @@ export const SetupCommands = (
     label: 'Select Below',
     execute: () => NotebookActions.selectBelow(nbWidget.content)
   });
+
   commands.addCommand(cmdIds.selectAbove, {
     label: 'Select Above',
     execute: () => NotebookActions.selectAbove(nbWidget.content)
   });
+
   commands.addCommand(cmdIds.extendAbove, {
     label: 'Extend Above',
     execute: () => NotebookActions.extendSelectionAbove(nbWidget.content)
   });
+
   commands.addCommand(cmdIds.extendTop, {
     label: 'Extend to Top',
     execute: () => NotebookActions.extendSelectionAbove(nbWidget.content, true)
   });
+
   commands.addCommand(cmdIds.extendBelow, {
     label: 'Extend Below',
     execute: () => NotebookActions.extendSelectionBelow(nbWidget.content)
   });
+
   commands.addCommand(cmdIds.extendBottom, {
     label: 'Extend to Bottom',
     execute: () => NotebookActions.extendSelectionBelow(nbWidget.content, true)
+  });
+
+  commands.addCommand(cmdIds.toCode, {
+    label: 'Change to Code Cell Type',
+    execute: () => NotebookActions.changeCellType(nbWidget.content, 'code')
+  });
+
+  commands.addCommand(cmdIds.toMarkdown, {
+    label: 'Change to Markdown Cell Type',
+    execute: () => NotebookActions.changeCellType(nbWidget.content, 'markdown')
+  });
+
+  commands.addCommand(cmdIds.toRaw, {
+    label: 'Change to Raw Cell Type',
+    execute: () => NotebookActions.changeCellType(nbWidget.content, 'raw')
+  });
+
+  commands.addCommand(cmdIds.markdown1, {
+    label: 'Change to Heading 1',
+    execute: () => NotebookActions.setMarkdownHeader(nbWidget.content, 1)
+  });
+
+  commands.addCommand(cmdIds.markdown2, {
+    label: 'Change to Heading 2',
+    execute: () => NotebookActions.setMarkdownHeader(nbWidget.content, 2)
+  });
+
+  commands.addCommand(cmdIds.markdown3, {
+    label: 'Change to Heading 3',
+    execute: () => NotebookActions.setMarkdownHeader(nbWidget.content, 3)
+  });
+
+  commands.addCommand(cmdIds.markdown4, {
+    label: 'Change to Heading 4',
+    execute: () => NotebookActions.setMarkdownHeader(nbWidget.content, 4)
+  });
+
+  commands.addCommand(cmdIds.markdown5, {
+    label: 'Change to Heading 5',
+    execute: () => NotebookActions.setMarkdownHeader(nbWidget.content, 5)
+  });
+
+  commands.addCommand(cmdIds.markdown6, {
+    label: 'Change to Heading 6',
+    execute: () => NotebookActions.setMarkdownHeader(nbWidget.content, 6)
+  });
+
+  commands.addCommand(cmdIds.insertAbove, {
+    label: 'Insert Cell Above',
+    execute: () => NotebookActions.insertAbove(nbWidget.content)
+  });
+
+  commands.addCommand(cmdIds.insertBelow, {
+    label: 'Insert Cell Below',
+    execute: () => NotebookActions.insertBelow(nbWidget.content)
+  });
+
+  commands.addCommand(cmdIds.toggleAllLines, {
+    label: 'Toggle All Line Numbers',
+    execute: () => NotebookActions.toggleAllLineNumbers(nbWidget.content)
   });
 
   let bindings = [
@@ -561,8 +646,133 @@ export const SetupCommands = (
     },
     {
       selector: '.jp-Notebook.jp-mod-commandMode:focus',
-      keys: ['Y'],
+      keys: ['Shift Z'],
       command: cmdIds.redo
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-commandMode:focus',
+      keys: ['Y'],
+      command: cmdIds.toCode
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-commandMode:focus',
+      keys: ['1'],
+      command: cmdIds.markdown1
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-commandMode:focus',
+      keys: ['2'],
+      command: cmdIds.markdown2
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-commandMode:focus',
+      keys: ['3'],
+      command: cmdIds.markdown3
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-commandMode:focus',
+      keys: ['4'],
+      command: cmdIds.markdown4
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-commandMode:focus',
+      keys: ['5'],
+      command: cmdIds.markdown5
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-commandMode:focus',
+      keys: ['6'],
+      command: cmdIds.markdown6
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-commandMode:focus',
+      keys: ['M'],
+      command: cmdIds.toMarkdown
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-commandMode:focus',
+      keys: ['R'],
+      command: cmdIds.toRaw
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-commandMode:focus',
+      keys: ['C'],
+      command: cmdIds.copy
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-commandMode:focus',
+      keys: ['X'],
+      command: cmdIds.cut
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-commandMode:focus',
+      keys: ['D', 'D'],
+      command: cmdIds.deleteCell
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-commandMode:focus',
+      keys: ['Shift ArrowUp'],
+      command: cmdIds.extendAbove
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-commandMode:focus',
+      keys: ['Shift Home'],
+      command: cmdIds.extendTop
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-commandMode:focus',
+      keys: ['Shift ArrowDown'],
+      command: cmdIds.extendBelow
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-commandMode:focus',
+      keys: ['Shift End'],
+      command: cmdIds.extendBottom
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-commandMode:focus',
+      keys: ['A'],
+      command: cmdIds.insertAbove
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-commandMode:focus',
+      keys: ['B'],
+      command: cmdIds.insertBelow
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-commandMode:focus',
+      keys: ['V'],
+      command: cmdIds.pasteBelow
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-commandMode:focus',
+      keys: ['Ctrl Enter'],
+      command: cmdIds.run
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-editMode',
+      keys: ['Ctrl Enter'],
+      command: cmdIds.run
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-commandMode:focus',
+      keys: ['Alt Enter'],
+      command: cmdIds.runAndInsert
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-editMode',
+      keys: ['Alt Enter'],
+      command: cmdIds.runAndInsert
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-commandMode:focus',
+      keys: ['A', 'A'],
+      command: cmdIds.selectAll
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-commandMode:focus',
+      keys: ['Shift L'],
+      command: cmdIds.toggleAllLines
     }
   ];
   bindings.map(binding => commands.addKeyBinding(binding));
