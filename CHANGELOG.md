@@ -1,3 +1,54 @@
+## Version 0.3.0 (2020/07/29)
+
+### New Features
+
+* The plugin now uses JupyterLab instead of Jupyter Notebook to render notebooks. This ensures that the new features developed by the Jupyter team, such as drag and drop to reorder code cells, are available in Spyder.
+* Support for Python 2 is dropped. The plugin now requires Python 3.5 and Spyder 3.1 or later.
+* Notebooks are rendered in a dark theme if Spyder is run using a dark theme.
+* A new item, "Server Info", in the option menu of the plugin. This should help with troubleshooting in case of problems.
+* Translations for Brazilian Portuguese, German and Spanish are now available.
+* When you open Spyder, the plugin will open the notebooks that were open when you last quit Spyder.
+
+### Issues Closed
+
+* [Issue 306](https://github.com/spyder-ide/spyder-notebook/issues/306) - Shortcut 'M' does not switch cell type to Markdown ([PR 307](https://github.com/spyder-ide/spyder-notebook/pull/307))
+* [Issue 305](https://github.com/spyder-ide/spyder-notebook/issues/305) - Enable translations ([PR 304](https://github.com/spyder-ide/spyder-notebook/pull/304))
+* [Issue 296](https://github.com/spyder-ide/spyder-notebook/issues/296) - Check dependency on jupyterlab Python package ([PR 300](https://github.com/spyder-ide/spyder-notebook/pull/300))
+* [Issue 295](https://github.com/spyder-ide/spyder-notebook/issues/295) - Plugin may use server not started by Spyder ([PR 298](https://github.com/spyder-ide/spyder-notebook/pull/298))
+* [Issue 290](https://github.com/spyder-ide/spyder-notebook/issues/290) - Inherit dark or light theme from Spyder
+* [Issue 288](https://github.com/spyder-ide/spyder-notebook/issues/288) - Use QProcess instead of subprocess to start server ([PR 298](https://github.com/spyder-ide/spyder-notebook/pull/298))
+* [Issue 284](https://github.com/spyder-ide/spyder-notebook/issues/284) - Package JavaScript files ([PR 300](https://github.com/spyder-ide/spyder-notebook/pull/300))
+* [Issue 280](https://github.com/spyder-ide/spyder-notebook/issues/280) - Normalize line endings in source ([PR 287](https://github.com/spyder-ide/spyder-notebook/pull/287))
+* [Issue 275](https://github.com/spyder-ide/spyder-notebook/issues/275) - Move functionality out of NotebookPlugin ([PR 283](https://github.com/spyder-ide/spyder-notebook/pull/283))
+* [Issue 270](https://github.com/spyder-ide/spyder-notebook/issues/270) - Replace sidebar by menubar in new notebook server ([PR 274](https://github.com/spyder-ide/spyder-notebook/pull/274))
+* [Issue 261](https://github.com/spyder-ide/spyder-notebook/issues/261) - Transition to JupyterLab ([PR 264](https://github.com/spyder-ide/spyder-notebook/pull/264))
+* [Issue 260](https://github.com/spyder-ide/spyder-notebook/issues/260) - Drop support for Python 2 ([PR 276](https://github.com/spyder-ide/spyder-notebook/pull/276))
+* [Issue 245](https://github.com/spyder-ide/spyder-notebook/issues/245) - Cannot undock "Notebook" pane
+* [Issue 171](https://github.com/spyder-ide/spyder-notebook/issues/171) - Cleanly exit notebook server ([PR 289](https://github.com/spyder-ide/spyder-notebook/pull/289))
+* [Issue 133](https://github.com/spyder-ide/spyder-notebook/issues/133) - Using native menu actions of the notebook as 'Rename' its a point of failures
+* [Issue 68](https://github.com/spyder-ide/spyder-notebook/issues/68) - Restore the previous list of opened notebooks (per session) ([PR 292](https://github.com/spyder-ide/spyder-notebook/pull/292))
+
+In this release 16 issues were closed.
+
+### Pull Requests Merged
+
+* [PR 307](https://github.com/spyder-ide/spyder-notebook/pull/307) - PR: Add shortcuts that are available in Jupyter Lab ([306](https://github.com/spyder-ide/spyder-notebook/issues/306))
+* [PR 304](https://github.com/spyder-ide/spyder-notebook/pull/304) - PR: Update translations from Crowdin ([305](https://github.com/spyder-ide/spyder-notebook/issues/305))
+* [PR 303](https://github.com/spyder-ide/spyder-notebook/pull/303) - PR: Update localization source files
+* [PR 300](https://github.com/spyder-ide/spyder-notebook/pull/300) - PR: Install JavaScript files and other server components in distribution ([296](https://github.com/spyder-ide/spyder-notebook/issues/296), [284](https://github.com/spyder-ide/spyder-notebook/issues/284))
+* [PR 298](https://github.com/spyder-ide/spyder-notebook/pull/298) - PR: Rewrite code for starting and managing notebook servers ([295](https://github.com/spyder-ide/spyder-notebook/issues/295), [288](https://github.com/spyder-ide/spyder-notebook/issues/288))
+* [PR 297](https://github.com/spyder-ide/spyder-notebook/pull/297) - PR: Implement dark theme
+* [PR 292](https://github.com/spyder-ide/spyder-notebook/pull/292) - PR: Restore notebooks that were open at end of last session ([68](https://github.com/spyder-ide/spyder-notebook/issues/68))
+* [PR 289](https://github.com/spyder-ide/spyder-notebook/pull/289) - PR: Shutdown notebook server properly ([171](https://github.com/spyder-ide/spyder-notebook/issues/171))
+* [PR 287](https://github.com/spyder-ide/spyder-notebook/pull/287) - PR: Normalize line endings in text files to LF ([280](https://github.com/spyder-ide/spyder-notebook/issues/280))
+* [PR 283](https://github.com/spyder-ide/spyder-notebook/pull/283) - PR: Split off part of NotebookPlugin into NotebookTabWidget ([275](https://github.com/spyder-ide/spyder-notebook/issues/275))
+* [PR 276](https://github.com/spyder-ide/spyder-notebook/pull/276) - PR: Drop support for Python 2 ([260](https://github.com/spyder-ide/spyder-notebook/issues/260))
+* [PR 274](https://github.com/spyder-ide/spyder-notebook/pull/274) - PR: Add menu bar to notebook ([270](https://github.com/spyder-ide/spyder-notebook/issues/270))
+* [PR 264](https://github.com/spyder-ide/spyder-notebook/pull/264) - PR: Use JupyterLab to render notebooks ([261](https://github.com/spyder-ide/spyder-notebook/issues/261))
+
+In this release 13 pull requests were closed.
+
+
 ## Version 0.2.3 (2020/03/21)
 
 This release fixes some annoying bugs and UI glitches.
