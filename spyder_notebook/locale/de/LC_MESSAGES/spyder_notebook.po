@@ -1,63 +1,65 @@
-# -*- coding: utf-8 -*-
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR ORGANIZATION
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: spyder-notebook\n"
 "POT-Creation-Date: 2020-07-18 13:54+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-07-20 20:07\n"
+"Last-Translator: \n"
+"Language-Team: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: spyder-notebook\n"
+"X-Crowdin-Project-ID: 381803\n"
+"X-Crowdin-Language: de\n"
+"X-Crowdin-File: /master/spyder_notebook/locale/spyder_notebook.pot\n"
+"X-Crowdin-File-ID: 17\n"
+"Language: de_DE\n"
 
 #: spyder_notebook/notebookplugin.py:33 spyder_notebook/widgets/notebooktabwidget.py:41
 msgid "Jupyter notebooks"
-msgstr ""
+msgstr "Jupyter-Notebooks"
 
 #: spyder_notebook/notebookplugin.py:59
 msgid "Open recent"
-msgstr ""
+msgstr "Letzte öffnen"
 
 #: spyder_notebook/notebookplugin.py:65
 msgid "Open a new notebook"
-msgstr ""
+msgstr "Neues Notebook öffnen"
 
 #: spyder_notebook/notebookplugin.py:68
 msgid "Options"
-msgstr ""
+msgstr "Optionen"
 
 #: spyder_notebook/notebookplugin.py:101
 msgid "Notebook"
-msgstr ""
+msgstr "Notebook"
 
 #: spyder_notebook/notebookplugin.py:149
 msgid "New notebook"
-msgstr ""
+msgstr "Neues Notebook"
 
 #: spyder_notebook/notebookplugin.py:152
 msgid "Save as..."
-msgstr ""
+msgstr "Speichern unter..."
 
 #: spyder_notebook/notebookplugin.py:155
 msgid "Open..."
-msgstr ""
+msgstr "Öffnen..."
 
 #: spyder_notebook/notebookplugin.py:158
 msgid "Open console"
-msgstr ""
+msgstr "Konsole öffnen"
 
 #: spyder_notebook/notebookplugin.py:161
 msgid "Server info..."
-msgstr ""
+msgstr "Serverinformationen..."
 
 #: spyder_notebook/notebookplugin.py:164
 msgid "Clear this list"
-msgstr ""
+msgstr "Diese Liste leeren"
 
 #: spyder_notebook/notebookplugin.py:204
 msgid "You are working with Qt4 and in order to use this plugin you need to have Qt5.<br><br>Please update your Qt and/or PyQt packages to meet this requirement."
@@ -65,63 +67,63 @@ msgstr ""
 
 #: spyder_notebook/notebookplugin.py:305
 msgid "Error opening console"
-msgstr ""
+msgstr "Fehler beim Öffnen der Konsole"
 
 #: spyder_notebook/notebookplugin.py:306
 msgid "There is no kernel associated to this notebook."
-msgstr ""
+msgstr "Mit diesem Notebook ist kein Kernel verknüpft."
 
 #: spyder_notebook/widgets/client.py:125
 msgid "An error occurred while starting the kernel"
-msgstr ""
+msgstr "Beim Starten des Kernels ist ein Fehler aufgetreten"
 
 #: spyder_notebook/widgets/client.py:138
 msgid "Connecting to kernel..."
-msgstr ""
+msgstr "Verbindungsaufbau mit Kernel..."
 
 #: spyder_notebook/widgets/client.py:284 spyder_notebook/widgets/client.py:292
 msgid "Spyder could not get a list of sessions from the Jupyter Notebook server. Message: {}"
-msgstr ""
+msgstr "Spyder konnte keine Liste der Sitzungen vom Jupyter-Notebook-Server erhalten. Nachricht: {}"
 
 #: spyder_notebook/widgets/client.py:287 spyder_notebook/widgets/client.py:295 spyder_notebook/widgets/client.py:321 spyder_notebook/widgets/notebooktabwidget.py:397
 msgid "Server error"
-msgstr ""
+msgstr "Serverfehler"
 
 #: spyder_notebook/widgets/client.py:322
 msgid "The Jupyter Notebook server failed to shutdown the kernel associated with this notebook. If you want to shut it down, you'll have to close Spyder."
-msgstr ""
+msgstr "Der Jupyter-Notebook-Server konnte den mit diesem Notebook verbundenen Kernel nicht herunterfahren. Falls Sie ihn herunterfahren möchten, müssen Sie Spyder schließen."
 
 #: spyder_notebook/widgets/notebooktabwidget.py:119
 msgid "Open notebook"
-msgstr ""
+msgstr "Notebook öffnen"
 
 #: spyder_notebook/widgets/notebooktabwidget.py:261
 msgid "<b>{0}</b> has been modified.<br>Do you want to save changes?"
-msgstr ""
+msgstr "<b>{0}</b> wurde geändert.<br>Möchten Sie die Änderungen speichern?"
 
 #: spyder_notebook/widgets/notebooktabwidget.py:264
 msgid "Save changes"
-msgstr ""
+msgstr "Änderungen speichern"
 
 #: spyder_notebook/widgets/notebooktabwidget.py:301
 msgid "Save notebook"
-msgstr ""
+msgstr "Notebook speichern"
 
 #: spyder_notebook/widgets/notebooktabwidget.py:309
 msgid "Error while reading {}<p>{}"
-msgstr ""
+msgstr "Fehler beim Lesen {}<p>{}"
 
 #: spyder_notebook/widgets/notebooktabwidget.py:311 spyder_notebook/widgets/notebooktabwidget.py:318
 msgid "File Error"
-msgstr ""
+msgstr "Dateifehler"
 
 #: spyder_notebook/widgets/notebooktabwidget.py:316
 msgid "Error while writing {}<p>{}"
-msgstr ""
+msgstr "Fehler beim Schreiben {}<p>{}"
 
 #: spyder_notebook/widgets/notebooktabwidget.py:398
 msgid "The Jupyter Notebook server failed to start or it is taking too much time to do it. Please start it in a system terminal with the command 'jupyter notebook' to check for errors."
-msgstr ""
+msgstr "Der Jupyter-Notebook-Server konnte nicht gestartet werden oder es dauert zu lange. Bitte starten Sie ihn in einem Systemterminal mit dem Befehl 'jupyter notebook', um ihn auf Fehler zu überprüfen."
 
 #: spyder_notebook/widgets/serverinfo.py:27
 msgid "Starting up"
@@ -129,19 +131,19 @@ msgstr ""
 
 #: spyder_notebook/widgets/serverinfo.py:28
 msgid "Running"
-msgstr ""
+msgstr "Läuft"
 
 #: spyder_notebook/widgets/serverinfo.py:29
 msgid "Finished"
-msgstr ""
+msgstr "Fertig"
 
 #: spyder_notebook/widgets/serverinfo.py:30
 msgid "Error"
-msgstr ""
+msgstr "Fehler"
 
 #: spyder_notebook/widgets/serverinfo.py:31
 msgid "Timed out"
-msgstr ""
+msgstr "Zeit überschritten"
 
 #: spyder_notebook/widgets/serverinfo.py:51
 msgid "Notebook server info"
@@ -149,7 +151,7 @@ msgstr ""
 
 #: spyder_notebook/widgets/serverinfo.py:59
 msgid "Process ID:"
-msgstr ""
+msgstr "Prozesskennung:"
 
 #: spyder_notebook/widgets/serverinfo.py:63
 msgid "Notebook dir:"
@@ -157,8 +159,9 @@ msgstr ""
 
 #: spyder_notebook/widgets/serverinfo.py:67
 msgid "State:"
-msgstr ""
+msgstr "Status:"
 
 #: spyder_notebook/widgets/serverinfo.py:75
 msgid "Refresh"
-msgstr ""
+msgstr "Aktualisieren"
+
