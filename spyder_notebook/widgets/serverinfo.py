@@ -15,10 +15,10 @@ from qtpy.QtWidgets import (
     QPushButton, QTextEdit, QVBoxLayout)
 
 # Spyder imports
-from spyder.config.base import _
 from spyder.plugins.variableexplorer.widgets.basedialog import BaseDialog
 
 # Local imports
+from spyder_notebook.utils.localization import _
 from spyder_notebook.utils.servermanager import ServerProcess, ServerState
 
 

@@ -17,7 +17,6 @@ from qtpy.QtWidgets import QMessageBox, QVBoxLayout, QMenu
 
 # Spyder imports
 from spyder.api.plugins import SpyderPluginWidget
-from spyder.config.base import _
 from spyder.config.gui import is_dark_interface
 from spyder.utils import icon_manager as ima
 from spyder.utils.qthelpers import (create_action, create_toolbutton,
@@ -25,6 +24,7 @@ from spyder.utils.qthelpers import (create_action, create_toolbutton,
 from spyder.utils.switcher import shorten_paths
 
 # Local imports
+from spyder_notebook.utils.localization import _
 from spyder_notebook.utils.servermanager import ServerManager
 from spyder_notebook.widgets.notebooktabwidget import NotebookTabWidget
 from spyder_notebook.widgets.serverinfo import ServerInfoDialog

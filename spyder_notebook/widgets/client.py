@@ -25,12 +25,13 @@ from notebook.utils import url_path_join, url_escape
 import requests
 
 # Spyder imports
-from spyder.config.base import _, get_image_path, get_module_source_path
+from spyder.config.base import get_image_path, get_module_source_path
 from spyder.utils.qthelpers import add_actions
 from spyder.utils import sourcecode
 from spyder.widgets.findreplace import FindReplace
 
 # Local imports
+from spyder_notebook.utils.localization import _
 from spyder_notebook.widgets.dom import DOMWidget
 
 # -----------------------------------------------------------------------------

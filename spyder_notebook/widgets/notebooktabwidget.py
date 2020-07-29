@@ -20,11 +20,11 @@ from qtpy.QtWidgets import QMessageBox
 import nbformat
 
 # Spyder imports
-from spyder.config.base import _
 from spyder.utils.programs import get_temp_dir
 from spyder.widgets.tabs import Tabs
 
 # Local imports
+from spyder_notebook.utils.localization import _
 from spyder_notebook.widgets.client import NotebookClient
 
 
