@@ -13,6 +13,8 @@ import {
   NotebookSearchProvider
 } from '@jupyterlab/documentsearch';
 
+import { dismissTooltip, invokeTooltip } from './tooltip';
+
 /**
  * The map of command ids used by the notebook.
  */
@@ -21,6 +23,8 @@ const cmdIds = {
   select: 'completer:select',
   invokeNotebook: 'completer:invoke-notebook',
   selectNotebook: 'completer:select-notebook',
+  dismissTooltip: 'tooltip:dismiss',
+  invokeTooltip: 'tooltip:invoke',
   startSearch: 'documentsearch:start-search',
   findNext: 'documentsearch:find-next',
   findPrevious: 'documentsearch:find-previous',
@@ -361,6 +365,17 @@ export const SetupCommands = (
     execute: () => nbWidget.context.session.selectKernel()
   });
 
+  // Tooltip commands
+  commands.addCommand(cmdIds.dismissTooltip, {
+    label: 'Dismiss Tooltip',
+    execute: () => dismissTooltip()
+  });
+
+  commands.addCommand(cmdIds.invokeTooltip, {
+    label: 'Invoke Tooltip',
+    execute: () => invokeTooltip(nbWidget)
+  });
+
   // Add other commands.
   commands.addCommand(cmdIds.invoke, {
     label: 'Completer: Invoke',
@@ -553,6 +568,16 @@ export const SetupCommands = (
       selector: `.jp-mod-completer-active`,
       keys: ['Enter'],
       command: cmdIds.selectNotebook
+    },
+    {
+      selector: 'body.jp-mod-tooltip .jp-Notebook',
+      keys: ['Escape'],
+      command: cmdIds.dismissTooltip
+    },
+    {
+      selector: '.jp-Notebook.jp-mod-editMode .jp-InputArea-editor:not(.jp-mod-has-primary-selection):not(.jp-mod-in-leading-whitespace)',
+      keys: ['Shift Tab'],
+      command: cmdIds.invokeTooltip
     },
     {
       selector: '.jp-Notebook',
