@@ -186,7 +186,7 @@ class ServerManager(QObject):
         arguments = [serverscript, '--no-browser',
                      '--notebook-dir={}'.format(nbdir),
                      '--NotebookApp.password=',
-                     "--KernelSpecManager.kernel_spec_class='{}'".format(
+                     '--KernelSpecManager.kernel_spec_class={}'.format(
                            KERNELSPEC)]
         if self.dark_theme:
             arguments.append('--dark')
