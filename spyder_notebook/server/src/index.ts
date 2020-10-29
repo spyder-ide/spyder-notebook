@@ -10,6 +10,7 @@ declare var require: any;
 
 import '@jupyterlab/application/style/index.css';
 import '@jupyterlab/codemirror/style/index.css';
+import '@jupyterlab/completer/style/index.css';
 import '@jupyterlab/notebook/style/index.css';
 
 if (PageConfig.getOption('darkTheme') == 'true') {
