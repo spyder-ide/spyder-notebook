@@ -15,6 +15,7 @@ import '@jupyterlab/notebook/style/index.css';
 
 if (PageConfig.getOption('darkTheme') == 'true') {
   require('@jupyterlab/theme-dark-extension/style/index.css');
+  require('../dark-theme-hack.css');
 } else {
   require('@jupyterlab/theme-light-extension/style/index.css');
 }
