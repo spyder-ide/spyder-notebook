@@ -63,9 +63,11 @@ def test_notebookclient_get_kernel_id_with_fields_missing(plugin, mocker):
 
 
 def test_notebookclient_get_kernel_id_with_error_status(plugin, mocker):
-    """Test NotebookClient.get_kernel_id() when response has error status."""
+    """Test NotebookClient.get_kernel_id() when response has error status.
+    In this case, the content of the response may be empty;
+    see spyder-ide/spyder-notebook#317."""
     response = mocker.Mock()
-    content = b'{"message": "error"}'
+    content = b''
     response.content = content
     response.status_code = requests.codes.forbidden
     mocker.patch('requests.get', return_value=response)

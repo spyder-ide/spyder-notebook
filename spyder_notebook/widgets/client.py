@@ -288,11 +288,10 @@ class NotebookClient(QWidget):
             QMessageBox.warning(self, _('Server error'), msg)
             return None
 
-        sessions = json.loads(sessions_response.content.decode())
         if sessions_response.status_code != requests.codes.ok:
             msg = _('Spyder could not get a list of sessions '
                     'from the Jupyter Notebook server. '
-                    'Message: {}').format(sessions.get('message'))
+                    'Status code: {}').format(sessions_response.status_code)
             QMessageBox.warning(self, _('Server error'), msg)
             return None
 
@@ -301,6 +300,7 @@ class NotebookClient(QWidget):
         else:
             path = self.path
 
+        sessions = json.loads(sessions_response.content.decode())
         for session in sessions:
             notebook_path = session.get('notebook', {}).get('path')
             if notebook_path is not None and notebook_path == path:
