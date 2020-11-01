@@ -1,3 +1,13 @@
+## Version 0.3.1 (2020/11/01)
+
+### Bug Fixes
+
+* Fix compatibility issue which prevented the plugin from working at all if traitlets version 5 is installed ([Issue 314](https://github.com/spyder-ide/spyder-notebook/issues/314), [PR 326](https://github.com/spyder-ide/spyder-notebook/pull/326)).
+* Add background to code completions to make them visible ([Issue 318](https://github.com/spyder-ide/spyder-notebook/issues/318), [PR 329](https://github.com/spyder-ide/spyder-notebook/pull/329)).
+* Make strings brighter in dark mode to increase legibility ([Issue 319](https://github.com/spyder-ide/spyder-notebook/issues/319), [PR 331](https://github.com/spyder-ide/spyder-notebook/pull/331)).
+* Prevent JSONDecodeError when closing notebook ([Issue 317](https://github.com/spyder-ide/spyder-notebook/issues/317), [PR 332](https://github.com/spyder-ide/spyder-notebook/pull/332)).
+
+
 ## Version 0.3.0 (2020/07/29)
 
 ### New Features
