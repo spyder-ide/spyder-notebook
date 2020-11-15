@@ -234,7 +234,7 @@ class NotebookClient(QWidget):
         self.file_url = self.add_token(url)
 
     def go_to(self, url_or_text):
-        """Go to page utl."""
+        """Go to page URL."""
         if isinstance(url_or_text, str):
             url = QUrl(url_or_text)
         else:
@@ -259,22 +259,20 @@ class NotebookClient(QWidget):
 
     def save(self):
         """
-        Save current notebook.
+        Save current notebook asynchronously.
 
-        This function saves the current notebook by simulating a click on the
-        Save button in the notebook. The Save button is found by selecting the
-        first element of class `jp-ToolbarButtonComponent` whose `title`
-        attribute begins with the string "Save".
-
-        NB: I am not sure whether the save is performed before the function
-        returns.
+        This function simulates a click on the Save button in the notebook
+        which will save the current notebook (but the function will return
+        before). The Save button is found by selecting the first element of
+        class `jp-ToolbarButtonComponent` whose `title` attribute begins with
+        the string "Save".
         """
         self.notebookwidget.mousedown(
             '.jp-ToolbarButtonComponent[title^="Save"]')
 
     def get_session_url(self):
         """
-        Get the kernel sessions url of the client.
+        Get the kernel sessions URL of the client.
 
         Return a str with the URL or None, if no server is associated to
         the client.
