@@ -153,6 +153,11 @@ class NotebookClient(QWidget):
 
     This is a widget composed of a NotebookWidget and a find dialog to
     render notebooks.
+
+    Attributes
+    ----------
+    server_url : str or None
+        URL to send requests to; set by register().
     """
 
     def __init__(self, parent, filename, actions=None, ini_message=None):
@@ -268,8 +273,17 @@ class NotebookClient(QWidget):
             '.jp-ToolbarButtonComponent[title^="Save"]')
 
     def get_session_url(self):
-        """Get the kernel sessions url of the client."""
-        return self.add_token(url_path_join(self.server_url, 'api/sessions'))
+        """
+        Get the kernel sessions url of the client.
+
+        Return a str with the URL or None, if no server is associated to
+        the client.
+        """
+        if self.server_url:
+            session_url = url_path_join(self.server_url, 'api/sessions')
+            return self.add_token(session_url)
+        else:
+            return None
 
     def get_kernel_id(self):
         """
@@ -279,6 +293,9 @@ class NotebookClient(QWidget):
         box and return None.
         """
         sessions_url = self.get_session_url()
+        if not sessions_url:
+            return None
+
         try:
             sessions_response = requests.get(sessions_url)
         except requests.exceptions.RequestException as exception:
