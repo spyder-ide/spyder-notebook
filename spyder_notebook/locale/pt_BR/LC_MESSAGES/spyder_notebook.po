@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: spyder-notebook\n"
 "POT-Creation-Date: 2020-07-18 13:54+0100\n"
-"PO-Revision-Date: 2020-07-18 15:57\n"
+"PO-Revision-Date: 2020-11-21 21:50\n"
 "Last-Translator: \n"
 "Language-Team: Portuguese, Brazilian\n"
 "MIME-Version: 1.0\n"
@@ -55,7 +55,7 @@ msgstr "Abrir console"
 
 #: spyder_notebook/notebookplugin.py:161
 msgid "Server info..."
-msgstr ""
+msgstr "Informações do servidor..."
 
 #: spyder_notebook/notebookplugin.py:164
 msgid "Clear this list"
@@ -83,7 +83,7 @@ msgstr "Conectando ao kernel..."
 
 #: spyder_notebook/widgets/client.py:284 spyder_notebook/widgets/client.py:292
 msgid "Spyder could not get a list of sessions from the Jupyter Notebook server. Message: {}"
-msgstr ""
+msgstr "O Spyder não conseguiu obter uma lista de sessões do servidor do Notebook Jupyter. Mensagem: {}"
 
 #: spyder_notebook/widgets/client.py:287 spyder_notebook/widgets/client.py:295 spyder_notebook/widgets/client.py:321 spyder_notebook/widgets/notebooktabwidget.py:397
 msgid "Server error"
@@ -99,11 +99,11 @@ msgstr "Abrir notebook"
 
 #: spyder_notebook/widgets/notebooktabwidget.py:261
 msgid "<b>{0}</b> has been modified.<br>Do you want to save changes?"
-msgstr ""
+msgstr "<b>{0}</b> foi modificado.<br>Deseja salvar as alterações?"
 
 #: spyder_notebook/widgets/notebooktabwidget.py:264
 msgid "Save changes"
-msgstr ""
+msgstr "Salvar alterações"
 
 #: spyder_notebook/widgets/notebooktabwidget.py:301
 msgid "Save notebook"
@@ -111,15 +111,15 @@ msgstr "Salvar notebook"
 
 #: spyder_notebook/widgets/notebooktabwidget.py:309
 msgid "Error while reading {}<p>{}"
-msgstr ""
+msgstr "Erro ao ler {}<p>{}"
 
 #: spyder_notebook/widgets/notebooktabwidget.py:311 spyder_notebook/widgets/notebooktabwidget.py:318
 msgid "File Error"
-msgstr ""
+msgstr "Erro de Arquivo"
 
 #: spyder_notebook/widgets/notebooktabwidget.py:316
 msgid "Error while writing {}<p>{}"
-msgstr ""
+msgstr "Erro ao escrever {}<p>{}"
 
 #: spyder_notebook/widgets/notebooktabwidget.py:398
 msgid "The Jupyter Notebook server failed to start or it is taking too much time to do it. Please start it in a system terminal with the command 'jupyter notebook' to check for errors."
@@ -127,41 +127,41 @@ msgstr "O servidor Notebook Jupyter falhou ao iniciar ou está demorando muito p
 
 #: spyder_notebook/widgets/serverinfo.py:27
 msgid "Starting up"
-msgstr ""
+msgstr "Iniciando"
 
 #: spyder_notebook/widgets/serverinfo.py:28
 msgid "Running"
-msgstr ""
+msgstr "Executando"
 
 #: spyder_notebook/widgets/serverinfo.py:29
 msgid "Finished"
-msgstr ""
+msgstr "Finalizado"
 
 #: spyder_notebook/widgets/serverinfo.py:30
 msgid "Error"
-msgstr ""
+msgstr "Erro"
 
 #: spyder_notebook/widgets/serverinfo.py:31
 msgid "Timed out"
-msgstr ""
+msgstr "Tempo esgotado"
 
 #: spyder_notebook/widgets/serverinfo.py:51
 msgid "Notebook server info"
-msgstr ""
+msgstr "Informação do servidor Notebook"
 
 #: spyder_notebook/widgets/serverinfo.py:59
 msgid "Process ID:"
-msgstr ""
+msgstr "ID do processo:"
 
 #: spyder_notebook/widgets/serverinfo.py:63
 msgid "Notebook dir:"
-msgstr ""
+msgstr "Diretório do Notebook:"
 
 #: spyder_notebook/widgets/serverinfo.py:67
 msgid "State:"
-msgstr ""
+msgstr "Estado:"
 
 #: spyder_notebook/widgets/serverinfo.py:75
 msgid "Refresh"
-msgstr ""
+msgstr "Atualizar"
 
