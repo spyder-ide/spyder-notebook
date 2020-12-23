@@ -18,10 +18,11 @@ class MockPlugin(QWidget):
     def get_plugin_actions(self):
         return []
 
+
 @pytest.fixture
-def plugin(qtbot):
+def plugin_without_server(qtbot):
     """
-    Construct mock plugin with NotebookClient for use in tests.
+    Construct mock plugin with NotebookClient but no notebook server.
 
     Use `plugin.client` to access the client.
     """
@@ -29,11 +30,21 @@ def plugin(qtbot):
     qtbot.addWidget(plugin)
     client = NotebookClient(plugin, '/path/notebooks/ham.ipynb')
     plugin.client = client
+    return plugin
+
+
+@pytest.fixture
+def plugin(plugin_without_server):
+    """
+    Construct mock plugin with NotebookClient with server registered.
+
+    Use `plugin.client` to access the client.
+    """
     server_info = {'notebook_dir': '/path/notebooks',
                    'url': 'fake_url',
                    'token': 'fake_token'}
-    client.register(server_info)
-    return plugin
+    plugin_without_server.client.register(server_info)
+    return plugin_without_server
 
 
 def test_notebookclient_get_kernel_id(plugin, mocker):
@@ -46,6 +57,17 @@ def test_notebookclient_get_kernel_id(plugin, mocker):
 
     kernel_id = plugin.client.get_kernel_id()
     assert kernel_id == '42'
+
+
+def test_notebookclient_get_kernel_id_without_server(
+        plugin_without_server, mocker):
+    """Test NotebookClient.get_kernel_id() if client has no server."""
+    mock_get = mocker.patch('requests.get')
+
+    kernel_id = plugin_without_server.client.get_kernel_id()
+
+    assert kernel_id is None
+    mock_get.assert_not_called()
 
 
 def test_notebookclient_get_kernel_id_with_fields_missing(plugin, mocker):

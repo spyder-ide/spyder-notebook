@@ -153,6 +153,11 @@ class NotebookClient(QWidget):
 
     This is a widget composed of a NotebookWidget and a find dialog to
     render notebooks.
+
+    Attributes
+    ----------
+    server_url : str or None
+        URL to send requests to; set by register().
     """
 
     def __init__(self, parent, filename, actions=None, ini_message=None):
@@ -229,7 +234,7 @@ class NotebookClient(QWidget):
         self.file_url = self.add_token(url)
 
     def go_to(self, url_or_text):
-        """Go to page utl."""
+        """Go to page URL."""
         if isinstance(url_or_text, str):
             url = QUrl(url_or_text)
         else:
@@ -254,22 +259,29 @@ class NotebookClient(QWidget):
 
     def save(self):
         """
-        Save current notebook.
+        Save current notebook asynchronously.
 
-        This function saves the current notebook by simulating a click on the
-        Save button in the notebook. The Save button is found by selecting the
-        first element of class `jp-ToolbarButtonComponent` whose `title`
-        attribute begins with the string "Save".
-
-        NB: I am not sure whether the save is performed before the function
-        returns.
+        This function simulates a click on the Save button in the notebook
+        which will save the current notebook (but the function will return
+        before). The Save button is found by selecting the first element of
+        class `jp-ToolbarButtonComponent` whose `title` attribute begins with
+        the string "Save".
         """
         self.notebookwidget.mousedown(
             '.jp-ToolbarButtonComponent[title^="Save"]')
 
     def get_session_url(self):
-        """Get the kernel sessions url of the client."""
-        return self.add_token(url_path_join(self.server_url, 'api/sessions'))
+        """
+        Get the kernel sessions URL of the client.
+
+        Return a str with the URL or None, if no server is associated to
+        the client.
+        """
+        if self.server_url:
+            session_url = url_path_join(self.server_url, 'api/sessions')
+            return self.add_token(session_url)
+        else:
+            return None
 
     def get_kernel_id(self):
         """
@@ -279,6 +291,9 @@ class NotebookClient(QWidget):
         box and return None.
         """
         sessions_url = self.get_session_url()
+        if not sessions_url:
+            return None
+
         try:
             sessions_response = requests.get(sessions_url)
         except requests.exceptions.RequestException as exception:
