@@ -4,8 +4,9 @@
 /**
  * Set up keyboard shortcuts & commands for notebook
  */
-import { CommandRegistry } from '@phosphor/commands';
-import { Menu, MenuBar } from '@phosphor/widgets';
+import { CommandRegistry } from '@lumino/commands';
+import { Menu, MenuBar } from '@lumino/widgets';
+import { sessionContextDialogs } from '@jupyterlab/apputils';
 import { CompletionHandler } from '@jupyterlab/completer';
 import { NotebookPanel, NotebookActions } from '@jupyterlab/notebook';
 import {
@@ -235,7 +236,7 @@ export const SetupCommands = (
     execute: () => {
       return NotebookActions.runAndAdvance(
         nbWidget.content,
-        nbWidget.context.session
+        nbWidget.context.sessionContext
       );
     }
   });
@@ -245,7 +246,7 @@ export const SetupCommands = (
     execute: () => {
       return NotebookActions.run(
         nbWidget.content,
-        nbWidget.context.session
+        nbWidget.context.sessionContext
       );
     }
   });
@@ -255,7 +256,7 @@ export const SetupCommands = (
     execute: () => {
       return NotebookActions.runAndInsert(
         nbWidget.content,
-        nbWidget.context.session
+        nbWidget.context.sessionContext
       );
     }
   });
@@ -265,7 +266,7 @@ export const SetupCommands = (
     execute: () => {
       return NotebookActions.runAllAbove(
         nbWidget.content,
-        nbWidget.context.session
+        nbWidget.context.sessionContext
       );
     },
     isEnabled: () => {
@@ -280,7 +281,7 @@ export const SetupCommands = (
     execute: () => {
       return NotebookActions.runAllBelow(
         nbWidget.content,
-        nbWidget.context.session
+        nbWidget.context.sessionContext
       );
     },
     isEnabled: () => {
@@ -299,7 +300,7 @@ export const SetupCommands = (
     execute: () => {
       return NotebookActions.renderAllMarkdown(
         nbWidget.content,
-        nbWidget.context.session
+        nbWidget.context.sessionContext
       );
     }
   });
@@ -309,7 +310,7 @@ export const SetupCommands = (
     execute: () => {
       return NotebookActions.runAll(
         nbWidget.content,
-        nbWidget.context.session
+        nbWidget.context.sessionContext
       );
     }
   });
@@ -317,11 +318,12 @@ export const SetupCommands = (
   commands.addCommand(cmdIds.restartRunAll, {
     label: 'Restart Kernel and Run All Cells…',
     execute: () => {
-      return nbWidget.session.restart().then(restarted => {
+      return sessionContextDialogs.restart(nbWidget.context.sessionContext)
+             .then(restarted => {
         if (restarted) {
           void NotebookActions.runAll(
             nbWidget.content,
-            nbWidget.context.session
+            nbWidget.context.sessionContext
           );
         }
         return restarted;
@@ -332,33 +334,32 @@ export const SetupCommands = (
   // Commands in Kernel menu.
   commands.addCommand(cmdIds.interrupt, {
     label: 'Interrupt Kernel',
-    execute: async () => {
-      if (nbWidget.context.session.kernel) {
-        await nbWidget.context.session.kernel.interrupt();
-      }
-    }
+    execute: async () =>
+      nbWidget.context.sessionContext.session?.kernel?.interrupt()
   });
 
   commands.addCommand(cmdIds.restart, {
     label: 'Restart Kernel…',
-    execute: () => nbWidget.context.session.restart()
+    execute: () =>
+      sessionContextDialogs.restart(nbWidget.context.sessionContext)
   });
 
   commands.addCommand(cmdIds.restartClear, {
     label: 'Restart Kernel and Clear All Outputs…',
-    execute: () => nbWidget.context.session.restart().then(() => {
-      NotebookActions.clearAllOutputs(nbWidget.content);
-    })
+    execute: () =>
+      sessionContextDialogs.restart(nbWidget.context.sessionContext).then(
+        () => NotebookActions.clearAllOutputs(nbWidget.content))
   });
 
   commands.addCommand(cmdIds.shutdown, {
     label: 'Shutdown Kernel',
-    execute: () => nbWidget.context.session.shutdown()
+    execute: () => nbWidget.context.sessionContext.shutdown()
   });
 
   commands.addCommand(cmdIds.switchKernel, {
     label: 'Change Kernel…',
-    execute: () => nbWidget.context.session.selectKernel()
+    execute: () =>
+      sessionContextDialogs.selectKernel(nbWidget.context.sessionContext)
   });
 
   // Add other commands.
@@ -375,7 +376,7 @@ export const SetupCommands = (
   commands.addCommand(cmdIds.invokeNotebook, {
     label: 'Invoke Notebook',
     execute: () => {
-      if (nbWidget.content.activeCell.model.type === 'code') {
+      if (nbWidget.content.activeCell?.model.type === 'code') {
         return commands.execute(cmdIds.invoke);
       }
     }
@@ -384,7 +385,7 @@ export const SetupCommands = (
   commands.addCommand(cmdIds.selectNotebook, {
     label: 'Select Notebook',
     execute: () => {
-      if (nbWidget.content.activeCell.model.type === 'code') {
+      if (nbWidget.content.activeCell?.model.type === 'code') {
         return commands.execute(cmdIds.select);
       }
     }
@@ -395,7 +396,7 @@ export const SetupCommands = (
     execute: () => nbWidget.context.save()
   });
 
-  let searchInstance: SearchInstance;
+  let searchInstance: SearchInstance | undefined;
   commands.addCommand(cmdIds.startSearch, {
     label: 'Find...',
     execute: () => {
@@ -543,7 +544,7 @@ export const SetupCommands = (
     execute: () => NotebookActions.toggleAllLineNumbers(nbWidget.content)
   });
 
-  let bindings = [
+  const bindings = [
     {
       selector: '.jp-Notebook.jp-mod-editMode .jp-mod-completer-enabled',
       keys: ['Tab'],
