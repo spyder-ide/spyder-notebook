@@ -366,5 +366,19 @@ def test_view_server_info(mocker, plugin_no_server):
     mock_ServerInfoDialog.return_value.show.assert_called_once()
 
 
+@pytest.mark.parametrize('config_value', ['same as spyder', 'dark', 'light'])
+@pytest.mark.parametrize('spyder_is_dark', [True, False])
+def test_dark_theme(mocker, plugin_no_server, config_value, spyder_is_dark):
+    plugin_no_server.set_option('theme', config_value)
+    mocker.patch('spyder_notebook.notebookplugin.is_dark_interface',
+                 return_value=spyder_is_dark)
+
+    value = plugin_no_server.dark_theme
+
+    expected = (config_value == 'dark' or
+                (config_value == 'same as spyder' and spyder_is_dark))
+    assert value == expected
+
+
 if __name__ == "__main__":
     pytest.main()
