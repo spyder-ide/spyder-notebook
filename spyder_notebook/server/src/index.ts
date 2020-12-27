@@ -12,6 +12,7 @@ import '@jupyterlab/application/style/index.css';
 import '@jupyterlab/codemirror/style/index.css';
 import '@jupyterlab/completer/style/index.css';
 import '@jupyterlab/notebook/style/index.css';
+import '@jupyterlab/tooltip/style/index.css';
 
 if (PageConfig.getOption('darkTheme') == 'true') {
   require('@jupyterlab/theme-dark-extension/style/index.css');
