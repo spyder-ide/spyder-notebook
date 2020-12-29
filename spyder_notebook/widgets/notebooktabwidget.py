@@ -395,10 +395,9 @@ class NotebookTabWidget(Tabs):
         QMessageBox.critical(
             self,
             _("Server error"),
-            _("The Jupyter Notebook server failed to start or it is "
-              "taking too much time to do it. Please start it in a "
-              "system terminal with the command 'jupyter notebook' to "
-              "check for errors."))
+            _("The Spyder Notebook server failed to start or it is "
+              "taking too much time to do it. Please select 'Server info' "
+              "in the plugin's option menu to check for errors."))
         # Create a welcome widget
         # See issue 93
         self.untitled_num -= 1
