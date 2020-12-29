@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: spyder-notebook\n"
 "POT-Creation-Date: 2020-07-18 13:54+0100\n"
-"PO-Revision-Date: 2020-12-29 12:55\n"
+"PO-Revision-Date: 2020-12-29 13:06\n"
 "Last-Translator: \n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -63,7 +63,7 @@ msgstr "Diese Liste leeren"
 
 #: spyder_notebook/notebookplugin.py:204
 msgid "You are working with Qt4 and in order to use this plugin you need to have Qt5.<br><br>Please update your Qt and/or PyQt packages to meet this requirement."
-msgstr ""
+msgstr "Sie arbeiten mit Qt4 und um dieses Plugin verwenden zu können, benötigen Sie Qt5. <br> <br> Bitte aktualisieren Sie Ihre Qt- und / oder PyQt Pakete, um diese Anforderung zu erfüllen."
 
 #: spyder_notebook/notebookplugin.py:305
 msgid "Error opening console"
@@ -127,7 +127,7 @@ msgstr "Der Jupyter-Notebook-Server konnte nicht gestartet werden oder es dauert
 
 #: spyder_notebook/widgets/serverinfo.py:27
 msgid "Starting up"
-msgstr ""
+msgstr "Inbetriebnahme"
 
 #: spyder_notebook/widgets/serverinfo.py:28
 msgid "Running"
@@ -155,7 +155,7 @@ msgstr "Prozesskennung:"
 
 #: spyder_notebook/widgets/serverinfo.py:63
 msgid "Notebook dir:"
-msgstr ""
+msgstr "Notebook Verzeichnis:"
 
 #: spyder_notebook/widgets/serverinfo.py:67
 msgid "State:"
