@@ -24,6 +24,7 @@ from spyder.utils.qthelpers import (create_action, create_toolbutton,
 from spyder.utils.switcher import shorten_paths
 
 # Local imports
+from spyder_notebook.config import NotebookConfigPage
 from spyder_notebook.utils.localization import _
 from spyder_notebook.utils.servermanager import ServerManager
 from spyder_notebook.widgets.notebooktabwidget import NotebookTabWidget
@@ -40,8 +41,10 @@ class NotebookPlugin(SpyderPluginWidget):
 
     CONF_SECTION = 'notebook'
     CONF_DEFAULTS = [(CONF_SECTION, {
-        'recent_notebooks': [],    # Items in "Open recent" menu
-        'opened_notebooks': []})]  # Notebooks to open at start
+        'recent_notebooks': [],       # Items in "Open recent" menu
+        'opened_notebooks': [],       # Notebooks to open at start
+        'theme': 'same as spyder'})]  # Notebook theme (light/dark)
+    CONFIGWIDGET_CLASS = NotebookConfigPage
     focus_changed = Signal()
 
     def __init__(self, parent, testing=False):
@@ -72,17 +75,30 @@ class NotebookPlugin(SpyderPluginWidget):
         menu_btn.setPopupMode(menu_btn.InstantPopup)
         corner_widgets = {Qt.TopRightCorner: [new_notebook_btn, menu_btn]}
 
-        dark_theme = is_dark_interface()
-        self.server_manager = ServerManager(dark_theme)
+        self.server_manager = ServerManager(self.dark_theme)
         self.tabwidget = NotebookTabWidget(
             self, self.server_manager, menu=self._options_menu,
             actions=self.menu_actions, corner_widgets=corner_widgets,
-            dark_theme=dark_theme)
+            dark_theme=self.dark_theme)
 
         self.tabwidget.currentChanged.connect(self.refresh_plugin)
 
         layout.addWidget(self.tabwidget)
         self.setLayout(layout)
+
+    @property
+    def dark_theme(self):
+        """Whether to use the dark theme for notebooks (bool)."""
+        theme_config = self.get_option('theme', default='same as spyder')
+        if theme_config == 'same as spyder':
+            return is_dark_interface()
+        elif theme_config == 'dark':
+            return True
+        elif theme_config == 'light':
+            return False
+        else:
+            raise RuntimeError('theme config corrupted, value = {}'
+                               .format(theme_config))
 
     # ------ SpyderPluginMixin API --------------------------------------------
     def on_first_registration(self):
