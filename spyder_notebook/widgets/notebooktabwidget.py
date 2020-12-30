@@ -40,6 +40,12 @@ WELCOME_DARK = osp.join(PACKAGE_PATH, 'utils', 'templates',
 # Filter to use in file dialogs
 FILES_FILTER = '{} (*.ipynb)'.format(_('Jupyter notebooks'))
 
+# How long to wait after save before checking whether file exists (in ms)
+WAIT_SAVE_DELAY = 250
+
+# How often to wait for that time
+WAIT_SAVE_ITERATIONS = 20
+
 logger = logging.getLogger(__name__)
 
 
@@ -247,16 +253,33 @@ class NotebookTabWidget(Tabs):
         if not self.is_newly_created(client):
             return filename
 
-        # Read file to see whether notebook is empty
-        wait_save = QEventLoop()
-        QTimer.singleShot(1000, wait_save.quit)
-        wait_save.exec_()
-        nb_contents = nbformat.read(filename, as_version=4)
-        if (len(nb_contents['cells']) == 0
-                or len(nb_contents['cells'][0]['source']) == 0):
+        # Repeatly try reading file to see whether notebook is empty
+        for iteration in range(WAIT_SAVE_ITERATIONS):
+
+            # Wait a bit
+            wait_save = QEventLoop()
+            QTimer.singleShot(WAIT_SAVE_DELAY, wait_save.quit)
+            wait_save.exec_()
+
+            # Try reading the file
+            try:
+                nb_contents = nbformat.read(filename, as_version=4)
+            except FileNotFoundError:
+                logger.debug('File not found')
+                continue
+
+            # If empty, we are done
+            if (len(nb_contents['cells']) == 0
+                    or len(nb_contents['cells'][0]['source']) == 0):
+                return filename
+            else:
+                break
+        else:
+            # It is taking longer than expected;
+            # Just return and hope for the best
             return filename
 
-        # Ask user to save notebook with new filename
+        # Notebook not empty, so ask user to save with new filename
         buttons = QMessageBox.Yes | QMessageBox.No
         text = _("<b>{0}</b> has been modified.<br>"
                  "Do you want to save changes?").format(osp.basename(filename))
