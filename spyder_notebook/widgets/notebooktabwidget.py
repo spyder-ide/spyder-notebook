@@ -252,31 +252,7 @@ class NotebookTabWidget(Tabs):
         filename = client.filename
         if not self.is_newly_created(client):
             return filename
-
-        # Repeatly try reading file to see whether notebook is empty
-        for iteration in range(WAIT_SAVE_ITERATIONS):
-
-            # Wait a bit
-            wait_save = QEventLoop()
-            QTimer.singleShot(WAIT_SAVE_DELAY, wait_save.quit)
-            wait_save.exec_()
-
-            # Try reading the file
-            try:
-                nb_contents = nbformat.read(filename, as_version=4)
-            except FileNotFoundError:
-                logger.debug('File not found')
-                continue
-
-            # If empty, we are done
-            if (len(nb_contents['cells']) == 0
-                    or len(nb_contents['cells'][0]['source']) == 0):
-                return filename
-            else:
-                break
-        else:
-            # It is taking longer than expected;
-            # Just return and hope for the best
+        if self.wait_and_check_if_empty(filename):
             return filename
 
         # Notebook not empty, so ask user to save with new filename
@@ -289,6 +265,49 @@ class NotebookTabWidget(Tabs):
             return self.save_as(reopen_after_save=False)
         else:
             return filename
+
+    @staticmethod
+    def wait_and_check_if_empty(filename):
+        """
+        Wait until notebook is created and check whether it is empty.
+
+        Repeatedly try to read the file, waiting a bit after every attempt.
+        At the first attempt where the file exists, test whether it is empty
+        and return. If it takes too long before the file is created, pretend
+        it is empty.
+
+        Parameters
+        ----------
+        filename : str
+            File name of notebook to be checked.
+
+        Returns
+        -------
+        True if notebook is empty or on timeout, False otherwise.
+        """
+        for iteration in range(WAIT_SAVE_ITERATIONS):
+
+            # Wait a bit
+            wait_save = QEventLoop()
+            QTimer.singleShot(WAIT_SAVE_DELAY, wait_save.quit)
+            wait_save.exec_()
+
+            # Try reading the file
+            try:
+                nb_contents = nbformat.read(filename, as_version=4)
+            except FileNotFoundError:
+                continue
+
+            # If empty, we are done
+            if (len(nb_contents['cells']) == 0
+                    or len(nb_contents['cells'][0]['source']) == 0):
+                return True
+            else:
+                return False
+        else:
+            # It is taking longer than expected;
+            # Just return True and hope for the best
+            return True
 
     def save_as(self, name=None, reopen_after_save=True):
         """
