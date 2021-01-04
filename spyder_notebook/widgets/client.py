@@ -15,8 +15,9 @@ import sys
 from qtpy.QtCore import QUrl, Qt
 from qtpy.QtGui import QFontMetrics, QFont
 from qtpy.QtWebEngineWidgets import (QWebEnginePage, QWebEngineSettings,
-                                     WEBENGINE)
-from qtpy.QtWidgets import QMenu, QVBoxLayout, QWidget, QMessageBox
+                                     QWebEngineView, WEBENGINE)
+from qtpy.QtWidgets import (QApplication, QMenu, QVBoxLayout, QWidget,
+                            QMessageBox)
 
 # Notebook imports
 from notebook.utils import url_path_join, url_escape
@@ -81,11 +82,17 @@ class NotebookWidget(DOMWidget):
         actions in `self.actions` and remove the Back and Forward actions
         which have no meaning for the notebook widget.
 
+        If Shift is pressed, then instead display the standard Qt context menu,
+        per gh:spyder-ide/spyder-notebook#279
+
         Parameters
         ----------
         event : QContextMenuEvent
             The context menu event that needs to be handled.
         """
+        if QApplication.keyboardModifiers() & Qt.ShiftModifier:
+            return QWebEngineView.contextMenuEvent(self, event)
+
         if self.actions is None:
             actions = []
         else:
