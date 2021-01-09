@@ -7,6 +7,7 @@
 
 # Third-party imports
 import pytest
+from qtpy.QtCore import QUrl
 from qtpy.QtWidgets import QWidget
 import requests
 
@@ -45,6 +46,20 @@ def plugin(plugin_without_server):
                    'token': 'fake_token'}
     plugin_without_server.client.register(server_info)
     return plugin_without_server
+
+
+def test_notebookwidget_create_window(plugin, mocker, qtbot):
+    """Test that NotebookWidget.create_window() creates an object that calls
+    webbrowser.open() when its URL is set."""
+    widget = plugin.client.notebookwidget
+    mock_notebook_open = mocker.patch('webbrowser.open')
+    new_view = widget.createWindow(42)
+    url = 'https://www.spyder-ide.org/'
+
+    with qtbot.waitSignal(new_view.loadFinished):
+        new_view.setUrl(QUrl(url))
+
+    mock_notebook_open.assert_called_once_with(url)
 
 
 def test_notebookclient_get_kernel_id(plugin, mocker):
