@@ -5,9 +5,10 @@
 
 """Qt widgets for the notebook."""
 
+# Standard library imports
+import json
 import os
 import os.path as osp
-import json
 from string import Template
 import sys
 
@@ -19,10 +20,8 @@ from qtpy.QtWebEngineWidgets import (QWebEnginePage, QWebEngineSettings,
 from qtpy.QtWidgets import (QApplication, QMenu, QVBoxLayout, QWidget,
                             QMessageBox)
 
-# Notebook imports
-from notebook.utils import url_path_join, url_escape
-
 # Third-party imports
+from notebook.utils import url_path_join, url_escape
 import requests
 
 # Spyder imports
@@ -55,6 +54,39 @@ KERNEL_ERROR = open(osp.join(TEMPLATES_PATH, 'kernel_error.html')).read()
 # -----------------------------------------------------------------------------
 # Widgets
 # -----------------------------------------------------------------------------
+class WebViewInBrowser(QWebEngineView):
+    """
+    WebView which opens document in an external browser.
+
+    This is a subclass of QWebEngineView, which as soon as the URL is set,
+    opens the web page in an external browser and closes itself. It is used
+    in NotebookWidget to open links.
+    """
+
+    def __init__(self, parent):
+        """Construct object."""
+        super().__init__(parent)
+        self.urlChanged.connect(self.open_in_browser)
+
+    def open_in_browser(self, url):
+        """
+        Open web page in external browser and close self.
+
+        Parameters
+        ----------
+        url : QUrl
+            URL of web page to open in browser
+        """
+        import webbrowser
+        try:
+            webbrowser.open(url.toString())
+        except ValueError:
+            # See: spyder-ide/spyder#9849
+            pass
+        self.stop()
+        self.close()
+
+
 class NotebookWidget(DOMWidget):
     """WebView widget for notebooks."""
 
@@ -152,6 +184,17 @@ class NotebookWidget(DOMWidget):
     def show_message(self, page):
         """Show a message page with the given .html file."""
         self.setHtml(page)
+
+    def createWindow(self, webWindowType):
+        """
+        Create new browser window.
+
+        This function is called by Qt if the user clicks on a link in the
+        notebook. The goal is to open the web page in an external browser.
+        To that end, we create and return an object which will open the browser
+        when Qt sets the URL.
+        """
+        return WebViewInBrowser(self.parent())
 
 
 class NotebookClient(QWidget):
