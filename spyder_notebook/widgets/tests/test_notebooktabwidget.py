@@ -22,7 +22,7 @@ from spyder_notebook.widgets.notebooktabwidget import (
 @pytest.fixture
 def tabwidget(mocker, qtbot):
     """Create an empty NotebookTabWidget which does not start up servers."""
-    def fake_get_server(filename, start):
+    def fake_get_server(filename, interpreter, start):
         return collections.defaultdict(
             str, filename=filename, notebook_dir=osp.dirname(filename))
 

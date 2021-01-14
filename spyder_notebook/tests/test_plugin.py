@@ -103,7 +103,7 @@ def notebook(qtbot):
 def plugin_no_server(mocker, qtbot):
     """Set up the Notebook plugin with a fake nbopen which does not start
     a notebook server."""
-    def fake_get_server(filename, start):
+    def fake_get_server(filename, interpreter, start):
         return collections.defaultdict(
             str, filename=filename, notebook_dir=osp.dirname(filename))
     fake_server_manager = mocker.Mock(get_server=fake_get_server)

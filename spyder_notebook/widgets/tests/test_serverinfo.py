@@ -29,9 +29,11 @@ class FakeProcess:
 def dialog(qtbot):
     """Construct and return dialog window for testing."""
     servers = [ServerProcess(FakeProcess(42), '/my/home/dir',
+                             interpreter='/ham/interpreter',
                              state=ServerState.RUNNING,
                              output='Nicely humming along...\n'),
                ServerProcess(FakeProcess(404), '/some/other/dir',
+                             interpreter='/spam/interpreter',
                              state=ServerState.FINISHED,
                              output='Terminated for some reason...\n')]
     res = ServerInfoDialog(servers)
