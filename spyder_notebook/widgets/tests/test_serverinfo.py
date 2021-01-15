@@ -49,6 +49,7 @@ def test_dialog_on_initialization(dialog):
     assert dialog.process_combo.itemText(1) == '404'
     assert dialog.state_lineedit.text() == 'Running'
     assert dialog.dir_lineedit.text() == '/my/home/dir'
+    assert dialog.interpreter_lineedit.text() == '/ham/interpreter'
     assert dialog.log_textedit.toPlainText() == 'Nicely humming along...\n'
 
 
@@ -61,5 +62,6 @@ def test_dialog_change_process(dialog):
     assert dialog.process_combo.currentText() == '404'
     assert dialog.state_lineedit.text() == 'Finished'
     assert dialog.dir_lineedit.text() == '/some/other/dir'
+    assert dialog.interpreter_lineedit.text() == '/spam/interpreter'
     assert (dialog.log_textedit.toPlainText()
             == 'Terminated for some reason...\n')
