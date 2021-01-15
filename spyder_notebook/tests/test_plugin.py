@@ -278,6 +278,9 @@ def test_new_notebook(notebook, qtbot):
     assert notebook.tabwidget.count() == 2
 
 
+# Teardown sometimes fails on Mac with Python 3.8 due to NoProcessException
+# in shutdown_server() in notebookapp.py in external notebook library
+@flaky
 def test_open_console_when_no_kernel(notebook, qtbot, mocker):
     """Test that open_console() handles the case when there is no kernel."""
     # Create mock IPython console plugin and QMessageBox
