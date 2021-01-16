@@ -62,6 +62,11 @@ class ServerInfoDialog(BaseDialog):
         self.dir_lineedit.setReadOnly(True)
         self.formlayout.addRow(_('Notebook dir:'), self.dir_lineedit)
 
+        self.interpreter_lineedit = QLineEdit(self)
+        self.interpreter_lineedit.setReadOnly(True)
+        self.formlayout.addRow(_('Python interpreter:'),
+                               self.interpreter_lineedit)
+
         self.state_lineedit = QLineEdit(self)
         self.state_lineedit.setReadOnly(True)
         self.formlayout.addRow(_('State:'), self.state_lineedit)
@@ -88,6 +93,7 @@ class ServerInfoDialog(BaseDialog):
 
     def select_process(self, index):
         self.dir_lineedit.setText(self.servers[index].notebook_dir)
+        self.interpreter_lineedit.setText(self.servers[index].interpreter)
         self.state_lineedit.setText(
             SERVER_STATE_DESCRIPTIONS[self.servers[index].state])
         self.log_textedit.setPlainText(self.servers[index].output)
@@ -103,9 +109,11 @@ def test():  # pragma: no cover
             return self.pid
 
     servers = [ServerProcess(FakeProcess(42), '/my/home/dir',
+                             '/ham/interpreter',
                              state=ServerState.RUNNING,
                              output='Nicely humming along...\n'),
                ServerProcess(FakeProcess(404), '/some/other/dir',
+                             '/spam/interpreter',
                              state=ServerState.FINISHED,
                              output='Terminated for some reason...\n')]
 

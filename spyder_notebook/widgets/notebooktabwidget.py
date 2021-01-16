@@ -20,7 +20,9 @@ from qtpy.QtWidgets import QMessageBox
 import nbformat
 
 # Spyder imports
-from spyder.utils.programs import get_temp_dir
+from spyder.config.manager import CONF
+from spyder.utils.misc import get_python_executable
+from spyder.utils.programs import get_temp_dir, is_python_interpreter
 from spyder.widgets.tabs import Tabs
 
 # Local imports
@@ -158,13 +160,36 @@ class NotebookTabWidget(Tabs):
 
         client = NotebookClient(self, filename, self.actions)
         self.add_tab(client)
-        server_info = self.server_manager.get_server(filename, start=True)
+        interpreter = self.get_interpreter()
+        server_info = self.server_manager.get_server(
+            filename, interpreter, start=True)
         if server_info:
             logger.debug('Using existing server at %s',
                          server_info['notebook_dir'])
             client.register(server_info)
             client.load_notebook()
         return client
+
+    @staticmethod
+    def get_interpreter():
+        """
+        Return the Python interpreter to be used in notebooks.
+
+        This function looks in the Spyder configuration to determine and
+        return the Python interpreter to be used in notebooks, which is the
+        same as is used in consoles.
+
+        Returns
+        -------
+        The file name of the interpreter
+        """
+        if CONF.get('main_interpreter', 'default'):
+            pyexec = get_python_executable()
+        else:
+            pyexec = CONF.get('main_interpreter', 'executable')
+            if not is_python_interpreter(pyexec):
+                pyexec = get_python_executable()
+        return pyexec
 
     def maybe_create_welcome_client(self):
         """
@@ -414,34 +439,47 @@ class NotebookTabWidget(Tabs):
         self.setCurrentIndex(index)
         self.setTabToolTip(index, widget.get_filename())
 
-    def handle_server_started(self):
+    def handle_server_started(self, process):
         """
         Handle signal that a notebook server has started.
 
         Go through all notebook tabs which do not have server info and try
-        getting the server info for them.
+        getting the server info for them. If that marches the server process
+        that has started, then update the notebook tab.
+
+        Parameters
+        ----------
+        process : ServerProcess
+            Info about the server that has started.
         """
+        pid = process.process.processId()
         for client_index in range(self.count()):
             client = self.widget(client_index)
             if not client.static and not client.server_url:
                 logger.debug('Getting server for %s', client.filename)
                 server_info = self.server_manager.get_server(
-                    client.filename, start=False)
-                if server_info:
+                    client.filename, process.interpreter, start=False)
+                if server_info and server_info['pid'] == pid:
                     logger.debug('Success')
                     client.register(server_info)
                     client.load_notebook()
 
-    def handle_server_timed_out_or_error(self):
-        """Display message box that server failed to start."""
+    def handle_server_timed_out_or_error(self, process):
+        """
+        Display message box that server failed to start.
+
+        Parameters
+        ----------
+        process : ServerProcess
+            Info about the server that failed to start.
+        """
         QMessageBox.critical(
             self,
             _("Server error"),
             _("The Spyder Notebook server failed to start or it is "
               "taking too much time to do it. Please select 'Server info' "
               "in the plugin's option menu to check for errors."))
-        # Create a welcome widget
-        # See issue 93
+        # Create a welcome widget, see gh:spyder-ide/spyder-notebook#93
         self.untitled_num -= 1
         self.maybe_create_welcome_client()
         return None

@@ -53,7 +53,7 @@ class ServerProcess():
     This is a data class.
     """
 
-    def __init__(self, process, notebook_dir, starttime=None,
+    def __init__(self, process, notebook_dir, interpreter, starttime=None,
                  state=ServerState.STARTING, server_info=None, output=''):
         """
         Construct a ServerProcess.
@@ -64,6 +64,8 @@ class ServerProcess():
             The process described by this instance.
         notebook_dir : str
             Directory from which the server can render notebooks.
+        interpreter : str
+            File name of Python interpreter used to render notebooks.
         starttime : datetime or None, optional
             Time at which the process was started. The default is None,
             meaning that the current time should be used.
@@ -79,6 +81,7 @@ class ServerProcess():
         """
         self.process = process
         self.notebook_dir = notebook_dir
+        self.interpreter = interpreter
         self.starttime = starttime or datetime.datetime.now()
         self.state = state
         self.server_info = server_info
@@ -102,13 +105,13 @@ class ServerManager(QObject):
     """
 
     # A server has started and is now accepting requests
-    sig_server_started = Signal()
+    sig_server_started = Signal(ServerProcess)
 
     # We tried to start a server but it took too long to start up
-    sig_server_timed_out = Signal()
+    sig_server_timed_out = Signal(ServerProcess)
 
     # We tried to start a server but an error occurred
-    sig_server_errored = Signal()
+    sig_server_errored = Signal(ServerProcess)
 
     def __init__(self, dark_theme=False):
         """
@@ -124,19 +127,22 @@ class ServerManager(QObject):
         self.dark_theme = dark_theme
         self.servers = []
 
-    def get_server(self, filename, start=True):
+    def get_server(self, filename, interpreter, start=True):
         """
         Return server which can render a notebook or potentially start one.
 
         Return the server info of a server managed by this object which can
-        render the notebook with the given file name. If no such server
-        exists and `start` is True, then start up a server asynchronously
-        (unless a suitable server is already in the process of starting up).
+        render the notebook with the given file name and which uses the given
+        interpreter. If no such server exists and `start` is True, then start
+        up a server asynchronously (unless a suitable server is already in the
+        process of starting up).
 
         Parameters
         ----------
         filename : str
             File name of notebook which is to be rendered.
+        interpreter : str
+            File name of Python interpreter to be used.
         start : bool, optional
             Whether to start up a server if none exists. The default is True.
 
@@ -148,7 +154,8 @@ class ServerManager(QObject):
         """
         filename = osp.abspath(filename)
         for server in self.servers:
-            if filename.startswith(server.notebook_dir):
+            if (filename.startswith(server.notebook_dir)
+                    and interpreter == server.interpreter):
                 if server.state == ServerState.RUNNING:
                     return server.server_info
                 elif server.state == ServerState.STARTING:
@@ -156,22 +163,24 @@ class ServerManager(QObject):
                                  server.notebook_dir)
                     return None
         if start:
-            self.start_server(filename)
+            self.start_server(filename, interpreter)
         return None
 
-    def start_server(self, filename):
+    def start_server(self, filename, interpreter):
         """
         Start a notebook server asynchronously.
 
         Start a server which can render the given notebook and return
-        immediately. The manager will check periodically whether the server is
-        accepting requests and emit `sig_server_started` or
-        `sig_server_timed_out` when appropriate.
+        immediately. Assume the server uses the given interpreter. The manager
+        will check periodically whether the server is accepting requests and
+        emit `sig_server_started` or `sig_server_timed_out` when appropriate.
 
         Parameters
         ----------
         filename : str
             File name of notebook to be rendered by the server.
+        interpreter : str
+            File name of Python interpreter to be used.
         """
         home_dir = get_home_dir()
         if filename.startswith(home_dir):
@@ -197,7 +206,8 @@ class ServerManager(QObject):
             env.insert('PYTHONPATH', osp.dirname(get_module_path('spyder')))
             process.setProcessEnvironment(env)
 
-        server_process = ServerProcess(process, notebook_dir=nbdir)
+        server_process = ServerProcess(
+            process, notebook_dir=nbdir, interpreter=interpreter)
         process.setProcessChannelMode(QProcess.MergedChannels)
         process.readyReadStandardOutput.connect(
             lambda: self.read_server_output(server_process))
@@ -249,7 +259,7 @@ class ServerManager(QObject):
                 logger.debug('Notebook server for %s timed out',
                              server_process.notebook_dir)
                 server_process.state = ServerState.TIMED_OUT
-                self.sig_server_timed_out.emit()
+                self.sig_server_timed_out.emit(server_process)
             else:
                 QTimer.singleShot(
                     CHECK_SERVER_UP_DELAY,
@@ -259,7 +269,7 @@ class ServerManager(QObject):
         logger.debug('Server for %s started', server_process.notebook_dir)
         server_process.state = ServerState.RUNNING
         server_process.server_info = server_info
-        self.sig_server_started.emit()
+        self.sig_server_started.emit(server_process)
 
     def shutdown_all_servers(self):
         """Shutdown all running servers."""
@@ -307,7 +317,7 @@ class ServerManager(QObject):
         logger.debug('Server for %s encountered error %s',
                      server_process.notebook_dir, str(error))
         server_process.state = ServerState.ERROR
-        self.sig_server_errored.emit()
+        self.sig_server_errored.emit(server_process)
 
     def handle_finished(self, server_process, code, status):
         """
