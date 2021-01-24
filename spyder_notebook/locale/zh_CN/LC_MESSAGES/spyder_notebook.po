@@ -1,22 +1,21 @@
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: spyder-notebook\n"
 "POT-Creation-Date: 2021-01-16 12:42+0000\n"
-"PO-Revision-Date: 2020-07-18 15:57\n"
+"PO-Revision-Date: 2021-01-16 13:16\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_CN\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: pygettext.py 1.5\n"
-"X-Crowdin-File: /master/spyder_notebook/locale/spyder_notebook.pot\n"
-"X-Crowdin-File-ID: 17\n"
-"X-Crowdin-Language: zh-CN\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "X-Crowdin-Project: spyder-notebook\n"
 "X-Crowdin-Project-ID: 381803\n"
+"X-Crowdin-Language: zh-CN\n"
+"X-Crowdin-File: /master/spyder_notebook/locale/spyder_notebook.pot\n"
+"X-Crowdin-File-ID: 17\n"
+"Language: zh_CN\n"
 
 #: spyder_notebook/config.py:27
 msgid "Notebook theme"
@@ -181,3 +180,4 @@ msgstr ""
 #: spyder_notebook/widgets/serverinfo.py:80
 msgid "Refresh"
 msgstr ""
+
