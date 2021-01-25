@@ -1,3 +1,20 @@
+## Version 0.3.2 (2021/01/25)
+
+### New Features
+
+* Pressing Shift-Tab now shows the documentation of functions and so on, as in a Jupyter server ([Issue 315](https://github.com/spyder-ide/spyder-notebook/issues/315), [PR 344](https://github.com/spyder-ide/spyder-notebook/pull/344))
+* Add an option to Preferences so that you can now have Spyder in a dark theme and notebooks in a light theme, or vice versa ([Issue 310](https://github.com/spyder-ide/spyder-notebook/issues/310), [PR 345](https://github.com/spyder-ide/spyder-notebook/pull/345))
+* Shift-RightClick now shows the browser menu, which allows you to save a plot as a picture ([Issue 279](https://github.com/spyder-ide/spyder-notebook/issues/279), [PR 349](https://github.com/spyder-ide/spyder-notebook/pull/349))
+
+### Bug Fixes
+
+* Opening a link from a notebook now opens the correct page in your web browser ([Issue 185](https://github.com/spyder-ide/spyder-notebook/issues/185), [PR 351](https://github.com/spyder-ide/spyder-notebook/pull/351))
+* If you change the Python interpreter in the Preferences, then notebooks opened afterwards will use the new environment; previously, you had to restart Spyder ([Issue 266](https://github.com/spyder-ide/spyder-notebook/issues/266), [PR 352](https://github.com/spyder-ide/spyder-notebook/pull/352))
+* Update error message when server fails so that it is more helpful ([Issue 337](https://github.com/spyder-ide/spyder-notebook/issues/337), [PR 347](https://github.com/spyder-ide/spyder-notebook/pull/347))
+* Prevent an AttributeError exception when saving or closing notebooks ([Issue 311](https://github.com/spyder-ide/spyder-notebook/issues/311), [Issue 333](https://github.com/spyder-ide/spyder-notebook/issues/333), [PR 334](https://github.com/spyder-ide/spyder-notebook/pull/334))
+* Make saving more robust by waiting longer if necessary ([Issue 339](https://github.com/spyder-ide/spyder-notebook/issues/339), [PR 348](https://github.com/spyder-ide/spyder-notebook/pull/348))
+
+
 ## Version 0.3.1 (2020/11/01)
 
 ### Bug Fixes
