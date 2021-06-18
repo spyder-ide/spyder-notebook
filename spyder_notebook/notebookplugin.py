@@ -24,6 +24,7 @@ from spyder.utils.qthelpers import (create_action, create_toolbutton,
 from spyder.utils.switcher import shorten_paths
 
 # Local imports
+from spyder_notebook.config import CONF_DEFAULTS, CONF_VERSION
 from spyder_notebook.confpage import NotebookConfigPage
 from spyder_notebook.utils.localization import _
 from spyder_notebook.utils.servermanager import ServerManager
@@ -40,10 +41,8 @@ class NotebookPlugin(SpyderPluginWidget):
     """IPython Notebook plugin."""
 
     CONF_SECTION = 'notebook'
-    CONF_DEFAULTS = [(CONF_SECTION, {
-        'recent_notebooks': [],       # Items in "Open recent" menu
-        'opened_notebooks': [],       # Notebooks to open at start
-        'theme': 'same as spyder'})]  # Notebook theme (light/dark)
+    CONF_DEFAULTS = CONF_DEFAULTS
+    CONF_VERSION = CONF_VERSION
     CONFIGWIDGET_CLASS = NotebookConfigPage
     focus_changed = Signal()
 
