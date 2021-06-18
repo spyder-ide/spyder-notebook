@@ -70,7 +70,7 @@ if any([arg == 'bdist_wheel' for arg in sys.argv]):
         sys.exit(1)
 
 
-REQUIREMENTS = ['spyder>=4.1,<5', 'jinja2', 'jupyter_core', 'nbformat',
+REQUIREMENTS = ['spyder>=5.0.4,<6', 'jinja2', 'jupyter_core', 'nbformat',
                 'notebook>=4.3', 'qtpy', 'qdarkstyle', 'requests', 'traitlets']
 
 setup(
@@ -78,7 +78,7 @@ setup(
     version=get_version(),
     cmdclass={'sdist': my_sdist},
     keywords='spyder jupyter notebook',
-    python_requires='>=3.5',
+    python_requires='>=3.6',
     url='https://github.com/spyder-ide/spyder-notebook',
     license='MIT',
     author='Spyder Development Team',
@@ -88,10 +88,17 @@ setup(
     packages=find_packages(),
     install_requires=REQUIREMENTS,
     include_package_data=True,
-    classifiers=['Development Status :: 4 - Beta',
-                 'Framework :: Jupyter',
-                 'Intended Audience :: Developers',
-                 'License :: OSI Approved :: MIT License',
-                 'Operating System :: OS Independent',
-                 'Programming Language :: Python :: 3']
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Framework :: Jupyter',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 3'
+    ],
+    entry_points={
+        "spyder.plugins": [
+            "notebook = spyder_notebook.notebookplugin:NotebookPlugin"
+        ],
+    }
 )
