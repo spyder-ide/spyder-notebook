@@ -24,7 +24,7 @@ from spyder.utils.qthelpers import (create_action, create_toolbutton,
 from spyder.utils.switcher import shorten_paths
 
 # Local imports
-from spyder_notebook.config import NotebookConfigPage
+from spyder_notebook.confpage import NotebookConfigPage
 from spyder_notebook.utils.localization import _
 from spyder_notebook.utils.servermanager import ServerManager
 from spyder_notebook.widgets.notebooktabwidget import NotebookTabWidget
