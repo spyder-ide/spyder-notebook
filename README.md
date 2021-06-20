@@ -44,6 +44,8 @@ Using pip:
 pip install spyder-notebook
 ```
 
+**Note**: At the moment it is not possible to use this plugin with the [Spyder installers](http://docs.spyder-ide.org/current/installation.html#standalone-installers) for Windows and macOS. We're working to make that a reality in the future.
+
 ## Dependencies
 
 This project depends on:
