@@ -20,7 +20,7 @@ from qtpy.QtWidgets import QMessageBox
 import nbformat
 
 # Spyder imports
-from spyder.config.manager import CONF
+from spyder.api.config.mixins import SpyderConfigurationAccessor
 from spyder.utils.misc import get_python_executable
 from spyder.utils.programs import get_temp_dir, is_python_interpreter
 from spyder.widgets.tabs import Tabs
@@ -51,7 +51,7 @@ WAIT_SAVE_ITERATIONS = 20
 logger = logging.getLogger(__name__)
 
 
-class NotebookTabWidget(Tabs):
+class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
     """
     Tabbed widget whose tabs display notebooks.
 
@@ -170,8 +170,7 @@ class NotebookTabWidget(Tabs):
             client.load_notebook()
         return client
 
-    @staticmethod
-    def get_interpreter():
+    def get_interpreter(self):
         """
         Return the Python interpreter to be used in notebooks.
 
@@ -183,10 +182,10 @@ class NotebookTabWidget(Tabs):
         -------
         The file name of the interpreter
         """
-        if CONF.get('main_interpreter', 'default'):
+        if self.get_conf(option='default', section='main_interpreter'):
             pyexec = get_python_executable()
         else:
-            pyexec = CONF.get('main_interpreter', 'executable')
+            pyexec = self.get_conf(option='executable', section='main_interpreter')
             if not is_python_interpreter(pyexec):
                 pyexec = get_python_executable()
         return pyexec
