@@ -46,7 +46,7 @@ class ServerState(enum.Enum):
     TIMED_OUT = 5
 
 
-class ServerProcess():
+class ServerProcess:
     """
     Process executing a notebook server.
 

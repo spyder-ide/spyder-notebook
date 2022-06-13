@@ -15,6 +15,8 @@ from qtpy.QtGui import QIcon
 
 # Spyder imports
 from spyder.api.plugins import Plugins, SpyderDockablePlugin
+from spyder.api.plugin_registration.decorators import (
+    on_plugin_available, on_plugin_teardown)
 from spyder.utils.switcher import shorten_paths
 
 # Local imports
@@ -48,7 +50,8 @@ class NotebookPlugin(SpyderDockablePlugin):
 
     # ---- SpyderDockablePlugin API
     # ------------------------------------------------------------------------
-    def get_name(self):
+    @staticmethod
+    def get_name():
         """Return plugin name."""
         title = _('Notebook')
         return title
@@ -61,26 +64,35 @@ class NotebookPlugin(SpyderDockablePlugin):
         """Return plugin icon."""
         return self.create_icon('notebook')
 
-    def on_close(self, cancelable=False):
-        return self.get_widget().on_close(cancelable=cancelable)
-
-    def register(self):
+    def on_initialize(self):
         """Register plugin in Spyder's main window."""
         self.focus_changed.connect(self.main.plugin_focus_changed)
-        ipyconsole = self.get_plugin(Plugins.IPythonConsole)
-        preferences = self.get_plugin(Plugins.Preferences)
-
-        preferences.register_plugin_preferences(self)
-
-        if ipyconsole:
-            self.get_widget().sig_open_console_requested.connect(
-                self.open_console)
 
         # Connect to switcher
         self.switcher = self.main.switcher
         self.switcher.sig_mode_selected.connect(self.handle_switcher_modes)
         self.switcher.sig_item_selected.connect(
             self.handle_switcher_selection)
+
+    @on_plugin_available(plugin=Plugins.Preferences)
+    def on_preferences_available(self):
+        preferences = self.get_plugin(Plugins.Preferences)
+        preferences.register_plugin_preferences(self)
+
+    @on_plugin_available(plugin=Plugins.IPythonConsole)
+    def on_ipyconsole_available(self):
+        self.get_widget().sig_open_console_requested.connect(
+            self.open_console)
+
+    @on_plugin_teardown(plugin=Plugins.Preferences)
+    def on_preferences_teardown(self):
+        preferences = self.get_plugin(Plugins.Preferences)
+        preferences.deregister_plugin_preferences(self)
+
+    @on_plugin_teardown(plugin=Plugins.IPythonConsole)
+    def on_ipyconsole_teardown(self):
+        self.get_widget().sig_open_console_requested.disconnect(
+            self.open_console)
 
     def on_mainwindow_visible(self):
         self.get_widget().open_previous_session()
@@ -89,10 +101,11 @@ class NotebookPlugin(SpyderDockablePlugin):
     def open_console(self, kernel_id, tab_name):
         """Open an IPython console as requested."""
         ipyconsole = self.get_plugin(Plugins.IPythonConsole)
-        ipyconsole._create_client_for_kernel(kernel_id, None, None, None)
+        ipyconsole.get_widget()._create_client_for_kernel(
+            kernel_id, None, None, None)
         ipyclient = ipyconsole.get_current_client()
         ipyclient.allow_rename = False
-        ipyconsole.rename_client_tab(ipyclient, tab_name)
+        ipyconsole.get_widget().rename_client_tab(ipyclient, tab_name)
 
     # ------ Public API (for FileSwitcher) ------------------------------------
     def handle_switcher_modes(self, mode):

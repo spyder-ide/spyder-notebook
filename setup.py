@@ -70,15 +70,25 @@ if any([arg == 'bdist_wheel' for arg in sys.argv]):
         sys.exit(1)
 
 
-REQUIREMENTS = ['spyder>=5.0.4,<6', 'jinja2', 'jupyter_core', 'nbformat',
-                'notebook>=4.3', 'qtpy', 'qdarkstyle', 'requests', 'traitlets']
+REQUIREMENTS = [
+    'spyder>=5.3.1,<6',
+    'jinja2',
+    'jupyter_core',
+    'nbformat',
+    'notebook>=4.3',
+    'qtpy',
+    'qdarkstyle',
+    'requests',
+    'traitlets'
+]
+
 
 setup(
     name='spyder-notebook',
     version=get_version(),
     cmdclass={'sdist': my_sdist},
     keywords='spyder jupyter notebook',
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     url='https://github.com/spyder-ide/spyder-notebook',
     license='MIT',
     author='Spyder Development Team',

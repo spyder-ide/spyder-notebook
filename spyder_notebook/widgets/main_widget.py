@@ -116,35 +116,30 @@ class NotebookMainWidget(PluginMainWidget):
             icon=self.create_icon('filenew'),
             triggered=self.create_new_client
         )
-
         open_notebook_action = self.create_action(
             NotebookMainWidgetActions.Open,
             text=_("Open..."),
             icon=self.create_icon('fileopen'),
             triggered=self.open_notebook
         )
-
         self.save_as_action = self.create_action(
             NotebookMainWidgetActions.SaveAs,
             text=_("Save as..."),
             icon=self.create_icon('filesaveas'),
             triggered=self.save_as
         )
-
         self.open_console_action = self.create_action(
             NotebookMainWidgetActions.OpenConsole,
             text=_("Open console"),
             icon=self.create_icon('ipython_console'),
             triggered=self.open_console
         )
-
         self.server_info_action = self.create_action(
             NotebookMainWidgetActions.ServerInfo,
             text=_('Server info...'),
             icon=self.create_icon('log'),
             triggered=self.view_servers
         )
-
         self.clear_recent_notebooks_action = self.create_action(
             NotebookMainWidgetActions.ClearRecentNotebooks,
             text=_("Clear this list"),
@@ -172,13 +167,11 @@ class NotebookMainWidget(PluginMainWidget):
             menu=options_menu,
             section=NotebookMainWidgetOptionsMenuSections.SaveAs,
         )
-
         self.add_item_to_menu(
             self.open_console_action,
             menu=options_menu,
             section=NotebookMainWidgetOptionsMenuSections.Console,
         )
-
         self.add_item_to_menu(
             self.server_info_action,
             menu=options_menu,
@@ -198,6 +191,26 @@ class NotebookMainWidget(PluginMainWidget):
         else:
             self.save_as_action.setEnabled(False)
             self.open_console_action.setEnabled(False)
+
+    def on_close(self):
+        """
+        Perform actions before parent main window is closed.
+
+        This function closes all tabs, shuts down all notebook server and
+        stores the file names of all opened notebooks that are not temporary
+        and all notebooks in the 'Open recent' menu in Spyder's config.
+        """
+        opened_notebooks = []
+        for client_index in range(self.tabwidget.count()):
+            client = self.tabwidget.widget(client_index)
+            if (not self.tabwidget.is_welcome_client(client)
+                    and not self.tabwidget.is_newly_created(client)):
+                opened_notebooks.append(client.filename)
+            client.close()
+
+        self.set_conf('recent_notebooks', self.recent_notebooks)
+        self.set_conf('opened_notebooks', opened_notebooks)
+        self.server_manager.shutdown_all_servers()
 
     # ---- Public API
     # ------------------------------------------------------------------------
@@ -338,24 +351,3 @@ class NotebookMainWidget(PluginMainWidget):
         """Clear the list of recent notebooks."""
         self.recent_notebooks = []
         self.update_recent_notebooks_menu()
-
-    def on_close(self, cancelable=False):
-        """
-        Perform actions before parent main window is closed.
-
-        This function closes all tabs. It stores the file names of all opened
-        notebooks that are not temporary and all notebooks in the 'Open recent'
-        menu in the config.
-        """
-        opened_notebooks = []
-        for client_index in range(self.tabwidget.count()):
-            client = self.tabwidget.widget(client_index)
-            if (not self.tabwidget.is_welcome_client(client)
-                    and not self.tabwidget.is_newly_created(client)):
-                opened_notebooks.append(client.filename)
-            client.close()
-
-        self.set_conf('recent_notebooks', self.recent_notebooks)
-        self.set_conf('opened_notebooks', opened_notebooks)
-        self.server_manager.shutdown_all_servers()
-        return True

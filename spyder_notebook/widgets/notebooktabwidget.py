@@ -182,12 +182,7 @@ class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
         -------
         The file name of the interpreter
         """
-        if self.get_conf(option='default', section='main_interpreter'):
-            pyexec = get_python_executable()
-        else:
-            pyexec = self.get_conf(option='executable', section='main_interpreter')
-            if not is_python_interpreter(pyexec):
-                pyexec = get_python_executable()
+        pyexec = self.get_conf(option='executable', section='main_interpreter')
         return pyexec
 
     def maybe_create_welcome_client(self):
