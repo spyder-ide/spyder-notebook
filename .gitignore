@@ -15,6 +15,9 @@ spyder_crash.log
 .idea/
 .cache
 .coverage
+*.egg-info/
+spyder_notebook/server/node_modules/
+spyder_notebook/server/yarn.lock
 
 # git .orig files
 *.orig
