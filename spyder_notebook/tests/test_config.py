@@ -10,17 +10,17 @@
 import pytest
 
 # Spyder imports
-from spyder.preferences.configdialog import ConfigDialog
+from spyder.plugins.preferences.widgets.configdialog import ConfigDialog
 
 # Local imports
-from spyder_notebook.config import NotebookConfigPage
+from spyder_notebook.confpage import NotebookConfigPage
 from spyder_notebook.tests.test_plugin import plugin_no_server
 
 
-def test_config(mocker, plugin_no_server, qtbot):
+def test_config(plugin_no_server, qtbot):
     """Test that config page can be created and shown."""
     dlg = ConfigDialog()
-    page = NotebookConfigPage(plugin_no_server, parent=plugin_no_server)
+    page = NotebookConfigPage(plugin_no_server, parent=plugin_no_server.main)
     page.initialize()
     dlg.add_page(page)
     dlg.show()

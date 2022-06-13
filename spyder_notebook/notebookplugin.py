@@ -81,6 +81,9 @@ class NotebookPlugin(SpyderDockablePlugin):
         self.get_widget().open_previous_session()
 
     # ------ Public API -------------------------------------------------------
+    def open_notebook(self, filenames=None):
+        self.get_widget().open_notebook(filenames)
+
     def open_console(self, kernel_id, tab_name):
         """Open an IPython console as requested."""
         ipyconsole = self.get_plugin(Plugins.IPythonConsole)

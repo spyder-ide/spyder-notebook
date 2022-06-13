@@ -21,6 +21,7 @@ import nbformat
 
 # Spyder imports
 from spyder.api.config.mixins import SpyderConfigurationAccessor
+from spyder.utils.misc import get_python_executable
 from spyder.utils.programs import get_temp_dir
 from spyder.widgets.tabs import Tabs
 
@@ -181,7 +182,11 @@ class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
         -------
         The file name of the interpreter
         """
-        pyexec = self.get_conf(option='executable', section='main_interpreter')
+        pyexec = self.get_conf(
+            option='executable',
+            section='main_interpreter',
+            default=get_python_executable()
+        )
         return pyexec
 
     def maybe_create_welcome_client(self):
