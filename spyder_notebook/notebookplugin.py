@@ -5,9 +5,6 @@
 
 """Notebook plugin."""
 
-# Stdlib imports
-import os.path as osp
-
 # Qt imports
 from qtpy.QtCore import Signal
 
@@ -21,10 +18,6 @@ from spyder_notebook.config import CONF_DEFAULTS, CONF_VERSION
 from spyder_notebook.confpage import NotebookConfigPage
 from spyder_notebook.widgets.main_widget import NotebookMainWidget
 from spyder_notebook.utils.localization import _
-
-
-FILTER_TITLE = _("Jupyter notebooks")
-FILES_FILTER = "{} (*.ipynb)".format(FILTER_TITLE)
 
 
 class NotebookPlugin(SpyderDockablePlugin):

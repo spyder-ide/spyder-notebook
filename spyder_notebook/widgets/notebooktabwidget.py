@@ -21,8 +21,7 @@ import nbformat
 
 # Spyder imports
 from spyder.api.config.mixins import SpyderConfigurationAccessor
-from spyder.utils.misc import get_python_executable
-from spyder.utils.programs import get_temp_dir, is_python_interpreter
+from spyder.utils.programs import get_temp_dir
 from spyder.widgets.tabs import Tabs
 
 # Local imports
