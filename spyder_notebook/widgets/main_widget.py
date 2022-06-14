@@ -247,7 +247,6 @@ class NotebookMainWidget(PluginMainWidget):
             nb.setFocus()
         else:
             nb = None
-        #self.update_actions()
 
     def update_recent_notebooks_menu(self):
         """Update the recent notebooks menu actions."""
@@ -262,7 +261,7 @@ class NotebookMainWidget(PluginMainWidget):
                     icon=self.create_icon('notebook'),
                     register_action=False,
                     triggered=lambda v, path=notebook:
-                              self.create_new_client(filename=path)
+                        self.create_new_client(filename=path)
                 )
 
                 # Add action to menu
@@ -295,12 +294,6 @@ class NotebookMainWidget(PluginMainWidget):
 
     def open_notebook(self, filenames=None):
         """Open a notebook from file."""
-        # Save spyder_pythonpath before creating a client
-        # because it's needed by our kernel spec.
-        #if not self.testing:
-        #    self.set_conf('main/spyder_pythonpath',
-        #                  self.main.get_spyder_pythonpath())
-
         filenames = self.tabwidget.open_notebook(filenames)
         for filename in filenames:
             self.add_to_recent(filename)
@@ -308,12 +301,6 @@ class NotebookMainWidget(PluginMainWidget):
 
     def create_new_client(self, filename=None):
         """Create a new notebook or load a pre-existing one."""
-        # Save spyder_pythonpath before creating a client
-        # because it's needed by our kernel spec.
-        #if not self.testing:
-        #    self.set_conf('main/spyder_pythonpath',
-        #                  self.main.get_spyder_pythonpath())
-
         client = self.tabwidget.create_new_client(filename)
         if not self.tabwidget.is_newly_created(client):
             self.add_to_recent(filename)

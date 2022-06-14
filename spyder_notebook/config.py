@@ -9,12 +9,13 @@
 CONF_SECTION = 'notebook'
 
 CONF_DEFAULTS = [
-    (CONF_SECTION,
-     {
-      'recent_notebooks': [],    # Items in "Open recent" menu
-      'opened_notebooks': [],    # Notebooks to open at start
-      'theme': 'same as spyder'  # Notebook theme (light/dark)
-     }
+    (
+        CONF_SECTION,
+        {
+            'recent_notebooks': [],    # Items in "Open recent" menu
+            'opened_notebooks': [],    # Notebooks to open at start
+            'theme': 'same as spyder'  # Notebook theme (light/dark)
+        }
     )
 ]
 

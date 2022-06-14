@@ -224,7 +224,7 @@ def test_open_notebook_in_non_ascii_dir(notebook, qtbot, tmpdir):
     qtbot.waitUntil(lambda: text_present(nbwidget, qtbot),
                     timeout=NOTEBOOK_UP)
     assert text_present(nbwidget, qtbot)
-    assert notebook.get_widget().tabwidget.currentWidget().get_short_name() == \
+    assert notebook.get_widget().tabwidget.currentWidget().get_short_name() ==\
            "test"
 
 
@@ -265,7 +265,7 @@ def test_save_notebook(notebook, qtbot, tmpdir):
     qtbot.waitUntil(lambda: text_present(nbwidget, qtbot, text="test"),
                     timeout=NOTEBOOK_UP)
     assert text_present(nbwidget, qtbot, text="test")
-    assert notebook.get_widget().tabwidget.currentWidget().get_short_name() == \
+    assert notebook.get_widget().tabwidget.currentWidget().get_short_name() ==\
            "save"
 
 
