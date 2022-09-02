@@ -12,16 +12,15 @@ import os.path as osp
 from string import Template
 import sys
 
-# Qt imports
-from qtpy.QtCore import QUrl, Qt
+# Third-party imports
+from notebook.utils import url_path_join, url_escape
+import qstylizer
+from qtpy.QtCore import QEvent, QUrl, Qt, Signal
 from qtpy.QtGui import QFontMetrics, QFont
 from qtpy.QtWebEngineWidgets import (QWebEnginePage, QWebEngineSettings,
                                      QWebEngineView, WEBENGINE)
-from qtpy.QtWidgets import (QApplication, QMenu, QVBoxLayout, QWidget,
+from qtpy.QtWidgets import (QApplication, QMenu, QFrame, QVBoxLayout,
                             QMessageBox)
-
-# Third-party imports
-from notebook.utils import url_path_join, url_escape
 import requests
 
 # Spyder imports
@@ -29,6 +28,7 @@ from spyder.config.base import get_module_source_path
 from spyder.utils import sourcecode
 from spyder.utils.image_path_manager import get_image_path
 from spyder.utils.qthelpers import add_actions
+from spyder.utils.palette import QStylePalette
 from spyder.widgets.findreplace import FindReplace
 
 # Local imports
@@ -45,8 +45,7 @@ from spyder_notebook.widgets.dom import DOMWidget
 PLUGINS_PATH = get_module_source_path('spyder', 'plugins')
 CSS_PATH = osp.join(PLUGINS_PATH, 'help', 'utils', 'static', 'css')
 TEMPLATES_PATH = osp.join(
-        PLUGINS_PATH, 'ipythonconsole', 'assets', 'templates')
-open(osp.join(TEMPLATES_PATH, 'blank.html'))
+    PLUGINS_PATH, 'ipythonconsole', 'assets', 'templates')
 
 BLANK = open(osp.join(TEMPLATES_PATH, 'blank.html')).read()
 LOADING = open(osp.join(TEMPLATES_PATH, 'loading.html')).read()
@@ -91,6 +90,16 @@ class WebViewInBrowser(QWebEngineView):
 
 class NotebookWidget(DOMWidget):
     """WebView widget for notebooks."""
+
+    sig_focus_in_event = Signal()
+    """
+    This signal is emitted when the widget receives focus.
+    """
+
+    sig_focus_out_event = Signal()
+    """
+    This signal is emitted when the widget loses focus.
+    """
 
     def __init__(self, parent, actions=None):
         """
@@ -200,8 +209,21 @@ class NotebookWidget(DOMWidget):
         """
         return WebViewInBrowser(self.parent())
 
+    def eventFilter(self, widget, event):
+        """
+        Handle events that affect the view.
+        All events (e.g. focus in/out) reach the focus proxy, not this
+        widget itself. That's why this event filter is necessary.
+        """
+        if self.focusProxy() is widget:
+            if event.type() == QEvent.FocusIn:
+                self.sig_focus_in_event.emit()
+            elif event.type() == QEvent.FocusOut:
+                self.sig_focus_out_event.emit()
+        return super().eventFilter(widget, event)
 
-class NotebookClient(QWidget):
+
+class NotebookClient(QFrame):
     """
     Notebook client for Spyder.
 
@@ -251,6 +273,12 @@ class NotebookClient(QWidget):
         else:
             self.notebookwidget.show_blank()
             self.static = False
+
+        self.notebookwidget.sig_focus_in_event.connect(
+            lambda: self._apply_stylesheet(focus=True))
+        self.notebookwidget.sig_focus_out_event.connect(
+            lambda: self._apply_stylesheet(focus=False))
+        self._apply_stylesheet()
 
         self.find_widget = FindReplace(self)
         self.find_widget.set_editor(self.notebookwidget)
@@ -396,6 +424,23 @@ class NotebookClient(QWidget):
                       "associated with this notebook. "
                       "If you want to shut it down, "
                       "you'll have to close Spyder."))
+
+    def _apply_stylesheet(self, focus=False):
+        """Apply stylesheet according to the current focus."""
+        if focus:
+            border_color = QStylePalette.COLOR_ACCENT_3
+        else:
+            border_color = QStylePalette.COLOR_BACKGROUND_4
+
+        css = qstylizer.style.StyleSheet()
+        css.QFrame.setValues(
+            border=f'1px solid {border_color}',
+            margin='0px 1px 0px 1px',
+            padding='0px 0px 1px 0px',
+            borderRadius='3px'
+        )
+
+        self.setStyleSheet(css.toString())
 
 
 # -----------------------------------------------------------------------------
