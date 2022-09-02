@@ -16,7 +16,7 @@ import sys
 from notebook.utils import url_path_join, url_escape
 import qstylizer
 from qtpy.QtCore import QEvent, QUrl, Qt, Signal
-from qtpy.QtGui import QFontMetrics, QFont
+from qtpy.QtGui import QColor, QFontMetrics, QFont
 from qtpy.QtWebEngineWidgets import (QWebEnginePage, QWebEngineSettings,
                                      QWebEngineView, WEBENGINE)
 from qtpy.QtWidgets import (QApplication, QMenu, QFrame, QVBoxLayout,
@@ -121,6 +121,11 @@ class NotebookWidget(DOMWidget):
         # Path for css files in Spyder according to the interface theme set by
         # the user (i.e. dark or light).
         self.css_path = self.get_conf('css_path', section='appearance')
+
+        # Set default background color.
+        self.page().setBackgroundColor(
+            QColor(QStylePalette.COLOR_BACKGROUND_1)
+        )
 
     def contextMenuEvent(self, event):
         """
