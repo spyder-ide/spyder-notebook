@@ -43,7 +43,6 @@ from spyder_notebook.widgets.dom import DOMWidget
 # later it'll be a good idea to create a new one.
 
 PLUGINS_PATH = get_module_source_path('spyder', 'plugins')
-CSS_PATH = osp.join(PLUGINS_PATH, 'help', 'utils', 'static', 'css')
 TEMPLATES_PATH = osp.join(
     PLUGINS_PATH, 'ipythonconsole', 'assets', 'templates')
 
@@ -119,6 +118,10 @@ class NotebookWidget(DOMWidget):
         self.setup()
         self.actions = actions
 
+        # Path for css files in Spyder according to the interface theme set by
+        # the user (i.e. dark or light).
+        self.css_path = self.get_conf('css_path', section='appearance')
+
     def contextMenuEvent(self, event):
         """
         Handle context menu events.
@@ -161,9 +164,15 @@ class NotebookWidget(DOMWidget):
         menu.popup(event.globalPos())
         event.accept()
 
+    def _set_info(self, html):
+        """Set informational html with css from local path."""
+        self.setHtml(html, QUrl.fromLocalFile(self.css_path))
+
     def show_blank(self):
         """Show a blank page."""
-        self.setHtml(BLANK)
+        blank_template = Template(BLANK)
+        page = blank_template.substitute(css_path=self.css_path)
+        self._set_info(page)
 
     def show_kernel_error(self, error):
         """Show kernel initialization errors."""
@@ -177,10 +186,10 @@ class NotebookWidget(DOMWidget):
 
         message = _("An error occurred while starting the kernel")
         kernel_error_template = Template(KERNEL_ERROR)
-        page = kernel_error_template.substitute(css_path=CSS_PATH,
+        page = kernel_error_template.substitute(css_path=self.css_path,
                                                 message=message,
                                                 error=error)
-        self.setHtml(page)
+        self._set_info(page)
 
     def show_loading_page(self):
         """Show a loading animation while the kernel is starting."""
@@ -189,10 +198,10 @@ class NotebookWidget(DOMWidget):
         if os.name == 'nt':
             loading_img = loading_img.replace('\\', '/')
         message = _("Connecting to kernel...")
-        page = loading_template.substitute(css_path=CSS_PATH,
+        page = loading_template.substitute(css_path=self.css_path,
                                            loading_img=loading_img,
                                            message=message)
-        self.setHtml(page)
+        self._set_info(page)
 
     def show_message(self, page):
         """Show a message page with the given .html file."""
