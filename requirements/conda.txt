@@ -1,4 +1,4 @@
-spyder >=5.3.1,<6
+spyder >=5.3.3,<6
 jinja2
 jupyter_core
 nbformat

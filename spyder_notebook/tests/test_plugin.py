@@ -99,7 +99,7 @@ class MainMock(QMainWindow):
         self.main = self
         self.resize(640, 480)
 
-    def get_plugin(self, plugin_name):
+    def get_plugin(self, plugin_name, error=True):
         return Mock()
 
 

@@ -71,7 +71,7 @@ if any([arg == 'bdist_wheel' for arg in sys.argv]):
 
 
 REQUIREMENTS = [
-    'spyder>=5.3.1,<6',
+    'spyder>=5.3.3,<6',
     'jinja2',
     'jupyter_core',
     'nbformat',

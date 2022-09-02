@@ -65,7 +65,7 @@ class NotebookPlugin(SpyderDockablePlugin):
     @on_plugin_available(plugin=Plugins.IPythonConsole)
     def on_ipyconsole_available(self):
         self.get_widget().sig_open_console_requested.connect(
-            self.open_console)
+            self._open_console)
 
     @on_plugin_teardown(plugin=Plugins.Preferences)
     def on_preferences_teardown(self):
@@ -75,7 +75,7 @@ class NotebookPlugin(SpyderDockablePlugin):
     @on_plugin_teardown(plugin=Plugins.IPythonConsole)
     def on_ipyconsole_teardown(self):
         self.get_widget().sig_open_console_requested.disconnect(
-            self.open_console)
+            self._open_console)
 
     def on_mainwindow_visible(self):
         self.get_widget().open_previous_session()
@@ -84,11 +84,11 @@ class NotebookPlugin(SpyderDockablePlugin):
     def open_notebook(self, filenames=None):
         self.get_widget().open_notebook(filenames)
 
-    def open_console(self, kernel_id, tab_name):
+    # ------ Private API ------------------------------------------------------
+    def _open_console(self, kernel_id, tab_name):
         """Open an IPython console as requested."""
         ipyconsole = self.get_plugin(Plugins.IPythonConsole)
-        ipyconsole.get_widget()._create_client_for_kernel(
-            kernel_id, None, None, None)
+        ipyconsole.create_client_for_kernel(kernel_id)
         ipyclient = ipyconsole.get_current_client()
         ipyclient.allow_rename = False
-        ipyconsole.get_widget().rename_client_tab(ipyclient, tab_name)
+        ipyconsole.rename_client_tab(ipyclient, tab_name)
