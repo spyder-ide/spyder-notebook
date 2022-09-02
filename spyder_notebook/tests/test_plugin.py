@@ -13,14 +13,19 @@ import os
 import os.path as osp
 import shutil
 import sys
+from unittest.mock import Mock
 
 # Third-party library imports
 from flaky import flaky
 import pytest
 import requests
-from qtpy.QtWebEngineWidgets import WEBENGINE
 from qtpy.QtCore import Qt, QTimer
-from qtpy.QtWidgets import QFileDialog, QApplication, QLineEdit
+from qtpy.QtWebEngineWidgets import WEBENGINE
+from qtpy.QtWidgets import QFileDialog, QApplication, QLineEdit, QMainWindow
+
+# Spyder imports
+from spyder.api.plugins import Plugins
+from spyder.config.manager import CONF
 
 # Local imports
 from spyder_notebook.notebookplugin import NotebookPlugin
@@ -87,16 +92,31 @@ def is_kernel_up(kernel_id, sessions_url):
 # =============================================================================
 # Fixtures
 # =============================================================================
+class MainMock(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.switcher = Mock()
+        self.main = self
+        self.resize(640, 480)
+
+    def get_plugin(self, plugin_name, error=True):
+        return Mock()
+
+
 @pytest.fixture
 def notebook(qtbot):
     """Set up the Notebook plugin with a welcome tab and a tab with a new
     notebook. The latter tab is selected."""
-    notebook_plugin = NotebookPlugin(None, testing=True)
-    qtbot.addWidget(notebook_plugin)
-    notebook_plugin.tabwidget.maybe_create_welcome_client()
-    notebook_plugin.create_new_client()
+    window = MainMock()
+    notebook_plugin = NotebookPlugin(parent=window, configuration=CONF)
+    notebook_plugin.get_widget().tabwidget.maybe_create_welcome_client()
+    notebook_plugin.get_widget().create_new_client()
+    window.setCentralWidget(notebook_plugin.get_widget())
+    window.show()
+
+    qtbot.addWidget(window)
     yield notebook_plugin
-    notebook_plugin.closing_plugin()
+    notebook_plugin.get_widget().close()
 
 
 @pytest.fixture
@@ -107,13 +127,17 @@ def plugin_no_server(mocker, qtbot):
         return collections.defaultdict(
             str, filename=filename, notebook_dir=osp.dirname(filename))
     fake_server_manager = mocker.Mock(get_server=fake_get_server)
-    mocker.patch('spyder_notebook.notebookplugin.ServerManager',
+    mocker.patch('spyder_notebook.widgets.main_widget.ServerManager',
                  return_value=fake_server_manager)
-    plugin = NotebookPlugin(None, testing=True)
-    plugin.main = mocker.Mock()
-    qtbot.addWidget(plugin)
+
+    window = MainMock()
+    plugin = NotebookPlugin(parent=window, configuration=CONF)
+    window.show()
+
+    qtbot.addWidget(window)
     yield plugin
-    plugin.closing_plugin()
+    plugin.get_widget().close()
+
 
 # =============================================================================
 # Tests
@@ -122,19 +146,19 @@ def plugin_no_server(mocker, qtbot):
 def test_shutdown_notebook_kernel(notebook, qtbot):
     """Test that kernel is shutdown from server when closing a notebook."""
     # Wait for prompt
-    nbwidget = notebook.tabwidget.currentWidget().notebookwidget
+    nbwidget = notebook.get_widget().tabwidget.currentWidget().notebookwidget
     qtbot.waitUntil(lambda: prompt_present(nbwidget, qtbot),
                     timeout=NOTEBOOK_UP)
 
     # Get kernel id for the client
-    client = notebook.tabwidget.currentWidget()
+    client = notebook.get_widget().tabwidget.currentWidget()
     qtbot.waitUntil(lambda: client.get_kernel_id() is not None,
                     timeout=NOTEBOOK_UP)
     kernel_id = client.get_kernel_id()
     sessions_url = client.get_session_url()
 
     # Close the current client
-    notebook.tabwidget.close_client()
+    notebook.get_widget().tabwidget.close_client()
 
     # Assert that the kernel is down for the closed client
     assert not is_kernel_up(kernel_id, sessions_url)
@@ -144,16 +168,16 @@ def test_file_in_temp_dir_deleted_after_notebook_closed(notebook, qtbot):
     """Test that notebook file in temporary directory is deleted after the
     notebook is closed."""
     # Wait for prompt
-    nbwidget = notebook.tabwidget.currentWidget().notebookwidget
+    nbwidget = notebook.get_widget().tabwidget.currentWidget().notebookwidget
     qtbot.waitUntil(lambda: prompt_present(nbwidget, qtbot),
                     timeout=NOTEBOOK_UP)
 
     # Get file name
-    client = notebook.tabwidget.currentWidget()
+    client = notebook.get_widget().tabwidget.currentWidget()
     filename = client.get_filename()
 
     # Close the current client
-    notebook.tabwidget.close_client()
+    notebook.get_widget().tabwidget.close_client()
 
     # Assert file is deleted
     assert not osp.exists(filename)
@@ -165,17 +189,17 @@ def test_close_nonexisting_notebook(notebook, qtbot):
     # Set up tab with non-existingg notebook
     filename = osp.join(LOCATION, 'does-not-exist.ipynb')
     notebook.open_notebook(filenames=[filename])
-    nbwidget = notebook.tabwidget.currentWidget().notebookwidget
+    nbwidget = notebook.get_widget().tabwidget.currentWidget().notebookwidget
     qtbot.waitUntil(lambda: prompt_present(nbwidget, qtbot),
                     timeout=NOTEBOOK_UP)
-    client = notebook.tabwidget.currentWidget()
+    client = notebook.get_widget().tabwidget.currentWidget()
 
     # Close tab
-    notebook.tabwidget.close_client()
+    notebook.get_widget().tabwidget.close_client()
 
     # Assert tab is closed (without raising an exception)
-    for client_index in range(notebook.tabwidget.count()):
-        assert client != notebook.tabwidget.widget(client_index)
+    for client_index in range(notebook.get_widget().tabwidget.count()):
+        assert client != notebook.get_widget().tabwidget.widget(client_index)
 
 
 # TODO Find out what goes wrong on Mac
@@ -191,7 +215,7 @@ def test_open_notebook_in_non_ascii_dir(notebook, qtbot, tmpdir):
 
     # Wait for prompt
     notebook.open_notebook(filenames=[test_notebook_non_ascii])
-    nbwidget = notebook.tabwidget.currentWidget().notebookwidget
+    nbwidget = notebook.get_widget().tabwidget.currentWidget().notebookwidget
     qtbot.waitUntil(lambda: prompt_present(nbwidget, qtbot),
                     timeout=NOTEBOOK_UP)
 
@@ -200,7 +224,8 @@ def test_open_notebook_in_non_ascii_dir(notebook, qtbot, tmpdir):
     qtbot.waitUntil(lambda: text_present(nbwidget, qtbot),
                     timeout=NOTEBOOK_UP)
     assert text_present(nbwidget, qtbot)
-    assert notebook.tabwidget.currentWidget().get_short_name() == "test"
+    assert notebook.get_widget().tabwidget.currentWidget().get_short_name() ==\
+           "test"
 
 
 @flaky(max_runs=3)
@@ -209,7 +234,7 @@ def test_open_notebook_in_non_ascii_dir(notebook, qtbot, tmpdir):
 def test_save_notebook(notebook, qtbot, tmpdir):
     """Test that a notebook can be saved."""
     # Wait for prompt
-    nbwidget = notebook.tabwidget.currentWidget().notebookwidget
+    nbwidget = notebook.get_widget().tabwidget.currentWidget().notebookwidget
     qtbot.waitUntil(lambda: prompt_present(nbwidget, qtbot),
                     timeout=NOTEBOOK_UP)
 
@@ -228,10 +253,10 @@ def test_save_notebook(notebook, qtbot, tmpdir):
     # Save the notebook
     name = osp.join(str(tmpdir), 'save.ipynb')
     QTimer.singleShot(1000, lambda: manage_save_dialog(qtbot, fname=name))
-    notebook.save_as()
+    notebook.get_widget().save_as()
 
     # Wait for prompt
-    nbwidget = notebook.tabwidget.currentWidget().notebookwidget
+    nbwidget = notebook.get_widget().tabwidget.currentWidget().notebookwidget
     qtbot.waitUntil(lambda: prompt_present(nbwidget, qtbot),
                     timeout=NOTEBOOK_UP)
 
@@ -240,7 +265,8 @@ def test_save_notebook(notebook, qtbot, tmpdir):
     qtbot.waitUntil(lambda: text_present(nbwidget, qtbot, text="test"),
                     timeout=NOTEBOOK_UP)
     assert text_present(nbwidget, qtbot, text="test")
-    assert notebook.tabwidget.currentWidget().get_short_name() == "save"
+    assert notebook.get_widget().tabwidget.currentWidget().get_short_name() ==\
+           "save"
 
 
 def test_save_notebook_as_with_error(mocker, notebook, qtbot, tmpdir):
@@ -255,12 +281,12 @@ def test_save_notebook_as_with_error(mocker, notebook, qtbot, tmpdir):
                                  '.QMessageBox.critical')
 
     # Wait for prompt
-    nbwidget = notebook.tabwidget.currentWidget().notebookwidget
+    nbwidget = notebook.get_widget().tabwidget.currentWidget().notebookwidget
     qtbot.waitUntil(lambda: prompt_present(nbwidget, qtbot),
                     timeout=NOTEBOOK_UP)
 
     # Save the notebook
-    notebook.save_as()
+    notebook.get_widget().save_as()
 
     # Assert that message box is displayed (reporting error raised by write)
     assert mock_critical.called
@@ -270,12 +296,12 @@ def test_save_notebook_as_with_error(mocker, notebook, qtbot, tmpdir):
 def test_new_notebook(notebook, qtbot):
     """Test that a new client is really a notebook."""
     # Wait for prompt
-    nbwidget = notebook.tabwidget.currentWidget().notebookwidget
+    nbwidget = notebook.get_widget().tabwidget.currentWidget().notebookwidget
     qtbot.waitUntil(lambda: prompt_present(nbwidget, qtbot),
                     timeout=NOTEBOOK_UP)
 
     # Assert that we have one notebook and the welcome page
-    assert notebook.tabwidget.count() == 2
+    assert notebook.get_widget().tabwidget.count() == 2
 
 
 # Teardown sometimes fails on Mac with Python 3.8 due to NoProcessException
@@ -284,71 +310,77 @@ def test_new_notebook(notebook, qtbot):
 def test_open_console_when_no_kernel(notebook, qtbot, mocker):
     """Test that open_console() handles the case when there is no kernel."""
     # Create mock IPython console plugin and QMessageBox
-    notebook.ipyconsole = mocker.Mock()
-    MockMessageBox = mocker.patch('spyder_notebook.notebookplugin.QMessageBox')
+    MockMessageBox = mocker.patch(
+        'spyder_notebook.widgets.main_widget.QMessageBox')
 
     # Wait for prompt
-    nbwidget = notebook.tabwidget.currentWidget().notebookwidget
+    nbwidget = notebook.get_widget().tabwidget.currentWidget().notebookwidget
     qtbot.waitUntil(lambda: prompt_present(nbwidget, qtbot),
                     timeout=NOTEBOOK_UP)
 
     # Shut the kernel down and check that this is successful
-    client = notebook.tabwidget.currentWidget()
+    client = notebook.get_widget().tabwidget.currentWidget()
     kernel_id = client.get_kernel_id()
     sessions_url = client.get_session_url()
     client.shutdown_kernel()
     assert not is_kernel_up(kernel_id, sessions_url)
 
     # Try opening a console
-    notebook.open_console(client)
+    notebook.get_widget().open_console(client)
 
     # Assert that a dialog is displayed and no console was opened
     MockMessageBox.critical.assert_called()
-    notebook.ipyconsole._create_client_for_kernel.assert_not_called()
+    ipyconsole = notebook.get_plugin(Plugins.IPythonConsole)
+    ipyconsole._create_client_for_kernel.assert_not_called()
 
 
-def test_register_plugin_with_opened_notebooks(mocker, plugin_no_server):
-    """Run .register_plugin() with the `opened_notebooks` conf option set to
-    a non-empty list. Check that plugin opens those notebooks."""
+def test_on_mainwindow_visible_with_opened_notebooks(plugin_no_server):
+    """
+    Run .on_mainwindow_visible() with the `opened_notebooks` conf option set to
+    a non-empty list. Check that plugin opens those notebooks.
+    """
     plugin = plugin_no_server
-    plugin.set_option('opened_notebooks', ['ham.ipynb', 'spam.ipynb'])
+    plugin.set_conf('opened_notebooks', ['ham.ipynb', 'spam.ipynb'])
 
-    plugin.register_plugin()
+    plugin.on_mainwindow_visible()
 
-    tabwidget = plugin.tabwidget
+    tabwidget = plugin.get_widget().tabwidget
     assert tabwidget.count() == 2
     assert tabwidget.widget(0).filename == 'ham.ipynb'
     assert tabwidget.widget(1).filename == 'spam.ipynb'
 
 
-def test_register_plugin_with_opened_notebooks_empty(mocker, plugin_no_server):
-    """Run .register_plugin() with the `opened_notebooks` conf option set to
+def test_on_mainwindow_visible_with_opened_notebooks_empty(plugin_no_server):
+    """
+    Run .on_mainwindow_visible() with the `opened_notebooks` conf option set to
     an empty list. Check that plugin opens a welcome tab and a new notebook,
-    and that the welcome tab is on top."""
+    and that the welcome tab is on top.
+    """
     plugin = plugin_no_server
-    plugin.set_option('opened_notebooks', [])
+    plugin.set_conf('opened_notebooks', [])
 
-    plugin.register_plugin()
+    plugin.on_mainwindow_visible()
 
-    tabwidget = plugin.tabwidget
+    tabwidget = plugin.get_widget().tabwidget
     assert tabwidget.count() == 2
     assert tabwidget.is_welcome_client(tabwidget.widget(0))
     assert tabwidget.is_newly_created(tabwidget.widget(1))
     assert tabwidget.currentIndex() == 0
 
 
-def test_closing_plugin(mocker, plugin_no_server):
-    """Close a plugin with a welcome tab, a new notebooks and a notebook
+def test_closing_main_widget(mocker, plugin_no_server):
+    """Close the main widget with a welcome tab, a new notebooks and a notebook
     opened from a file. Check that config variables `recent_notebooks` and
     `opened_notebook` are correctly set."""
     plugin = plugin_no_server
-    plugin.clear_recent_notebooks()
-    mock_set_option = mocker.patch.object(plugin, 'set_option')
-    plugin.tabwidget.maybe_create_welcome_client()
-    plugin.create_new_client()
-    plugin.open_notebook(['ham.ipynb'])
+    main_widget = plugin.get_widget()
+    main_widget.clear_recent_notebooks()
+    mock_set_option = mocker.patch.object(main_widget, 'set_conf')
+    main_widget.tabwidget.maybe_create_welcome_client()
+    main_widget.create_new_client()
+    main_widget.open_notebook(['ham.ipynb'])
 
-    plugin.closing_plugin()
+    plugin.get_widget().close()
 
     expected = [mocker.call('recent_notebooks', ['ham.ipynb']),
                 mocker.call('opened_notebooks', ['ham.ipynb'])]
@@ -360,23 +392,23 @@ def test_view_server_info(mocker, plugin_no_server):
     server data."""
     plugin = plugin_no_server
     mock_ServerInfoDialog = mocker.patch(
-        'spyder_notebook.notebookplugin.ServerInfoDialog')
+        'spyder_notebook.widgets.main_widget.ServerInfoDialog')
 
-    plugin.server_info_action.trigger()
+    plugin.get_widget().server_info_action.trigger()
 
     mock_ServerInfoDialog.assert_called_once_with(
-        plugin.server_manager.servers, parent=plugin)
+        plugin.get_widget().server_manager.servers, parent=plugin.get_widget())
     mock_ServerInfoDialog.return_value.show.assert_called_once()
 
 
 @pytest.mark.parametrize('config_value', ['same as spyder', 'dark', 'light'])
 @pytest.mark.parametrize('spyder_is_dark', [True, False])
 def test_dark_theme(mocker, plugin_no_server, config_value, spyder_is_dark):
-    plugin_no_server.set_option('theme', config_value)
-    mocker.patch('spyder_notebook.notebookplugin.is_dark_interface',
+    plugin_no_server.set_conf('theme', config_value)
+    mocker.patch('spyder_notebook.widgets.main_widget.is_dark_interface',
                  return_value=spyder_is_dark)
 
-    value = plugin_no_server.dark_theme
+    value = plugin_no_server.get_widget().dark_theme
 
     expected = (config_value == 'dark' or
                 (config_value == 'same as spyder' and spyder_is_dark))

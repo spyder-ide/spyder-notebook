@@ -25,12 +25,14 @@ from notebook.utils import url_path_join, url_escape
 import requests
 
 # Spyder imports
-from spyder.config.base import get_image_path, get_module_source_path
-from spyder.utils.qthelpers import add_actions
+from spyder.config.base import get_module_source_path
 from spyder.utils import sourcecode
+from spyder.utils.image_path_manager import get_image_path
+from spyder.utils.qthelpers import add_actions
 from spyder.widgets.findreplace import FindReplace
 
 # Local imports
+from spyder_notebook.config import CONF_SECTION
 from spyder_notebook.utils.localization import _
 from spyder_notebook.widgets.dom import DOMWidget
 
@@ -104,6 +106,8 @@ class NotebookWidget(DOMWidget):
             will be added.
         """
         super().__init__(parent)
+        self.CONTEXT_NAME = str(id(self))
+        self.setup()
         self.actions = actions
 
     def contextMenuEvent(self, event):
@@ -209,6 +213,8 @@ class NotebookClient(QWidget):
     server_url : str or None
         URL to send requests to; set by register().
     """
+
+    CONF_SECTION = CONF_SECTION
 
     def __init__(self, parent, filename, actions=None, ini_message=None):
         """

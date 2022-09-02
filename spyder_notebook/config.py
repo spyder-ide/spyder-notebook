@@ -1,38 +1,29 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) Spyder Project Contributors
+# Copyright © Spyder Project Contributors
 # Licensed under the terms of the MIT License
+# (see spyder/__init__.py for details)
 
-"""Spyder configuration page for notebook plugin."""
+"""Spyder notebook default configuration."""
 
-# Qt imports
-from qtpy.QtWidgets import QGridLayout, QGroupBox, QVBoxLayout
+CONF_SECTION = 'notebook'
 
-# Spyder imports
-from spyder.api.preferences import PluginConfigPage
+CONF_DEFAULTS = [
+    (
+        CONF_SECTION,
+        {
+            'recent_notebooks': [],    # Items in "Open recent" menu
+            'opened_notebooks': [],    # Notebooks to open at start
+            'theme': 'same as spyder'  # Notebook theme (light/dark)
+        }
+    )
+]
 
-# Local imports
-from spyder_notebook.utils.localization import _
-
-
-class NotebookConfigPage(PluginConfigPage):
-    """Widget with configuration options for notebook plugin."""
-
-    def setup_page(self):
-        """Fill configuration page with widgets."""
-        themes = ['Same as Spyder', 'Light', 'Dark']
-        theme_choices = list(zip(themes,
-                                 [theme.lower() for theme in themes]))
-        theme_combo = self.create_combobox(
-            _('Notebook theme'), theme_choices, 'theme', restart=True)
-
-        interface_layout = QGridLayout()
-        interface_layout.addWidget(theme_combo.label, 0, 0)
-        interface_layout.addWidget(theme_combo.combobox, 0, 1)
-        interface_group = QGroupBox(_('Interface'))
-        interface_group.setLayout(interface_layout)
-
-        vlayout = QVBoxLayout()
-        vlayout.addWidget(interface_group)
-        vlayout.addStretch(1)
-        self.setLayout(vlayout)
+# IMPORTANT NOTES:
+# 1. If you want to *change* the default value of a current option, you need to
+#    do a MINOR update in config version, e.g. from 1.0.0 to 1.1.0
+# 2. If you want to *remove* options that are no longer needed in our codebase,
+#    or if you want to *rename* options, then you need to do a MAJOR update in
+#    version, e.g. from 1.0.0 to 2.0.0
+# 3. You don't need to touch this value if you're just adding a new option
+CONF_VERSION = '0.1.0'
