@@ -43,9 +43,7 @@ class NotebookMainWidgetMenus:
 
 class NotebookMainWidgetOptionsMenuSections:
     Open = 'Open'
-    SaveAs = 'Save as'
-    Console = 'Console'
-    ServerInfo = 'Server info'
+    Other = 'Other'
 
 
 class NotebookMainWidgetRecentNotebooksMenuSections:
@@ -172,21 +170,13 @@ class NotebookMainWidget(PluginMainWidget):
                 section=NotebookMainWidgetOptionsMenuSections.Open,
             )
 
-        self.add_item_to_menu(
-            self.save_as_action,
-            menu=options_menu,
-            section=NotebookMainWidgetOptionsMenuSections.SaveAs,
-        )
-        self.add_item_to_menu(
-            self.open_console_action,
-            menu=options_menu,
-            section=NotebookMainWidgetOptionsMenuSections.Console,
-        )
-        self.add_item_to_menu(
-            self.server_info_action,
-            menu=options_menu,
-            section=NotebookMainWidgetOptionsMenuSections.ServerInfo,
-        )
+        for item in [self.save_as_action, self.open_console_action,
+                     self.server_info_action]:
+            self.add_item_to_menu(
+                item,
+                menu=options_menu,
+                section=NotebookMainWidgetOptionsMenuSections.Other,
+            )
 
     def update_actions(self):
         """Update actions of the options menu."""
