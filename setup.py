@@ -15,7 +15,7 @@ import subprocess
 import sys
 
 # Third party imports
-from setuptools import find_packages, setup
+from setuptools import find_namespace_packages, setup
 from setuptools.command.sdist import sdist
 
 if sys.platform == 'win32':
@@ -83,6 +83,10 @@ REQUIREMENTS = [
 ]
 
 
+with open('README.md', 'r') as f:
+    DESCRIPTION = f.read()
+
+
 setup(
     name='spyder-notebook',
     version=get_version(),
@@ -93,9 +97,9 @@ setup(
     license='MIT',
     author='Spyder Development Team',
     description='Jupyter notebook integration with Spyder',
-    long_description="This package allows the Jupyter notebook "
-                     "to run inside Spyder as a plugin.",
-    packages=find_packages(),
+    long_description=DESCRIPTION,
+    long_description_content_type='text/markdown',
+    packages=find_namespace_packages(),
     install_requires=REQUIREMENTS,
     include_package_data=True,
     classifiers=[
