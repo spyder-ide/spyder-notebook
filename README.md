@@ -35,7 +35,7 @@ To install this plugin, you can use either ``pip`` or ``conda`` package managers
 Using conda (the recommended way!):
 
 ```
-conda install spyder-notebook -c spyder-ide
+conda install spyder-notebook -c conda-forge
 ```
 
 Using pip:
@@ -50,7 +50,7 @@ pip install spyder-notebook
 
 This project depends on:
 
-* [Spyder](https://github.com/spyder-ide/spyder) (version 4.x)
+* [Spyder](https://github.com/spyder-ide/spyder) (version 5.x)
 * [Notebook](https://github.com/jupyter/notebook) (version 4.3 or later)
 
 
