@@ -1,5 +1,9 @@
 ## Version 0.4.0 (2022-09-19)
 
+### New Features
+
+* Add support for Spyder 5.
+
 ### Issues Closed
 
 * [Issue 360](https://github.com/spyder-ide/spyder-notebook/issues/360) - Support Spyder 5 ([PR 369](https://github.com/spyder-ide/spyder-notebook/pull/369) by [@ccordoba12](https://github.com/ccordoba12))
