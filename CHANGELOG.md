@@ -1,3 +1,21 @@
+## Version 0.4.0 (2022-09-19)
+
+### Issues Closed
+
+* [Issue 360](https://github.com/spyder-ide/spyder-notebook/issues/360) - Support Spyder 5 ([PR 369](https://github.com/spyder-ide/spyder-notebook/pull/369) by [@ccordoba12](https://github.com/ccordoba12))
+
+In this release 1 issue was closed.
+
+### Pull Requests Merged
+
+* [PR 377](https://github.com/spyder-ide/spyder-notebook/pull/377) - PR: Fix building wheel and tarball with the latest `setuptools` version, by [@ccordoba12](https://github.com/ccordoba12)
+* [PR 376](https://github.com/spyder-ide/spyder-notebook/pull/376) - PR: Some style fixes so it looks better in Spyder 5, by [@ccordoba12](https://github.com/ccordoba12)
+* [PR 369](https://github.com/spyder-ide/spyder-notebook/pull/369) - PR: Migrate to the new Spyder 5 API, by [@ccordoba12](https://github.com/ccordoba12) ([360](https://github.com/spyder-ide/spyder-notebook/issues/360))
+* [PR 368](https://github.com/spyder-ide/spyder-notebook/pull/368) - PR: Add note to Readme to mention that this plugin doesn't work with our installers, by [@ccordoba12](https://github.com/ccordoba12)
+
+In this release 4 pull requests were closed.
+
+
 ## Version 0.3.2 (2021/01/25)
 
 ### New Features
