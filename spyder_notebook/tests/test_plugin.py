@@ -142,7 +142,6 @@ def plugin_no_server(mocker, qtbot):
 # =============================================================================
 # Tests
 # =============================================================================
-@pytest.mark.skip
 @flaky(max_runs=3)
 def test_shutdown_notebook_kernel(notebook, qtbot):
     """Test that kernel is shutdown from server when closing a notebook."""
@@ -165,7 +164,6 @@ def test_shutdown_notebook_kernel(notebook, qtbot):
     assert not is_kernel_up(kernel_id, sessions_url)
 
 
-@pytest.mark.skip
 def test_file_in_temp_dir_deleted_after_notebook_closed(notebook, qtbot):
     """Test that notebook file in temporary directory is deleted after the
     notebook is closed."""
@@ -185,7 +183,6 @@ def test_file_in_temp_dir_deleted_after_notebook_closed(notebook, qtbot):
     assert not osp.exists(filename)
 
 
-@pytest.mark.skip
 def test_close_nonexisting_notebook(notebook, qtbot):
     """Test that we can close a tab if the notebook file does not exist.
     Regression test for spyder-ide/spyder-notebook#187."""
@@ -206,7 +203,6 @@ def test_close_nonexisting_notebook(notebook, qtbot):
 
 
 # TODO Find out what goes wrong on Mac
-@pytest.mark.skip
 @flaky(max_runs=3)
 @pytest.mark.skipif(sys.platform == 'darwin', reason='Prompt never comes up')
 def test_open_notebook_in_non_ascii_dir(notebook, qtbot, tmpdir):
@@ -232,7 +228,6 @@ def test_open_notebook_in_non_ascii_dir(notebook, qtbot, tmpdir):
            "test"
 
 
-@pytest.mark.skip
 @flaky(max_runs=3)
 @pytest.mark.skipif(not sys.platform.startswith('linux'),
                     reason='Test hangs on CI on Windows and MacOS')
@@ -274,7 +269,6 @@ def test_save_notebook(notebook, qtbot, tmpdir):
            "save"
 
 
-@pytest.mark.skip
 def test_save_notebook_as_with_error(mocker, notebook, qtbot, tmpdir):
     """Test that errors are handled in save_as()."""
     # Set up mocks
@@ -298,7 +292,6 @@ def test_save_notebook_as_with_error(mocker, notebook, qtbot, tmpdir):
     assert mock_critical.called
 
 
-@pytest.mark.skip
 @flaky(max_runs=3)
 def test_new_notebook(notebook, qtbot):
     """Test that a new client is really a notebook."""
@@ -313,7 +306,6 @@ def test_new_notebook(notebook, qtbot):
 
 # Teardown sometimes fails on Mac with Python 3.8 due to NoProcessException
 # in shutdown_server() in notebookapp.py in external notebook library
-@pytest.mark.skip
 @flaky
 def test_open_console_when_no_kernel(notebook, qtbot, mocker):
     """Test that open_console() handles the case when there is no kernel."""

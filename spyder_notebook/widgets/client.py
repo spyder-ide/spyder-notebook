@@ -7,6 +7,7 @@
 
 # Standard library imports
 import json
+import logging
 import os
 import os.path as osp
 from string import Template
@@ -49,6 +50,8 @@ TEMPLATES_PATH = osp.join(
 BLANK = open(osp.join(TEMPLATES_PATH, 'blank.html')).read()
 LOADING = open(osp.join(TEMPLATES_PATH, 'loading.html')).read()
 KERNEL_ERROR = open(osp.join(TEMPLATES_PATH, 'kernel_error.html')).read()
+
+logger = logging.getLogger(__name__)
 
 
 # -----------------------------------------------------------------------------
@@ -325,7 +328,7 @@ class NotebookClient(QFrame):
         # Server token
         self.token = server_info['token']
 
-        url = url_path_join(self.server_url, 'notebook',
+        url = url_path_join(self.server_url, 'notebooks',
                             url_escape(self.path))
 
         # Set file url to load this notebook
@@ -337,6 +340,7 @@ class NotebookClient(QFrame):
             url = QUrl(url_or_text)
         else:
             url = url_or_text
+        logger.debug(f'Going to URL {url_or_text}')
         self.notebookwidget.load(url)
 
     def load_notebook(self):
