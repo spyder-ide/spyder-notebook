@@ -246,7 +246,7 @@ class ServerManager(QObject):
 
         pid = server_process.process.processId()
         runtime_dir = jupyter_runtime_dir()
-        filename = osp.join(runtime_dir, 'nbserver-{}.json'.format(pid))
+        filename = osp.join(runtime_dir, 'jpserver-{}.json'.format(pid))
 
         try:
             with open(filename, encoding='utf-8') as f:
