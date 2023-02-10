@@ -165,7 +165,7 @@ class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
             filename, interpreter, start=True)
         if server_info:
             logger.debug('Using existing server at %s',
-                         server_info['notebook_dir'])
+                         server_info['root_dir'])
             client.register(server_info)
             client.load_notebook()
         return client

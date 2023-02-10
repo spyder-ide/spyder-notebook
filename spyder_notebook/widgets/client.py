@@ -313,7 +313,7 @@ class NotebookClient(QFrame):
         """Register attributes that can be computed with the server info."""
         # Path relative to the server directory
         self.path = os.path.relpath(self.filename,
-                                    start=server_info['notebook_dir'])
+                                    start=server_info['root_dir'])
 
         # Replace backslashes on Windows
         if os.name == 'nt':

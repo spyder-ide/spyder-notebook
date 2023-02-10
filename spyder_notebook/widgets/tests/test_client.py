@@ -41,7 +41,7 @@ def plugin(plugin_without_server):
 
     Use `plugin.client` to access the client.
     """
-    server_info = {'notebook_dir': '/path/notebooks',
+    server_info = {'root_dir': '/path/notebooks',
                    'url': 'fake_url',
                    'token': 'fake_token'}
     plugin_without_server.client.register(server_info)
