@@ -67,6 +67,17 @@ $ jlpm build
 $ cd ../..
 ```
 
+**Note:** If the plugin is based on Jupyter Notebook 7, then instead we
+need to install that. Currently, it is only available as alpha release
+to be installed with pip, so:
+
+```bash
+$ python -m pip install notebook --pre
+```
+
+Cross your fingers that there the mixing of pip and conda does not
+cause any problems!
+
 ### Installing the plugin
 
 This installs the Spyder notebook plugin so that Spyder will use it.

@@ -13,7 +13,7 @@ from string import Template
 import sys
 
 # Third-party imports
-from notebook.utils import url_path_join, url_escape
+from jupyter_server.utils import url_path_join, url_escape
 import qstylizer
 from qtpy.QtCore import QEvent, QUrl, Qt, Signal
 from qtpy.QtGui import QColor, QFontMetrics, QFont

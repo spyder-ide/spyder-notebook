@@ -18,7 +18,6 @@ from qtpy.QtCore import QObject, QProcess, QProcessEnvironment, QTimer, Signal
 
 # Third-party imports
 from jupyter_core.paths import jupyter_runtime_dir
-from notebook import notebookapp
 
 # Spyder imports
 from spyder.config.base import DEV, get_home_dir, get_module_path
@@ -279,7 +278,8 @@ class ServerManager(QObject):
                              server.notebook_dir)
                 server.process.errorOccurred.disconnect()
                 server.process.finished.disconnect()
-                notebookapp.shutdown_server(server.server_info)
+                # notebookapp.shutdown_server(server.server_info)
+                # TODO Shutdown server properly
                 server.state = ServerState.FINISHED
 
     def read_server_output(self, server_process):
