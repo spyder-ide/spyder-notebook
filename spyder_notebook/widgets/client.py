@@ -281,6 +281,10 @@ class NotebookClient(QFrame):
         self.path = None
 
         self.notebookwidget = NotebookWidget(self, actions)
+        self.notebookwidget.loadFinished.connect(self.hide_header)
+        # self.notebookwidget.selectionChanged.connect(self.hide_header)
+        self.notebookwidget.urlChanged.connect(self.hide_header)
+
         if ini_message:
             self.notebookwidget.show_message(ini_message)
             self.static = True
@@ -342,6 +346,23 @@ class NotebookClient(QFrame):
     def load_notebook(self):
         """Load the associated notebook."""
         self.go_to(self.file_url)
+
+    def hide_header(self):
+        """Hide the header of the notebook."""
+        # print('hide_header')
+        # import logging
+        # logger = logging.getLogger(__name__)
+        # logger.error('hide_header')
+        from qtpy.QtCore import QTimer
+        QTimer.singleShot(10000, self.hide_header_inner)
+
+    def hide_header_inner(self):
+        """Hide the header of the notebook."""
+        # print('hide_header')
+        # import logging
+        # logger = logging.getLogger(__name__)
+        # logger.error('hide_header')
+        self.notebookwidget.hide_element_by_id('top-panel-wrapper')
 
     def get_filename(self):
         """Get notebook's filename."""

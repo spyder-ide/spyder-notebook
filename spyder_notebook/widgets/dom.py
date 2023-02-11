@@ -62,3 +62,16 @@ class DOMWidget(WebView):
         script = 'document.querySelector("%s").setAttribute("value", "%s")'
         script = script % (selector, value)
         self.evaluate(script)
+
+    def hide_element_by_id(self, id_value):
+        """Hide the element with the given ID."""
+        # import logging
+        # logger = logging.getLogger(__name__)
+        # logger.error(f'In hide_element_by_id: {id_value=}')
+        script = f"""
+            (function () {{
+                var element = document.getElementById('{id_value}');
+                element.style.display = 'none';
+            }})();"""
+        # logger.error(script)
+        return self.evaluate(script)
