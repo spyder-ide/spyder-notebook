@@ -195,7 +195,7 @@ def test_shutdown_all_servers(mocker):
     """Test that .shutdown_all_servers() does shutdown all running servers,
     but not servers in another state."""
     mock_shutdown = mocker.patch(
-        'spyder_notebook.utils.servermanager.notebookapp.shutdown_server')
+        'spyder_notebook.utils.servermanager.serverapp.shutdown_server')
     server1 = ServerProcess(
         mocker.Mock(spec=QProcess), '', '', '', state=ServerState.RUNNING,
         server_info=mocker.Mock(dict))
