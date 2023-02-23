@@ -11,6 +11,8 @@ import {
 
 import { IDocumentManager } from '@jupyterlab/docmanager';
 
+import { IMainMenu } from '@jupyterlab/mainmenu';
+
 /**
  * A regular expression to match path to notebooks and documents
  *
@@ -62,9 +64,27 @@ const opener: JupyterFrontEndPlugin<void> = {
 };
 
 /**
+ * A plugin to customize menus
+ *
+ * Compared to the corresponding plugin in Jupyter Notebook, here we
+ * always remove the File menu and we leave out the handling of
+ * non-notebook pages.
+ */
+const menus: JupyterFrontEndPlugin<void> = {
+  id: '@spyder-notebook/application-extension:menus',
+  requires: [IMainMenu],
+  autoStart: true,
+  activate: (app: JupyterFrontEnd, menu: IMainMenu) => {
+    menu.fileMenu.dispose();
+    menu.tabsMenu.dispose();
+  }
+};
+
+/**
  * Export the plugins as default.
  */
 const plugins: JupyterFrontEndPlugin<any>[] = [
+  menus,
   opener
 ];
 

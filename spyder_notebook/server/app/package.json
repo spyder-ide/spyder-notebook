@@ -187,7 +187,6 @@
         "@jupyter-notebook/application-extension": [
           "@jupyter-notebook/application-extension:commands",
           "@jupyter-notebook/application-extension:dirty",
-          "@jupyter-notebook/application-extension:menus",
           "@jupyter-notebook/application-extension:menu-spacer",
           "@jupyter-notebook/application-extension:pages",
           "@jupyter-notebook/application-extension:paths",

@@ -17,7 +17,8 @@
   },
   "dependencies": {
     "@jupyterlab/application": "^4.0.0-alpha.20",
-    "@jupyterlab/docmanager": "^4.0.0-alpha.20"
+    "@jupyterlab/docmanager": "^4.0.0-alpha.20",
+    "@jupyterlab/mainmenu": "^4.0.0-alpha.20"
   },
   "devDependencies": {
     "typescript": "5.0.1-rc"
