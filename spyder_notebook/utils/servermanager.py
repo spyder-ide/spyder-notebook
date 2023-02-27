@@ -207,7 +207,7 @@ class ServerManager(QObject):
         arguments = ['-m', 'spyder_notebook.server', '--no-browser',
                      f'--info-file={info_file}',
                      f'--notebook-dir={nbdir}',
-                     '--NotebookApp.password=',
+                     '--ServerApp.password=',
                      f'--KernelSpecManager.kernel_spec_class={KERNELSPEC}']
         # TODO: Add support for dark theme
         logger.debug('Arguments: %s', repr(arguments))
