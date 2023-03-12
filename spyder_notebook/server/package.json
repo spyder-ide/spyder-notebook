@@ -1,0 +1,18 @@
+{
+  "name": "@spyder-notebook/root",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "app"
+    ]
+  },
+  "scripts": {
+    "build": "lerna run build"
+  },
+  "devDependencies": {
+    "@jupyterlab/buildutils": "^4.0.0-alpha.20",
+    "lerna": "^6.0.1",
+    "typescript": "5.0.1-rc"
+  }
+}

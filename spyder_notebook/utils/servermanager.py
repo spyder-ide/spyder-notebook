@@ -204,7 +204,7 @@ class ServerManager(QObject):
         my_pid = os.getpid()
         server_index = len(self.servers) + 1
         info_file = f'spynbserver-{my_pid}-{server_index}.json'
-        arguments = [serverscript, '--no-browser',
+        arguments = ['-m', 'spyder_notebook.server', '--no-browser',
                      f'--info-file={info_file}',
                      f'--notebook-dir={nbdir}',
                      '--NotebookApp.password=',
