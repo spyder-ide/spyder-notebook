@@ -24,6 +24,6 @@ SOFTWARE.
 Server License
 ==============
 
-The files in the directory spyder_notebook/server are adapted from an example
-of the Jupyter Project and licensed under the revised BSD license. See the
+The files in the directory spyder_notebook/server are adapted from
+Jupyter Notebook and licensed under the BSD 3-Clause License. See the
 file spyder_notebook/server/LICENSE for details.
