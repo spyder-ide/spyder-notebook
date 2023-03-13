@@ -215,7 +215,6 @@ async function main() {
     window.jupyterapp = app;
   }
 
-  alert('Spyder was here!');  // Spyder: Add a silly alert()
   await app.start();
 }
 

@@ -1,0 +1,32 @@
+{
+  "name": "@spyder-notebook/application-extension",
+  "version": "0.5.0-dev.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "directories": {
+    "lib": "lib/"
+  },
+  "files": [
+    "lib/*.d.ts",
+    "lib/*.js.map",
+    "lib/*.js",
+    "schema/*.json"
+  ],
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@jupyterlab/application": "^4.0.0-alpha.20",
+    "@jupyterlab/docmanager": "^4.0.0-alpha.20"
+  },
+  "devDependencies": {
+    "typescript": "5.0.1-rc"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "jupyterlab": {
+    "extension": true,
+    "schemaDir": "schema"
+  }
+}

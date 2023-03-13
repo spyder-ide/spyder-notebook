@@ -328,7 +328,7 @@ class NotebookClient(QFrame):
         # Server token
         self.token = server_info['token']
 
-        url = url_path_join(self.server_url, 'notebooks',
+        url = url_path_join(self.server_url, 'spyder-notebooks',
                             url_escape(self.path))
 
         # Set file url to load this notebook

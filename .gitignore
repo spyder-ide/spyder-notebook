@@ -16,10 +16,13 @@ spyder_crash.log
 .cache
 .coverage
 *.egg-info/
-spyder_notebook/server/app/node_modules/
-spyder_notebook/server/node_modules/
+
+# JavaScript-related files
+spyder_notebook/server/**/node_modules/
+spyder_notebook/server/packages/*/lib/
 spyder_notebook/server/schemas/
 spyder_notebook/server/static/
+tsconfig.tsbuildinfo
 
 # git .orig files
 *.orig
