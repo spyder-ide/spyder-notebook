@@ -187,7 +187,6 @@
         "@jupyter-notebook/application-extension": [
           "@jupyter-notebook/application-extension:commands",
           "@jupyter-notebook/application-extension:dirty",
-          "@jupyter-notebook/application-extension:logo",
           "@jupyter-notebook/application-extension:menus",
           "@jupyter-notebook/application-extension:menu-spacer",
           "@jupyter-notebook/application-extension:pages",
@@ -196,8 +195,6 @@
           "@jupyter-notebook/application-extension:shell",
           "@jupyter-notebook/application-extension:status",
           "@jupyter-notebook/application-extension:tab-title",
-          "@jupyter-notebook/application-extension:title",
-          "@jupyter-notebook/application-extension:top",
           "@jupyter-notebook/application-extension:sidepanel",
           "@jupyter-notebook/application-extension:tree-resolver",
           "@jupyter-notebook/application-extension:tree-updater",
