@@ -14,8 +14,6 @@
     "@jupyter-notebook/help-extension": "~7.0.0-alpha.15",
     "@jupyter-notebook/notebook-extension": "~7.0.0-alpha.15",
     "@jupyter-notebook/terminal-extension": "~7.0.0-alpha.15",
-    "@jupyter-notebook/tree": "~7.0.0-alpha.15",
-    "@jupyter-notebook/tree-extension": "~7.0.0-alpha.15",
     "@jupyter-notebook/ui-components": "~7.0.0-alpha.15",
     "@jupyter/ydoc": "~0.3.4",
     "@jupyterlab/application": "~4.0.0-alpha.20",
@@ -65,10 +63,7 @@
     "@jupyterlab/rendermime": "~4.0.0-alpha.20",
     "@jupyterlab/rendermime-extension": "~4.0.0-alpha.20",
     "@jupyterlab/rendermime-interfaces": "~3.8.0-alpha.20",
-    "@jupyterlab/running-extension": "~4.0.0-alpha.20",
     "@jupyterlab/services": "~7.0.0-alpha.20",
-    "@jupyterlab/settingeditor": "~4.0.0-alpha.20",
-    "@jupyterlab/settingeditor-extension": "~4.0.0-alpha.20",
     "@jupyterlab/settingregistry": "~4.0.0-alpha.20",
     "@jupyterlab/shortcuts-extension": "~4.0.0-alpha.20",
     "@jupyterlab/statedb": "~4.0.0-alpha.20",
@@ -110,8 +105,6 @@
     "@jupyter-notebook/help-extension": "^7.0.0-alpha.15",
     "@jupyter-notebook/notebook-extension": "^7.0.0-alpha.15",
     "@jupyter-notebook/terminal-extension": "^7.0.0-alpha.15",
-    "@jupyter-notebook/tree": "^7.0.0-alpha.15",
-    "@jupyter-notebook/tree-extension": "^7.0.0-alpha.15",
     "@jupyter-notebook/ui-components": "^7.0.0-alpha.15",
     "@jupyterlab/application-extension": "^4.0.0-alpha.20",
     "@jupyterlab/apputils-extension": "^4.0.0-alpha.20",
@@ -141,9 +134,6 @@
     "@jupyterlab/notebook-extension": "^4.0.0-alpha.20",
     "@jupyterlab/pdf-extension": "^4.0.0-alpha.20",
     "@jupyterlab/rendermime-extension": "^4.0.0-alpha.20",
-    "@jupyterlab/running-extension": "^4.0.0-alpha.20",
-    "@jupyterlab/settingeditor": "^4.0.0-alpha.20",
-    "@jupyterlab/settingeditor-extension": "^4.0.0-alpha.20",
     "@jupyterlab/shortcuts-extension": "^4.0.0-alpha.20",
     "@jupyterlab/terminal-extension": "^4.0.0-alpha.20",
     "@jupyterlab/theme-dark-extension": "^4.0.0-alpha.20",
@@ -271,22 +261,6 @@
         "@jupyterlab/ui-components-extension": true,
         "@jupyterlab/hub-extension": true
       },
-      "/tree": {
-        "@jupyterlab/extensionmanager-extension": true,
-        "@jupyterlab/filebrowser-extension": [
-          "@jupyterlab/filebrowser-extension:browser",
-          "@jupyterlab/filebrowser-extension:download",
-          "@jupyterlab/filebrowser-extension:file-upload-status",
-          "@jupyterlab/filebrowser-extension:open-with",
-          "@jupyterlab/filebrowser-extension:search",
-          "@jupyterlab/filebrowser-extension:share-file"
-        ],
-        "@jupyter-notebook/tree-extension": true,
-        "@jupyterlab/running-extension": true,
-        "@jupyterlab/settingeditor-extension": [
-          "@jupyterlab/settingeditor-extension:form-ui"
-        ]
-      },
       "/notebooks": {
         "@jupyterlab/celltags-extension": true,
         "@jupyterlab/cell-toolbar-extension": true,
@@ -312,22 +286,9 @@
           "@jupyterlab/tooltip-extension:manager",
           "@jupyterlab/tooltip-extension:notebooks"
         ]
-      },
-      "/consoles": {
-        "@jupyterlab/tooltip-extension": [
-          "@jupyterlab/tooltip-extension:manager",
-          "@jupyterlab/tooltip-extension:consoles"
-        ]
-      },
-      "/edit": {
-        "@jupyterlab/fileeditor-extension": [
-          "@jupyterlab/fileeditor-extension:completer",
-          "@jupyterlab/fileeditor-extension:search"
-        ]
       }
     },
     "singletonPackages": [
-      "@jupyter-notebook/tree",
       "@jupyter/ydoc",
       "@jupyterlab/application",
       "@jupyterlab/apputils",
@@ -353,7 +314,6 @@
       "@jupyterlab/rendermime",
       "@jupyterlab/rendermime-interfaces",
       "@jupyterlab/services",
-      "@jupyterlab/settingeditor",
       "@jupyterlab/settingregistry",
       "@jupyterlab/statedb",
       "@jupyterlab/statusbar",
