@@ -153,6 +153,7 @@
     "@jupyterlab/translation-extension": "^4.0.0-alpha.20",
     "@jupyterlab/ui-components-extension": "^4.0.0-alpha.20",
     "@jupyterlab/vega5-extension": "^4.0.0-alpha.20",
+    "@spyder-notebook/application": "^0.5.0-dev.0",
     "@spyder-notebook/application-extension": "^0.5.0-dev.0"
   },
   "devDependencies": {

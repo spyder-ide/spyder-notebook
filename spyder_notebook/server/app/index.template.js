@@ -202,7 +202,8 @@ async function main() {
   // plugin even if the debugger is only loaded on the notebook page.
   PageConfig.setOption('allPlugins', '{{{ json notebook_plugins }}}');
 
-  const NotebookApp = require('@jupyter-notebook/application').NotebookApp;
+  // Spyder: Use our own app class
+  const NotebookApp = require('@spyder-notebook/application').SpyderNotebookApp;
   const app = new NotebookApp({ mimeExtensions });
 
   app.registerPluginModules(mods);
