@@ -338,16 +338,6 @@
     "@lumino/signaling" "^2.0.0-rc.1"
     "@lumino/widgets" "^2.0.0-rc.1"
 
-"@jupyter-notebook/console-extension@^7.0.0-alpha.15":
-  version "7.0.0-alpha.15"
-  resolved "https://registry.yarnpkg.com/@jupyter-notebook/console-extension/-/console-extension-7.0.0-alpha.15.tgz#bb1638d65645fb052087e61df5d9dc4d261e869c"
-  integrity sha512-DwzBWDJLUbaeFrgG11SxZY7TQVj0LgX2vWa3TBoekHALaSWtWSnUxGF5fDhQThxQjD6+biDsdOHquEab4S1b4Q==
-  dependencies:
-    "@jupyterlab/application" "^4.0.0-alpha.20"
-    "@jupyterlab/console" "^4.0.0-alpha.20"
-    "@jupyterlab/coreutils" "^6.0.0-alpha.20"
-    "@lumino/algorithm" "^2.0.0-rc.1"
-
 "@jupyter-notebook/docmanager-extension@^7.0.0-alpha.15":
   version "7.0.0-alpha.15"
   resolved "https://registry.yarnpkg.com/@jupyter-notebook/docmanager-extension/-/docmanager-extension-7.0.0-alpha.15.tgz#b0113d8bca43e97390df27caa56983de4342da96"
@@ -399,16 +389,6 @@
     "@jupyterlab/translation" "^4.0.0-alpha.20"
     "@lumino/polling" "^2.0.0-rc.1"
     "@lumino/widgets" "^2.0.0-rc.1"
-
-"@jupyter-notebook/terminal-extension@^7.0.0-alpha.15":
-  version "7.0.0-alpha.15"
-  resolved "https://registry.yarnpkg.com/@jupyter-notebook/terminal-extension/-/terminal-extension-7.0.0-alpha.15.tgz#4c01bd773174c1eb87dbdd481cb5abf57ba86296"
-  integrity sha512-5aqH0wjDy7QeRq38rP461FnGti0QTGS8DIKZ+vA297wE/xCFNF5Ulh7R2eC+YYNj8gm/TAVxGXJ91Wrt8ASDkg==
-  dependencies:
-    "@jupyterlab/application" "^4.0.0-alpha.20"
-    "@jupyterlab/coreutils" "^6.0.0-alpha.20"
-    "@jupyterlab/terminal" "^4.0.0-alpha.20"
-    "@lumino/algorithm" "^2.0.0-rc.1"
 
 "@jupyter-notebook/ui-components@^7.0.0-alpha.15":
   version "7.0.0-alpha.15"
@@ -803,29 +783,6 @@
     "@lumino/domutils" "^2.0.0-rc.0"
     "@lumino/messaging" "^2.0.0-rc.0"
     "@lumino/signaling" "^2.0.0-rc.0"
-    "@lumino/widgets" "^2.0.0-rc.0"
-
-"@jupyterlab/console-extension@^4.0.0-alpha.20":
-  version "4.0.0-alpha.20"
-  resolved "https://registry.yarnpkg.com/@jupyterlab/console-extension/-/console-extension-4.0.0-alpha.20.tgz#0d8f938bf88e926ca2bfa96ce97af6b666a68187"
-  integrity sha512-/2q4TYI4xo06d0czCmKm/uvrRRqYKHCdU6MUehhu8H2tWQFXWYi6mN+d+ASW4MF/7sFUDW/9JrBOyX7yT7gTBA==
-  dependencies:
-    "@jupyterlab/application" "^4.0.0-alpha.20"
-    "@jupyterlab/apputils" "^4.0.0-alpha.20"
-    "@jupyterlab/codeeditor" "^4.0.0-alpha.20"
-    "@jupyterlab/completer" "^4.0.0-alpha.20"
-    "@jupyterlab/console" "^4.0.0-alpha.20"
-    "@jupyterlab/filebrowser" "^4.0.0-alpha.20"
-    "@jupyterlab/launcher" "^4.0.0-alpha.20"
-    "@jupyterlab/mainmenu" "^4.0.0-alpha.20"
-    "@jupyterlab/rendermime" "^4.0.0-alpha.20"
-    "@jupyterlab/settingregistry" "^4.0.0-alpha.20"
-    "@jupyterlab/translation" "^4.0.0-alpha.20"
-    "@jupyterlab/ui-components" "^4.0.0-alpha.35"
-    "@lumino/algorithm" "^2.0.0-rc.0"
-    "@lumino/coreutils" "^2.0.0-rc.0"
-    "@lumino/disposable" "^2.0.0-rc.0"
-    "@lumino/properties" "^2.0.0-rc.0"
     "@lumino/widgets" "^2.0.0-rc.0"
 
 "@jupyterlab/console@^4.0.0-alpha.20":
@@ -1611,41 +1568,6 @@
     "@lumino/signaling" "^2.0.0-rc.0"
     "@lumino/widgets" "^2.0.0-rc.0"
     react "^18.2.0"
-
-"@jupyterlab/terminal-extension@^4.0.0-alpha.20":
-  version "4.0.0-alpha.20"
-  resolved "https://registry.yarnpkg.com/@jupyterlab/terminal-extension/-/terminal-extension-4.0.0-alpha.20.tgz#26a21325a6cd064e13108993bf532e300576728a"
-  integrity sha512-QHYn8bYUa83JpKZE9KmQeZrLAxcCh4UloKnlHXc6Il+VXVoIKIMFbOCwIbCwtHQqychzc3VC0EPcF4vCFM894A==
-  dependencies:
-    "@jupyterlab/application" "^4.0.0-alpha.20"
-    "@jupyterlab/apputils" "^4.0.0-alpha.20"
-    "@jupyterlab/launcher" "^4.0.0-alpha.20"
-    "@jupyterlab/mainmenu" "^4.0.0-alpha.20"
-    "@jupyterlab/running" "^4.0.0-alpha.20"
-    "@jupyterlab/services" "^7.0.0-alpha.20"
-    "@jupyterlab/settingregistry" "^4.0.0-alpha.20"
-    "@jupyterlab/terminal" "^4.0.0-alpha.20"
-    "@jupyterlab/translation" "^4.0.0-alpha.20"
-    "@jupyterlab/ui-components" "^4.0.0-alpha.35"
-    "@lumino/widgets" "^2.0.0-rc.0"
-
-"@jupyterlab/terminal@^4.0.0-alpha.20":
-  version "4.0.0-alpha.20"
-  resolved "https://registry.yarnpkg.com/@jupyterlab/terminal/-/terminal-4.0.0-alpha.20.tgz#ddeeaa1a41468431a9c0db5d0b4edbb9942bfff2"
-  integrity sha512-v+5+2Y0A9xDYBVFPHH6mo6t2A4jovMIqATlJKBiGf9DT9vSdPwRWIo8IVczVvoAAESl5wOp2rf8t3SKyYnHrZQ==
-  dependencies:
-    "@jupyterlab/apputils" "^4.0.0-alpha.20"
-    "@jupyterlab/services" "^7.0.0-alpha.20"
-    "@jupyterlab/translation" "^4.0.0-alpha.20"
-    "@lumino/coreutils" "^2.0.0-rc.0"
-    "@lumino/domutils" "^2.0.0-rc.0"
-    "@lumino/messaging" "^2.0.0-rc.0"
-    "@lumino/widgets" "^2.0.0-rc.0"
-    xterm "~5.1.0"
-    xterm-addon-canvas "~0.3.0"
-    xterm-addon-fit "~0.7.0"
-    xterm-addon-web-links "~0.8.0"
-    xterm-addon-webgl "~0.14.0"
 
 "@jupyterlab/theme-dark-extension@^4.0.0-alpha.20":
   version "4.0.0-alpha.20"
@@ -9802,31 +9724,6 @@ xtend@~4.0.1:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/xtend/-/xtend-4.0.2.tgz#bb72779f5fa465186b1f438f674fa347fdb5db54"
   integrity sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==
-
-xterm-addon-canvas@~0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/xterm-addon-canvas/-/xterm-addon-canvas-0.3.0.tgz#8cfb5a13297f4a31a12870c1119af2c139392b50"
-  integrity sha512-2deF4ev6T+NjgSM56H+jcAWz4k5viEoaBtuDEyfo5Qdh1r7HOvNzLC45HSeegdH38qmEcL9XIt0KXyOINpSFRA==
-
-xterm-addon-fit@~0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/xterm-addon-fit/-/xterm-addon-fit-0.7.0.tgz#b8ade6d96e63b47443862088f6670b49fb752c6a"
-  integrity sha512-tQgHGoHqRTgeROPnvmtEJywLKoC/V9eNs4bLLz7iyJr1aW/QFzRwfd3MGiJ6odJd9xEfxcW36/xRU47JkD5NKQ==
-
-xterm-addon-web-links@~0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/xterm-addon-web-links/-/xterm-addon-web-links-0.8.0.tgz#2cb1d57129271022569208578b0bf4774e7e6ea9"
-  integrity sha512-J4tKngmIu20ytX9SEJjAP3UGksah7iALqBtfTwT9ZnmFHVplCumYQsUJfKuS+JwMhjsjH61YXfndenLNvjRrEw==
-
-xterm-addon-webgl@~0.14.0:
-  version "0.14.0"
-  resolved "https://registry.yarnpkg.com/xterm-addon-webgl/-/xterm-addon-webgl-0.14.0.tgz#bd9136710bd5d130a0a51fd42e6d14ea39348236"
-  integrity sha512-zcxL4RVVjeS7NNFeKe5HHQI8OUEx3wZpE4EqLoTVipa2UrTR+qLsigo16UEp/yVcYBMhK7tsJ/AJokoEe/f0mw==
-
-xterm@~5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/xterm/-/xterm-5.1.0.tgz#3e160d60e6801c864b55adf19171c49d2ff2b4fc"
-  integrity sha512-LovENH4WDzpwynj+OTkLyZgJPeDom9Gra4DMlGAgz6pZhIDCQ+YuO7yfwanY+gVbn/mmZIStNOnVRU/ikQuAEQ==
 
 y-protocols@^1.0.5:
   version "1.0.5"
