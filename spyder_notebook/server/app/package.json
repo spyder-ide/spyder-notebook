@@ -175,10 +175,7 @@
           "@jupyter-notebook/application-extension:status",
           "@jupyter-notebook/application-extension:tab-title",
           "@jupyter-notebook/application-extension:sidepanel",
-          "@jupyter-notebook/application-extension:tree-resolver",
-          "@jupyter-notebook/application-extension:tree-updater",
-          "@jupyter-notebook/application-extension:translator",
-          "@jupyter-notebook/application-extension:zen"
+          "@jupyter-notebook/application-extension:translator"
         ],
         "@jupyter-notebook/docmanager-extension": true,
         "@jupyter-notebook/documentsearch-extension": true,
