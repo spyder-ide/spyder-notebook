@@ -20,6 +20,7 @@ from qtpy.QtCore import QObject, QProcess, QProcessEnvironment, QTimer, Signal
 # Third-party imports
 from jupyter_core.paths import jupyter_runtime_dir
 from jupyter_server import serverapp
+from tornado.httpclient import HTTPClientError
 
 # Spyder imports
 from spyder.config.base import DEV, get_home_dir, get_module_path
@@ -291,7 +292,15 @@ class ServerManager(QObject):
                              server.notebook_dir)
                 server.process.errorOccurred.disconnect()
                 server.process.finished.disconnect()
-                serverapp.shutdown_server(server.server_info, log=logger)
+                try:
+                    serverapp.shutdown_server(server.server_info, log=logger)
+                except HTTPClientError as err:
+                    # No response received, typically due to time out
+                    if err.code == 599:
+                        logger.warning('Ignoring HTTPClientError '
+                                       'with code = 599')
+                    else:
+                        raise
                 server.state = ServerState.FINISHED
 
     def read_server_output(self, server_process):
