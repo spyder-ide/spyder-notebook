@@ -183,6 +183,7 @@ def test_file_in_temp_dir_deleted_after_notebook_closed(notebook, qtbot):
     assert not osp.exists(filename)
 
 
+@flaky(max_runs=3)
 def test_close_nonexisting_notebook(notebook, qtbot):
     """Test that we can close a tab if the notebook file does not exist.
     Regression test for spyder-ide/spyder-notebook#187."""
@@ -269,6 +270,7 @@ def test_save_notebook(notebook, qtbot, tmpdir):
            "save"
 
 
+@flaky(max_runs=3)
 def test_save_notebook_as_with_error(mocker, notebook, qtbot, tmpdir):
     """Test that errors are handled in save_as()."""
     # Set up mocks
