@@ -10,6 +10,7 @@ import logging
 import os
 import os.path as osp
 import sys
+import time
 
 # Qt imports
 from qtpy.compat import getopenfilenames, getsavefilename
@@ -49,6 +50,38 @@ WAIT_SAVE_DELAY = 250
 WAIT_SAVE_ITERATIONS = 20
 
 logger = logging.getLogger(__name__)
+
+
+def remove_file_retry_if_in_use(filename):
+    """
+    Remove file, retrying if file is in use
+
+    On non-Windows systems, a file which is in use by another process can be
+    removed without problems. However, on Windows, attempting to remove a file
+    which is in use by another process raises an error.
+
+    Thus, this function simply removes the file on non-Windows systems.
+    On Windows sytems, if removing the file raises an error indicating that
+    the file is in use by another process, this function waits half a
+    second in that case and tries again. After three attempts, it gives up.
+
+    Parameters
+    ----------
+    filename : str
+        Name of file which should be deleted
+    """
+    if sys.platform != 'win32':
+            os.remove(filename)
+    else:
+        for attempt in range(3):
+            try:
+                os.remove(filename)
+                break
+            except PermissionError as error:
+                if error.winerror == 32:  # File is in use
+                    time.sleep(0.5)
+                else:
+                    raise
 
 
 class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
@@ -245,10 +278,7 @@ class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
 
         # Delete notebook file if it is in temporary directory
         if filename.startswith(get_temp_dir()):
-            try:
-                os.remove(filename)
-            except EnvironmentError:
-                pass
+            remove_file_retry_if_in_use(filename)
 
         # Note: notebook index may have changed after closing related widgets
         self.removeTab(self.indexOf(client))
