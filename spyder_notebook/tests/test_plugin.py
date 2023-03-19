@@ -125,7 +125,7 @@ def plugin_no_server(mocker, qtbot):
     a notebook server."""
     def fake_get_server(filename, interpreter, start):
         return collections.defaultdict(
-            str, filename=filename, notebook_dir=osp.dirname(filename))
+            str, filename=filename, root_dir=osp.dirname(filename))
     fake_server_manager = mocker.Mock(get_server=fake_get_server)
     mocker.patch('spyder_notebook.widgets.main_widget.ServerManager',
                  return_value=fake_server_manager)

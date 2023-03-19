@@ -24,7 +24,7 @@ def tabwidget(mocker, qtbot):
     """Create an empty NotebookTabWidget which does not start up servers."""
     def fake_get_server(filename, interpreter, start):
         return collections.defaultdict(
-            str, filename=filename, notebook_dir=osp.dirname(filename))
+            str, filename=filename, root_dir=osp.dirname(filename))
 
     mocker.patch(
         'spyder_notebook.widgets.notebooktabwidget.WAIT_SAVE_DELAY', 1)
