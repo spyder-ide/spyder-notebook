@@ -48,7 +48,6 @@ def plugin(plugin_without_server):
     return plugin_without_server
 
 
-@pytest.mark.skip
 def test_notebookwidget_create_window(plugin, mocker, qtbot):
     """Test that NotebookWidget.create_window() creates an object that calls
     webbrowser.open() when its URL is set."""
