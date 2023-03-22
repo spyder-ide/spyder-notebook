@@ -76,9 +76,11 @@ def test_get_server_with_server(
 
 @pytest.mark.parametrize('under_home', [True, False])
 def test_start_server(mocker, under_home):
-    """Test that .start_server() starts a process with the correct arguments,
+    """
+    Test that .start_server() starts a process with the correct arguments,
     that it stores the server process in `.servers`; and that it calls
-    ._check_server_running()."""
+    ._check_server_running().
+    """
     dark = 'not used'
     serverManager = ServerManager(dark)
     mock_check = mocker.patch.object(serverManager, '_check_server_started')

@@ -26,4 +26,5 @@ def _jupyter_server_extension_points():
 def _jupyter_labextension_paths():
     return [{'src': 'labextension', 'dest': '@spyder-notebook/lab-extension'}]
 
+
 PLUGIN_CLASS

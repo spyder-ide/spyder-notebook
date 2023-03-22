@@ -210,6 +210,7 @@ class ServerManager(QObject):
                      f'--notebook-dir={nbdir}',
                      '--ServerApp.password=',
                      f'--KernelSpecManager.kernel_spec_class={KERNELSPEC}']
+
         # TODO: Add support for dark theme
         logger.debug('Arguments: %s', repr(arguments))
 
@@ -293,6 +294,7 @@ class ServerManager(QObject):
                              server.notebook_dir)
                 server.process.errorOccurred.disconnect()
                 server.process.finished.disconnect()
+
                 try:
                     serverapp.shutdown_server(server.server_info, log=logger)
                 except HTTPClientError as err:

@@ -55,7 +55,7 @@ $ conda install --file requirements/conda.txt
 ```
 
 **For version 0.5.0-alpha of the plugin:** The plugin is based on
-Jupyter Notebook 7, which is only available as alpha release on
+Jupyter Notebook 7, which is only available as an alpha release on
 PyPI. So in addition, we need to install it with pip usig the
 following command:
 
@@ -63,7 +63,7 @@ following command:
 $ python -m pip install notebook --pre
 ```
 
-Cross your fingers that there the mixing of pip and conda does not
+Cross your fingers that the mixing of pip and conda does not
 cause any problems!
 
 ### Building the notebook server

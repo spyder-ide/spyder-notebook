@@ -71,7 +71,7 @@ def remove_file_retry_if_in_use(filename):
         Name of file which should be deleted
     """
     if sys.platform != 'win32':
-            os.remove(filename)
+        os.remove(filename)
     else:
         for attempt in range(3):
             try:
