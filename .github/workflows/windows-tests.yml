@@ -4,9 +4,11 @@ on:
   push:
     branches:
     - master
+    - '0.*'
   pull_request:
     branches:
     - master
+    - '0.*'
 
 jobs:
   windows:
@@ -19,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false 
       matrix:
-        PYTHON_VERSION: ['3.7', '3.8', '3.9']
+        PYTHON_VERSION: ['3.8', '3.9', '3.10']
     steps:
       - name: Checkout branch
         uses: actions/checkout@v2

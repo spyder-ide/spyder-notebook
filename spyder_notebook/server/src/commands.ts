@@ -837,6 +837,8 @@ export const SetupCommands = (
   viewMenu.insertItem(6, { command: cmdIds.showOutput });
   viewMenu.insertItem(7, { command: cmdIds.showAllCode });
   viewMenu.insertItem(8, { command: cmdIds.showAllOutputs });
+  viewMenu.insertItem(9, { type: 'separator' });
+  viewMenu.insertItem(10, { command: cmdIds.toggleAllLines });
 
   // Create Run menu.
   let runMenu = new Menu({ commands });
