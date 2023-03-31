@@ -59,7 +59,7 @@ def test_get_server_with_server(
     server_info = mocker.Mock(spec=dict)
     server = ServerProcess(
         mocker.Mock(spec=QProcess), osp.abspath(nbdir), interpreter,
-        state=state, server_info=server_info)
+        'info.json', state=state, server_info=server_info)
     serverManager.servers.append(server)
 
     res = serverManager.get_server(filename, interpreter='ham')
@@ -114,15 +114,16 @@ def test_check_server_started_if_started(mocker, qtbot):
                              mocker.mock_open(read_data='{"foo": 42}'))
     mocker.patch('spyder_notebook.utils.servermanager.jupyter_runtime_dir',
                  return_value='runtimedir')
-    mock_process = mocker.Mock(spec=QProcess, processId=lambda: 7)
-    server_process = ServerProcess(mock_process, 'notebookdir', 'interpreter')
+    mock_process = mocker.Mock(spec=QProcess)
+    server_process = ServerProcess(
+        mock_process, 'notebookdir', 'interpreter', 'info.json')
     serverManager = ServerManager()
 
     with qtbot.waitSignal(serverManager.sig_server_started):
         serverManager._check_server_started(server_process)
 
     fake_open.assert_called_once_with(
-        osp.join('runtimedir', 'nbserver-7.json'), encoding='utf-8')
+        osp.join('runtimedir', 'info.json'), encoding='utf-8')
     assert server_process.state == ServerState.RUNNING
     assert server_process.server_info == {'foo': 42}
 
@@ -136,14 +137,15 @@ def test_check_server_started_if_not_started(mocker, qtbot):
                  return_value='runtimedir')
     mock_QTimer = mocker.patch('spyder_notebook.utils.servermanager.QTimer',
                                spec=QTimer)
-    mock_process = mocker.Mock(spec=QProcess, processId=lambda: 7)
-    server_process = ServerProcess(mock_process, 'notebookdir', 'interpreter')
+    mock_process = mocker.Mock(spec=QProcess)
+    server_process = ServerProcess(
+        mock_process, 'notebookdir', 'interpreter', 'info.json')
     serverManager = ServerManager()
 
     serverManager._check_server_started(server_process)
 
     fake_open.assert_called_once_with(
-        osp.join('runtimedir', 'nbserver-7.json'), encoding='utf-8')
+        osp.join('runtimedir', 'info.json'), encoding='utf-8')
     assert server_process.state == ServerState.STARTING
     mock_QTimer.singleShot.assert_called_once()
 
@@ -155,17 +157,18 @@ def test_check_server_started_if_timed_out(mocker, qtbot):
                              side_effect=OSError)
     mocker.patch('spyder_notebook.utils.servermanager.jupyter_runtime_dir',
                  return_value='runtimedir')
-    mock_process = mocker.Mock(spec=QProcess, processId=lambda: 7)
+    mock_process = mocker.Mock(spec=QProcess)
     one_hour_ago = datetime.datetime.now() - datetime.timedelta(hours=1)
     server_process = ServerProcess(
-        mock_process, 'notebookdir', 'interpreter', starttime=one_hour_ago)
+        mock_process, 'notebookdir', 'interpreter', 'info.json',
+        starttime=one_hour_ago)
     serverManager = ServerManager()
 
     with qtbot.waitSignal(serverManager.sig_server_timed_out):
         serverManager._check_server_started(server_process)
 
     fake_open.assert_called_once_with(
-        osp.join('runtimedir', 'nbserver-7.json'), encoding='utf-8')
+        osp.join('runtimedir', 'info.json'), encoding='utf-8')
     assert server_process.state == ServerState.TIMED_OUT
 
 
@@ -175,9 +178,10 @@ def test_check_server_started_if_errored(mocker, qtbot):
     fake_open = mocker.patch('spyder_notebook.utils.servermanager.open')
     mock_QTimer = mocker.patch('spyder_notebook.utils.servermanager.QTimer',
                                spec=QTimer)
-    mock_process = mocker.Mock(spec=QProcess, processId=lambda: 7)
+    mock_process = mocker.Mock(spec=QProcess)
     server_process = ServerProcess(
-        mock_process, 'notebookdir', 'interpreter', state=ServerState.ERROR)
+        mock_process, 'notebookdir', 'interpreter', 'info.json',
+        state=ServerState.ERROR)
     serverManager = ServerManager()
 
     serverManager._check_server_started(server_process)
@@ -193,10 +197,10 @@ def test_shutdown_all_servers(mocker):
     mock_shutdown = mocker.patch(
         'spyder_notebook.utils.servermanager.notebookapp.shutdown_server')
     server1 = ServerProcess(
-        mocker.Mock(spec=QProcess), '', '', state=ServerState.RUNNING,
+        mocker.Mock(spec=QProcess), '', '', '', state=ServerState.RUNNING,
         server_info=mocker.Mock(dict))
     server2 = ServerProcess(
-        mocker.Mock(spec=QProcess), '', '', state=ServerState.ERROR,
+        mocker.Mock(spec=QProcess), '', '', '', state=ServerState.ERROR,
         server_info=mocker.Mock(dict))
     serverManager = ServerManager()
     serverManager.servers = [server1, server2]
@@ -214,7 +218,7 @@ def test_read_standard_output(mocker):
     output = 'Αθήνα\n'  # check that we can handle non-ascii
     mock_read = mocker.Mock(return_value=QByteArray(output.encode()))
     mock_process = mocker.Mock(spec=QProcess, readAllStandardOutput=mock_read)
-    server = ServerProcess(mock_process, '', '', output=before)
+    server = ServerProcess(mock_process, '', '', '', output=before)
     serverManager = ServerManager()
     serverManager.servers = [server]
 
@@ -226,7 +230,7 @@ def test_read_standard_output(mocker):
 
 def test_handle_error(mocker, qtbot):
     """Test that .handle_error() changes the state and emits signal."""
-    server = ServerProcess(mocker.Mock(spec=QProcess), '', '')
+    server = ServerProcess(mocker.Mock(spec=QProcess), '', '', '')
     serverManager = ServerManager()
 
     with qtbot.waitSignal(serverManager.sig_server_errored):
@@ -237,7 +241,7 @@ def test_handle_error(mocker, qtbot):
 
 def test_handle_finished(mocker, qtbot):
     """Test that .handle_finished() changes the state."""
-    server = ServerProcess(mocker.Mock(spec=QProcess), '', '')
+    server = ServerProcess(mocker.Mock(spec=QProcess), '', '', '')
     serverManager = ServerManager()
 
     serverManager.handle_finished(server, mocker.Mock(), mocker.Mock())

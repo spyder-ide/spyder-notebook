@@ -6,17 +6,18 @@
 import os
 from jinja2 import FileSystemLoader
 from notebook.base.handlers import IPythonHandler, FileFindHandler
-from notebook.notebookapp import flags, NotebookApp
+from notebook.notebookapp import aliases, flags, NotebookApp
 from notebook.utils import url_path_join as ujoin
-from traitlets import Bool
+from traitlets import Bool, Dict, Unicode
 
 HERE = os.path.dirname(__file__)
+
+aliases['info-file'] = 'SpyderNotebookServer.info_file_cmdline'
 
 flags['dark'] = (
     {'SpyderNotebookServer': {'dark_theme': True}},
     'Use dark theme when rendering notebooks'
 )
-
 
 class NotebookHandler(IPythonHandler):
     """
@@ -55,15 +56,23 @@ class NotebookHandler(IPythonHandler):
 class SpyderNotebookServer(NotebookApp):
     """Server rendering notebooks in HTML and serving them over HTTP."""
 
-    flags = flags
+    flags = Dict(flags)
+    aliases = Dict(aliases)
 
     dark_theme = Bool(
         False, config=True,
         help='Whether to use dark theme when rendering notebooks')
 
+    info_file_cmdline = Unicode(
+        '', config=True,
+        help='Name of file in Jupyter runtime dir with connection info')
+
     def init_webapp(self):
         """Initialize tornado webapp and httpserver."""
         self.tornado_settings['dark_theme'] = self.dark_theme
+        if self.info_file_cmdline:
+            self.info_file = os.path.join(
+                self.runtime_dir, self.info_file_cmdline)
 
         super().init_webapp()
 
