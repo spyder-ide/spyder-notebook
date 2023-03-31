@@ -266,7 +266,7 @@ class ServerManager(QObject):
             with open(filename, encoding='utf-8') as f:
                 server_info = json.load(f)
         except OSError:  # E.g., file does not exist
-            logger.debug('_check_server_started: OSError')
+            logger.debug(f'OSError when opening {filename}')
             delay = datetime.datetime.now() - server_process.starttime
             if delay > datetime.timedelta(seconds=SERVER_TIMEOUT_DELAY):
                 logger.debug('Notebook server for %s timed out',
