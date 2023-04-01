@@ -54,7 +54,7 @@ class ServerProcess:
     This is a data class.
     """
 
-    def __init__(self, process, notebook_dir, interpreter, infofile,
+    def __init__(self, process, notebook_dir, interpreter, info_file,
                  starttime=None, state=ServerState.STARTING, server_info=None,
                  output=''):
         """
@@ -68,7 +68,7 @@ class ServerProcess:
             Directory from which the server can render notebooks.
         interpreter : str
             File name of Python interpreter used to render notebooks.
-        infofile : str
+        info_file : str
             Name of JSON file in jupyter_runtime_dir() with connection
             information for the server.
         starttime : datetime or None, optional
@@ -77,7 +77,7 @@ class ServerProcess:
         state : ServerState, optional
             State of the server process. The default is ServerState.STARTING.
         server_info : dict or None, optional
-            If set, this is a dict with the information in infofile. It has
+            If set, this is a dict with the information in info_file. It has
             keys like 'url' and 'token'. The default is None.
         output : str
             Output of the server process from stdout and stderr. The default
@@ -86,7 +86,7 @@ class ServerProcess:
         self.process = process
         self.notebook_dir = notebook_dir
         self.interpreter = interpreter
-        self.infofile = infofile
+        self.info_file = info_file
         self.starttime = starttime or datetime.datetime.now()
         self.state = state
         self.server_info = server_info
@@ -203,9 +203,9 @@ class ServerManager(QObject):
         serverscript = osp.normpath(serverscript)
         my_pid = os.getpid()
         server_index = len(self.servers) + 1
-        infofile = f'spynbserver-{my_pid}-{server_index}.json'
+        info_file = f'spynbserver-{my_pid}-{server_index}.json'
         arguments = [serverscript, '--no-browser',
-                     f'--info-file={infofile}',
+                     f'--info-file={info_file}',
                      f'--notebook-dir={nbdir}',
                      '--NotebookApp.password=',
                      f'--KernelSpecManager.kernel_spec_class={KERNELSPEC}']
@@ -220,7 +220,7 @@ class ServerManager(QObject):
 
         server_process = ServerProcess(
             process, notebook_dir=nbdir, interpreter=interpreter,
-            infofile=infofile)
+            info_file=info_file)
         process.setProcessChannelMode(QProcess.MergedChannels)
         process.readyReadStandardOutput.connect(
             lambda: self.read_server_output(server_process))
@@ -260,7 +260,7 @@ class ServerManager(QObject):
             return
 
         runtime_dir = jupyter_runtime_dir()
-        filename = osp.join(runtime_dir, server_process.infofile)
+        filename = osp.join(runtime_dir, server_process.info_file)
 
         try:
             with open(filename, encoding='utf-8') as f:
