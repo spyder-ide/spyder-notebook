@@ -10,6 +10,7 @@ import datetime
 import enum
 import json
 import logging
+import os
 import os.path as osp
 import sys
 
@@ -53,8 +54,9 @@ class ServerProcess:
     This is a data class.
     """
 
-    def __init__(self, process, notebook_dir, interpreter, starttime=None,
-                 state=ServerState.STARTING, server_info=None, output=''):
+    def __init__(self, process, notebook_dir, interpreter, info_file,
+                 starttime=None, state=ServerState.STARTING, server_info=None,
+                 output=''):
         """
         Construct a ServerProcess.
 
@@ -66,15 +68,17 @@ class ServerProcess:
             Directory from which the server can render notebooks.
         interpreter : str
             File name of Python interpreter used to render notebooks.
+        info_file : str
+            Name of JSON file in jupyter_runtime_dir() with connection
+            information for the server.
         starttime : datetime or None, optional
             Time at which the process was started. The default is None,
             meaning that the current time should be used.
         state : ServerState, optional
             State of the server process. The default is ServerState.STARTING.
         server_info : dict or None, optional
-            If set, this is a dict with information given by the server in
-            a JSON file in jupyter_runtime_dir(). It has keys like 'url' and
-            'token'. The default is None.
+            If set, this is a dict with the information in info_file. It has
+            keys like 'url' and 'token'. The default is None.
         output : str
             Output of the server process from stdout and stderr. The default
             is ''.
@@ -82,6 +86,7 @@ class ServerProcess:
         self.process = process
         self.notebook_dir = notebook_dir
         self.interpreter = interpreter
+        self.info_file = info_file
         self.starttime = starttime or datetime.datetime.now()
         self.state = state
         self.server_info = server_info
@@ -175,6 +180,10 @@ class ServerManager(QObject):
         will check periodically whether the server is accepting requests and
         emit `sig_server_started` or `sig_server_timed_out` when appropriate.
 
+        Every server uses a unique file to store its connection number in.
+        The name of this file is based on `self.servers`, under the assumption
+        that entries are never removed from this list.
+
         Parameters
         ----------
         filename : str
@@ -192,11 +201,14 @@ class ServerManager(QObject):
         process = QProcess(None)
         serverscript = osp.join(osp.dirname(__file__), '../server/main.py')
         serverscript = osp.normpath(serverscript)
+        my_pid = os.getpid()
+        server_index = len(self.servers) + 1
+        info_file = f'spynbserver-{my_pid}-{server_index}.json'
         arguments = [serverscript, '--no-browser',
-                     '--notebook-dir={}'.format(nbdir),
+                     f'--info-file={info_file}',
+                     f'--notebook-dir={nbdir}',
                      '--NotebookApp.password=',
-                     '--KernelSpecManager.kernel_spec_class={}'.format(
-                           KERNELSPEC)]
+                     f'--KernelSpecManager.kernel_spec_class={KERNELSPEC}']
         if self.dark_theme:
             arguments.append('--dark')
         logger.debug('Arguments: %s', repr(arguments))
@@ -207,7 +219,8 @@ class ServerManager(QObject):
             process.setProcessEnvironment(env)
 
         server_process = ServerProcess(
-            process, notebook_dir=nbdir, interpreter=interpreter)
+            process, notebook_dir=nbdir, interpreter=interpreter,
+            info_file=info_file)
         process.setProcessChannelMode(QProcess.MergedChannels)
         process.readyReadStandardOutput.connect(
             lambda: self.read_server_output(server_process))
@@ -246,14 +259,14 @@ class ServerManager(QObject):
         if server_process.state != ServerState.STARTING:
             return
 
-        pid = server_process.process.processId()
         runtime_dir = jupyter_runtime_dir()
-        filename = osp.join(runtime_dir, 'nbserver-{}.json'.format(pid))
+        filename = osp.join(runtime_dir, server_process.info_file)
 
         try:
             with open(filename, encoding='utf-8') as f:
                 server_info = json.load(f)
         except OSError:  # E.g., file does not exist
+            logger.debug(f'OSError when opening {filename}')
             delay = datetime.datetime.now() - server_process.starttime
             if delay > datetime.timedelta(seconds=SERVER_TIMEOUT_DELAY):
                 logger.debug('Notebook server for %s timed out',
