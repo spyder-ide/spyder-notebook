@@ -9,5 +9,4 @@ coverage:
       default:
         target: 50%  # require 50% of diff to be covered
 
-comment:
-  layout: "files"
+comment: false

@@ -178,6 +178,9 @@ class NotebookMainWidget(PluginMainWidget):
                 section=NotebookMainWidgetOptionsMenuSections.Other,
             )
 
+        # Context menu for notebooks
+        self.tabwidget.actions = [new_notebook_action, open_notebook_action]
+
     def update_actions(self):
         """Update actions of the options menu."""
         try:
