@@ -1,3 +1,17 @@
+## Version 0.4.1 (2023/04/07)
+
+### Bug Fixes
+
+* Plugin now works when installed in a venv on Windows ([Issue 398](https://github.com/spyder-ide/spyder-notebook/issues/398), [PR 408](https://github.com/spyder-ide/spyder-notebook/pull/408))
+* Require Spyder version 5.4.3, which fixes a bug causing notebooks and other HTML content not to display on some Linux computers ([Issue 386](https://github.com/spyder-ide/spyder-notebook/issues/386), [PR 410](https://github.com/spyder-ide/spyder-notebook/pull/410))
+* Add New/Open Notebook items back to the notebook context menu ([Issue 404](https://github.com/spyder-ide/spyder-notebook/issues/404), [Issue 174](https://github.com/spyder-ide/spyder-notebook/issues/174), [PR 409](https://github.com/spyder-ide/spyder-notebook/pull/409))
+* Update Readme with new installation instructions and supported Spyder version ([PR 378](https://github.com/spyder-ide/spyder-notebook/pull/378))
+
+### New Feature
+
+* Add menu item "Toggle All Line Numbers" ([Issue 403](https://github.com/spyder-ide/spyder-notebook/issues/403), [Issue 364](https://github.com/spyder-ide/spyder-notebook/issues/364), [PR 406](https://github.com/spyder-ide/spyder-notebook/pull/406))
+
+
 ## Version 0.4.0 (2022-09-19)
 
 ### New Features
