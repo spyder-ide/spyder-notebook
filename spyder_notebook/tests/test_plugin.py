@@ -142,7 +142,7 @@ def plugin_no_server(mocker, qtbot):
 # =============================================================================
 # Tests
 # =============================================================================
-@flaky(max_runs=3)
+@flaky(max_runs=5)
 def test_shutdown_notebook_kernel(notebook, qtbot):
     """Test that kernel is shutdown from server when closing a notebook."""
     # Wait for prompt

@@ -304,6 +304,8 @@ class ServerManager(QObject):
                                        'with code = 599')
                     else:
                         raise
+                except ConnectionError as err:
+                    logger.warning(f'Ignoring {err}')
                 server.state = ServerState.FINISHED
 
     def read_server_output(self, server_process):
