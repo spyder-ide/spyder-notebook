@@ -72,13 +72,12 @@ if any([arg == 'bdist_wheel' for arg in sys.argv]):
 
 REQUIREMENTS = [
     'spyder>=5.4.3,<6',
-    'jinja2',
-    'jupyter_core',
     'nbformat',
-    'notebook>=4.3',
+    'notebook>=7',
     'qtpy',
     'qdarkstyle',
     'requests',
+    'tornado',
     'traitlets'
 ]
 

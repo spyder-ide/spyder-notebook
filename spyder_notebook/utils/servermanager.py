@@ -19,7 +19,8 @@ from qtpy.QtCore import QObject, QProcess, QProcessEnvironment, QTimer, Signal
 
 # Third-party imports
 from jupyter_core.paths import jupyter_runtime_dir
-from notebook import notebookapp
+from jupyter_server import serverapp
+from tornado.httpclient import HTTPClientError
 
 # Spyder imports
 from spyder.config.base import DEV, get_home_dir, get_module_path
@@ -204,13 +205,13 @@ class ServerManager(QObject):
         my_pid = os.getpid()
         server_index = len(self.servers) + 1
         info_file = f'spynbserver-{my_pid}-{server_index}.json'
-        arguments = [serverscript, '--no-browser',
+        arguments = ['-m', 'spyder_notebook.server', '--no-browser',
                      f'--info-file={info_file}',
                      f'--notebook-dir={nbdir}',
-                     '--NotebookApp.password=',
+                     '--ServerApp.password=',
                      f'--KernelSpecManager.kernel_spec_class={KERNELSPEC}']
-        if self.dark_theme:
-            arguments.append('--dark')
+
+        # TODO: Add support for dark theme
         logger.debug('Arguments: %s', repr(arguments))
 
         if DEV:
@@ -265,8 +266,9 @@ class ServerManager(QObject):
         try:
             with open(filename, encoding='utf-8') as f:
                 server_info = json.load(f)
-        except OSError:  # E.g., file does not exist
-            logger.debug(f'OSError when opening {filename}')
+        except (OSError, json.JSONDecodeError):
+            # E.g., file does not (yet) exist or is still being written
+            logger.debug(f'Error when opening {filename}')
             delay = datetime.datetime.now() - server_process.starttime
             if delay > datetime.timedelta(seconds=SERVER_TIMEOUT_DELAY):
                 logger.debug('Notebook server for %s timed out',
@@ -292,7 +294,18 @@ class ServerManager(QObject):
                              server.notebook_dir)
                 server.process.errorOccurred.disconnect()
                 server.process.finished.disconnect()
-                notebookapp.shutdown_server(server.server_info)
+
+                try:
+                    serverapp.shutdown_server(server.server_info, log=logger)
+                except HTTPClientError as err:
+                    # No response received, typically due to time out
+                    if err.code == 599:
+                        logger.warning('Ignoring HTTPClientError '
+                                       'with code = 599')
+                    else:
+                        raise
+                except ConnectionError as err:
+                    logger.warning(f'Ignoring {err}')
                 server.state = ServerState.FINISHED
 
     def read_server_output(self, server_process):

@@ -7,13 +7,14 @@
 
 # Standard library imports
 import json
+import logging
 import os
 import os.path as osp
 from string import Template
 import sys
 
 # Third-party imports
-from notebook.utils import url_path_join, url_escape
+from jupyter_server.utils import url_path_join, url_escape
 import qstylizer
 from qtpy.QtCore import QEvent, QUrl, Qt, Signal
 from qtpy.QtGui import QColor, QFontMetrics, QFont
@@ -49,6 +50,8 @@ TEMPLATES_PATH = osp.join(
 BLANK = open(osp.join(TEMPLATES_PATH, 'blank.html')).read()
 LOADING = open(osp.join(TEMPLATES_PATH, 'loading.html')).read()
 KERNEL_ERROR = open(osp.join(TEMPLATES_PATH, 'kernel_error.html')).read()
+
+logger = logging.getLogger(__name__)
 
 
 # -----------------------------------------------------------------------------
@@ -313,7 +316,7 @@ class NotebookClient(QFrame):
         """Register attributes that can be computed with the server info."""
         # Path relative to the server directory
         self.path = os.path.relpath(self.filename,
-                                    start=server_info['notebook_dir'])
+                                    start=server_info['root_dir'])
 
         # Replace backslashes on Windows
         if os.name == 'nt':
@@ -325,7 +328,7 @@ class NotebookClient(QFrame):
         # Server token
         self.token = server_info['token']
 
-        url = url_path_join(self.server_url, 'notebook',
+        url = url_path_join(self.server_url, 'spyder-notebooks',
                             url_escape(self.path))
 
         # Set file url to load this notebook
@@ -337,6 +340,7 @@ class NotebookClient(QFrame):
             url = QUrl(url_or_text)
         else:
             url = url_or_text
+        logger.debug(f'Going to URL {url_or_text}')
         self.notebookwidget.load(url)
 
     def load_notebook(self):

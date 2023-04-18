@@ -1,9 +1,10 @@
 spyder >=5.4.3,<6
-jinja2
 jupyter_core
+jupyter_server
 nbformat
-notebook >=4.3
+# notebook >=7 - can only be installed with pip
 qtpy
 qdarkstyle
 requests
+tornado
 traitlets

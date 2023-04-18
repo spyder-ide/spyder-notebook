@@ -74,12 +74,14 @@ def test_get_server_with_server(
         mock_start.assert_not_called()
 
 
-@pytest.mark.parametrize(('dark', 'under_home'),
-                         [(True, True), (False, True), (False, False)])
-def test_start_server(mocker, dark, under_home):
-    """Test that .start_server() starts a process with the correct script file,
-    notebook dir, and dark argument; that it stores the server process in
-    `.servers`; and that it calls ._check_server_running()."""
+@pytest.mark.parametrize('under_home', [True, False])
+def test_start_server(mocker, under_home):
+    """
+    Test that .start_server() starts a process with the correct arguments,
+    that it stores the server process in `.servers`; and that it calls
+    ._check_server_running().
+    """
+    dark = 'not used'
     serverManager = ServerManager(dark)
     mock_check = mocker.patch.object(serverManager, '_check_server_started')
     mock_QProcess = mocker.patch(
@@ -97,10 +99,7 @@ def test_start_server(mocker, dark, under_home):
 
     mock_QProcess.return_value.start.assert_called_once()
     args = mock_QProcess.return_value.start.call_args[0]
-    import spyder_notebook.server.main
-    assert args[1][0] == spyder_notebook.server.main.__file__
     assert '--notebook-dir={}'.format(nbdir) in args[1]
-    assert ('--dark' in args[1]) == dark
     assert len(serverManager.servers) == 1
     assert serverManager.servers[0].process == mock_QProcess.return_value
     assert serverManager.servers[0].notebook_dir == nbdir
@@ -195,7 +194,7 @@ def test_shutdown_all_servers(mocker):
     """Test that .shutdown_all_servers() does shutdown all running servers,
     but not servers in another state."""
     mock_shutdown = mocker.patch(
-        'spyder_notebook.utils.servermanager.notebookapp.shutdown_server')
+        'spyder_notebook.utils.servermanager.serverapp.shutdown_server')
     server1 = ServerProcess(
         mocker.Mock(spec=QProcess), '', '', '', state=ServerState.RUNNING,
         server_info=mocker.Mock(dict))

@@ -4,85 +4,66 @@
 """Entry point for server rendering notebooks for Spyder."""
 
 import os
-from jinja2 import FileSystemLoader
-from notebook.base.handlers import IPythonHandler, FileFindHandler
-from notebook.notebookapp import aliases, flags, NotebookApp
-from notebook.utils import url_path_join as ujoin
-from traitlets import Bool, Dict, Unicode
+from notebook.app import aliases, JupyterNotebookApp, NotebookBaseHandler
+from tornado import web
+from traitlets import default, Unicode
 
 HERE = os.path.dirname(__file__)
 
-aliases['info-file'] = 'SpyderNotebookServer.info_file_cmdline'
-
-flags['dark'] = (
-    {'SpyderNotebookServer': {'dark_theme': True}},
-    'Use dark theme when rendering notebooks'
-)
-
-class NotebookHandler(IPythonHandler):
-    """
-    Serve a notebook file from the filesystem in the notebook interface
-    """
-
-    def get(self, filename):
-        """Get the main page for the application's interface."""
-        # Options set here can be read with PageConfig.getOption
-        config_data = {
-            # Use camelCase here, since that's what the lab components expect
-            'baseUrl': self.base_url,
-            'token': self.settings['token'],
-            'darkTheme': self.settings['dark_theme'],
-            'notebookPath': filename,
-            'frontendUrl': ujoin(self.base_url, 'static/'),
-            # FIXME: Don't use a CDN here
-            'mathjaxUrl': 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/'
-                          '2.7.5/MathJax.js',
-            'mathjaxConfig': "TeX-AMS_CHTML-full,Safe"
-        }
-        return self.write(
-            self.render_template(
-                'index.html',
-                static=self.static_url,
-                base_url=self.base_url,
-                config_data=config_data
-            )
-        )
-
-    def get_template(self, name):
-        loader = FileSystemLoader(HERE)
-        return loader.load(self.settings['jinja2_env'], name)
+aliases['info-file'] = 'SpyderNotebookApp.info_file_cmdline'
 
 
-class SpyderNotebookServer(NotebookApp):
-    """Server rendering notebooks in HTML and serving them over HTTP."""
+class SpyderNotebookHandler(NotebookBaseHandler):
+    """A notebook page handler for Spyder."""
 
-    flags = Dict(flags)
-    aliases = Dict(aliases)
+    @web.authenticated
+    def get(self, path=None):
+        """Get the notebook page."""
+        tpl = self.render_template(
+            'notebook-template.html', page_config=self.get_page_config())
+        return self.write(tpl)
 
-    dark_theme = Bool(
-        False, config=True,
-        help='Whether to use dark theme when rendering notebooks')
 
+class SpyderNotebookApp(JupyterNotebookApp):
+    """The Spyder notebook server extension app."""
+
+    name = 'spyder_notebook'
+    file_url_prefix = "/spyder-notebooks"
+
+    aliases = dict(aliases)
     info_file_cmdline = Unicode(
         '', config=True,
         help='Name of file in Jupyter runtime dir with connection info')
 
-    def init_webapp(self):
-        """Initialize tornado webapp and httpserver."""
-        self.tornado_settings['dark_theme'] = self.dark_theme
-        if self.info_file_cmdline:
-            self.info_file = os.path.join(
-                self.runtime_dir, self.info_file_cmdline)
+    @default('static_dir')
+    def _default_static_dir(self):
+        return os.path.join(HERE, 'static')
 
-        super().init_webapp()
+    @default('templates_dir')
+    def _default_templates_dir(self):
+        return HERE
 
-        default_handlers = [
-            (ujoin(self.base_url, r'/notebook/(.*)'), NotebookHandler),
-            (ujoin(self.base_url, r"/static/(.*)"), FileFindHandler,
-                {'path': os.path.join(HERE, 'build')})
-        ]
-        self.web_app.add_handlers('.*$', default_handlers)
+    def initialize_handlers(self):
+        """Initialize handlers."""
+        self.handlers.append(('/spyder-notebooks(.*)', SpyderNotebookHandler))
+        super().initialize_handlers()
 
+    @classmethod
+    def _load_jupyter_server_extension(cls, serverapp):
+        """
+        Overridden to propagate `info-file` command line parameter.
 
-if __name__ == '__main__':
-    SpyderNotebookServer.launch_instance()
+        If the `info-file` command line parameter is given, then prepend the
+        Jupyter runtime directory and use the resulting path to store the
+        server info file.
+        """
+        extension = super()._load_jupyter_server_extension(serverapp)
+        if extension.info_file_cmdline:
+            serverapp.info_file = os.path.join(
+                serverapp.runtime_dir, extension.info_file_cmdline)
+        return extension
+
+main = SpyderNotebookApp.launch_instance
+
+if __name__ == "__main__":
+    main()

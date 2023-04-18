@@ -13,8 +13,9 @@
     "noUnusedLocals": true,
     "preserveWatchOutput": true,
     "resolveJsonModule": true,
-    "sourceMap": true,
-    "target": "es2017",
+    "strict": true,
+    "strictNullChecks": true,
+    "target": "ES2018",
     "types": []
   }
 }

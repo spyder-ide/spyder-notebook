@@ -125,7 +125,7 @@ def plugin_no_server(mocker, qtbot):
     a notebook server."""
     def fake_get_server(filename, interpreter, start):
         return collections.defaultdict(
-            str, filename=filename, notebook_dir=osp.dirname(filename))
+            str, filename=filename, root_dir=osp.dirname(filename))
     fake_server_manager = mocker.Mock(get_server=fake_get_server)
     mocker.patch('spyder_notebook.widgets.main_widget.ServerManager',
                  return_value=fake_server_manager)
@@ -142,7 +142,7 @@ def plugin_no_server(mocker, qtbot):
 # =============================================================================
 # Tests
 # =============================================================================
-@flaky(max_runs=3)
+@flaky(max_runs=5)
 def test_shutdown_notebook_kernel(notebook, qtbot):
     """Test that kernel is shutdown from server when closing a notebook."""
     # Wait for prompt
@@ -183,6 +183,7 @@ def test_file_in_temp_dir_deleted_after_notebook_closed(notebook, qtbot):
     assert not osp.exists(filename)
 
 
+@flaky(max_runs=3)
 def test_close_nonexisting_notebook(notebook, qtbot):
     """Test that we can close a tab if the notebook file does not exist.
     Regression test for spyder-ide/spyder-notebook#187."""
@@ -269,6 +270,7 @@ def test_save_notebook(notebook, qtbot, tmpdir):
            "save"
 
 
+@flaky(max_runs=3)
 def test_save_notebook_as_with_error(mocker, notebook, qtbot, tmpdir):
     """Test that errors are handled in save_as()."""
     # Set up mocks

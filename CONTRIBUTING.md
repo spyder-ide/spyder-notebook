@@ -31,7 +31,7 @@ development version of the Spyder notebook plugin.
 This creates a new conda environment with the name `spydernb-dev`.
 
 ```bash
-$ conda create -n spydernb-dev python=3.7
+$ conda create -n spydernb-dev python
 $ conda activate spydernb-dev
 ```
 
@@ -54,6 +54,18 @@ the conda environment.
 $ conda install --file requirements/conda.txt
 ```
 
+**For version 0.5.0-alpha of the plugin:** The plugin is based on
+Jupyter Notebook 7, which is only available as an alpha release on
+PyPI. So in addition, we need to install it with pip usig the
+following command:
+
+```bash
+$ python -m pip install notebook --pre
+```
+
+Cross your fingers that the mixing of pip and conda does not
+cause any problems!
+
 ### Building the notebook server
 
 The Spyder notebook plugin includes a server which serves notebooks as HTML
@@ -61,6 +73,7 @@ pages. The following commands install the JavaScript dependencies of the
 notebook server and build the server.
 
 ```bash
+$ conda install nodejs
 $ cd spyder_notebook/server
 $ jlpm install
 $ jlpm build
