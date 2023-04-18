@@ -1,0 +1,126 @@
+name: Run tests
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  main:
+    strategy:
+      fail-fast: false 
+      matrix:
+        OS: ['ubuntu', 'macos', 'windows']
+        PYTHON_VERSION: ['3.8', '3.9', '3.10']
+        SPYDER_SOURCE: ['conda']
+    name: ${{ matrix.OS }} py${{ matrix.PYTHON_VERSION }} spyder-from-${{ matrix.SPYDER_SOURCE }}
+    runs-on: ${{ matrix.OS }}-latest
+    env:
+      CI: True
+      PYTHON_VERSION: ${{ matrix.PYTHON_VERSION }}
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v3
+      - name: Install System Packages
+        if: matrix.OS == 'ubuntu'
+        run: | 
+          sudo apt-get update --fix-missing
+          sudo apt-get install -qq pyqt5-dev-tools libxcb-xinerama0 xterm --fix-missing
+      - name: Install Conda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+           miniforge-variant: Mambaforge
+           auto-update-conda: true
+           python-version: ${{ matrix.PYTHON_VERSION }} 
+      - name: Checkout Spyder from git
+        if: matrix.SPYDER_SOURCE == 'git'
+        uses: actions/checkout@v3
+        with:
+          repository: 'spyder-ide/spyder'
+          path: 'spyder'
+      - name: Install Spyder's dependencies (main)
+        if: matrix.SPYDER_SOURCE == 'git'
+        shell: bash -l {0}
+        run: mamba env update --file spyder/requirements/main.yml
+      - name: Install Spyder's dependencies (Linux)
+        if: matrix.SPYDER_SOURCE == 'git' && matrix.OS == 'ubuntu'
+        shell: bash -l {0}
+        run: mamba env update --file spyder/requirements/linux.yml
+      - name: Install Spyder's dependencies (Mac / Windows)
+        if: matrix.SPYDER_SOURCE == 'git' && matrix.OS != 'ubuntu'
+        shell: bash -l {0}
+        run: mamba env update --file spyder/requirements/${{ matrix.OS }}.yml
+      - name: Install Spyder from source
+        if: matrix.SPYDER_SOURCE == 'git'
+        shell: bash -l {0}
+        run: pip install --no-deps -e spyder
+      - name: Install node.js
+        shell: bash -l {0}
+        run: mamba install nodejs -y
+      - name: Install plugin dependencies (without Spyder)
+        if: matrix.SPYDER_SOURCE == 'git'
+        shell: bash -l {0}
+        run: |
+          python .github/scripts/generate-without-spyder.py
+          mamba install --file requirements/without-spyder.txt -y
+      - name: Install plugin dependencies
+        if: matrix.SPYDER_SOURCE == 'conda'
+        shell: bash -l {0}
+        run: mamba install --file requirements/conda.txt -y
+      - name: Install test dependencies
+        shell: bash -l {0}
+        run: |
+          mamba install nomkl -y -q
+          mamba install --file requirements/tests.txt -y
+      - name: Install Jupyter Notebook using pip
+        shell: bash -l {0}
+        run: python -m pip install notebook==7.0.0a15 jupyterlab==4.0.0a34 --pre
+      - name: Build JavaScript
+        shell: bash -l {0}
+        run: |
+          cd spyder_notebook/server
+          jlpm install
+          jlpm build
+      - name: Install plugin
+        shell: bash -l {0}
+        run: pip install --no-deps -e .
+      - name: Show environment information
+        shell: bash -l {0}
+        run: |
+          mamba info
+          mamba list
+      - name: Run tests (Linux)
+        if: matrix.OS == 'ubuntu'
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          shell: bash
+          command: |
+            . ~/.profile
+            xvfb-run --auto-servernum pytest spyder_notebook --cov=spyder_notebook --cov-report=xml -vv
+      - name: Run tests (MacOS)
+        if: matrix.OS == 'macos'
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          shell: bash
+          command: |
+            . ~/.profile
+            pytest spyder_notebook -vv
+      - name: Run tests (Windows)
+        if: matrix.OS == 'windows'
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: pytest spyder_notebook -vv
+      - name: Upload coverage to Codecov
+        if: matrix.OS == 'ubuntu' && matrix.PYTHON_VERSION == '3.10'
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
