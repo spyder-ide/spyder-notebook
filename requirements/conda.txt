@@ -2,7 +2,7 @@ spyder >=5.4.3,<6
 jupyter_core
 jupyter_server
 nbformat
-# notebook >=7 - can only be installed with pip
+notebook >=7.0.0b0
 qtpy
 qdarkstyle
 requests
