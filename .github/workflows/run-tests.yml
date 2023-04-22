@@ -77,7 +77,7 @@ jobs:
           mamba install --file requirements/tests.txt -y
       - name: Install Jupyter Notebook using pip
         shell: bash -l {0}
-        run: python -m pip install notebook==7.0.0a15 jupyterlab==4.0.0a34 --pre
+        run: python -m pip install notebook==7.0.0b0 jupyterlab==4.0.0b1 --pre
       - name: Build JavaScript
         shell: bash -l {0}
         run: |
