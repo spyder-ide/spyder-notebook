@@ -14,7 +14,7 @@ from qtpy.QtWidgets import QMessageBox, QVBoxLayout
 # Spyder imports
 from spyder.api.widgets.main_widget import PluginMainWidget
 from spyder.config.gui import is_dark_interface
-from spyder.utils.switcher import shorten_paths
+from spyder.plugins.switcher.utils import shorten_paths
 
 # Local imports
 from spyder_notebook.utils.localization import _
