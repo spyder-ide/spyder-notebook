@@ -33,10 +33,6 @@ class NotebookPlugin(SpyderDockablePlugin):
     WIDGET_CLASS = NotebookMainWidget
     CONF_WIDGET_CLASS = NotebookConfigPage
 
-    # ---- Signals
-    # ------------------------------------------------------------------------
-    focus_changed = Signal()
-
     # ---- SpyderDockablePlugin API
     # ------------------------------------------------------------------------
     @staticmethod
@@ -54,8 +50,8 @@ class NotebookPlugin(SpyderDockablePlugin):
         return self.create_icon('notebook')
 
     def on_initialize(self):
-        """Register plugin in Spyder's main window."""
-        self.focus_changed.connect(self.main.plugin_focus_changed)
+        """Set up the plugin; does nothing."""
+        pass
 
     @on_plugin_available(plugin=Plugins.Preferences)
     def on_preferences_available(self):
