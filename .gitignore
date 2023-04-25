@@ -24,5 +24,9 @@ spyder_notebook/server/schemas/
 spyder_notebook/server/static/
 tsconfig.tsbuildinfo
 
+# yarn >=2.x local files
+spyder_notebook/server/.yarn/*
+spyder_notebook/server/.pnp.*
+
 # git .orig files
 *.orig

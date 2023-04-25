@@ -15,10 +15,10 @@
     "build": "tsc -b"
   },
   "dependencies": {
-    "@jupyter-notebook/application": "^7.0.0-alpha.15"
+    "@jupyter-notebook/application": "^7.0.0-beta.0"
   },
   "devDependencies": {
-    "typescript": "5.0.1-rc"
+    "typescript": "5.0.2"
   },
   "publishConfig": {
     "access": "public"

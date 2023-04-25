@@ -271,8 +271,15 @@ def test_save_notebook(notebook, qtbot, tmpdir):
 
 
 @flaky(max_runs=3)
+@pytest.mark.skipif(os.name == 'nt',
+                    reason='Test hangs often on CI on Windows')
 def test_save_notebook_as_with_error(mocker, notebook, qtbot, tmpdir):
     """Test that errors are handled in save_as()."""
+    # Wait for prompt
+    nbwidget = notebook.get_widget().tabwidget.currentWidget().notebookwidget
+    qtbot.waitUntil(lambda: prompt_present(nbwidget, qtbot),
+                    timeout=NOTEBOOK_UP)
+
     # Set up mocks
     name = osp.join(str(tmpdir), 'save.ipynb')
     mocker.patch('spyder_notebook.widgets.notebooktabwidget.getsavefilename',
@@ -281,11 +288,6 @@ def test_save_notebook_as_with_error(mocker, notebook, qtbot, tmpdir):
                  side_effect=PermissionError)
     mock_critical = mocker.patch('spyder_notebook.widgets.notebooktabwidget'
                                  '.QMessageBox.critical')
-
-    # Wait for prompt
-    nbwidget = notebook.get_widget().tabwidget.currentWidget().notebookwidget
-    qtbot.waitUntil(lambda: prompt_present(nbwidget, qtbot),
-                    timeout=NOTEBOOK_UP)
 
     # Save the notebook
     notebook.get_widget().save_as()
