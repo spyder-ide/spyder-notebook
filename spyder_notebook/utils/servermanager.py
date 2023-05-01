@@ -287,13 +287,22 @@ class ServerManager(QObject):
         self.sig_server_started.emit(server_process)
 
     def shutdown_all_servers(self):
-        """Shutdown all running servers."""
+        """
+        Shutdown all servers.
+
+        Disconnect all signals of the server process and try to shutdown the
+        server nicely. However, if the server is still starting up, or if
+        shutting down nicely does not work, then kill the server process.
+        """
         for server in self.servers:
+            process = server.process
+            process.readyReadStandardOutput.disconnect()
+            process.errorOccurred.disconnect()
+            process.finished.disconnect()
+
             if server.state == ServerState.RUNNING:
                 logger.debug('Shutting down notebook server for %s',
                              server.notebook_dir)
-                server.process.errorOccurred.disconnect()
-                server.process.finished.disconnect()
 
                 try:
                     serverapp.shutdown_server(server.server_info, log=logger)
@@ -307,6 +316,15 @@ class ServerManager(QObject):
                 except ConnectionError as err:
                     logger.warning(f'Ignoring {err}')
                 server.state = ServerState.FINISHED
+
+            if server.state == ServerState.STARTING:
+                process.kill()
+                server.state = ServerState.FINISHED
+
+            if process.state() != QProcess.NotRunning:
+                # Should not be necessary, but make sure that process is killed
+                process.kill()
+
 
     def read_server_output(self, server_process):
         """
