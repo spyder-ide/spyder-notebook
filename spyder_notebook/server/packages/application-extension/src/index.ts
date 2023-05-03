@@ -9,6 +9,10 @@ import {
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 
+import { IThemeManager } from '@jupyterlab/apputils';
+
+import { PageConfig } from '@jupyterlab/coreutils';
+
 import { IDocumentManager } from '@jupyterlab/docmanager';
 
 import { IMainMenu } from '@jupyterlab/mainmenu';
@@ -81,11 +85,32 @@ const menus: JupyterFrontEndPlugin<void> = {
 };
 
 /**
+ * A plugin to sync the notebook theme with the Spyder preferences
+ *
+ * On startup, read the `darkTheme` option from `PageConfig` and then set the
+ * notebook theme accordingly. This option is set in `SpyderNotebookHandler`.
+ */
+const theme: JupyterFrontEndPlugin<void> = {
+  id: '@spyder-notebook/application-extension:theme',
+  requires: [IThemeManager],
+  autoStart: true,
+  activate: (app: JupyterFrontEnd, themeManager: IThemeManager) => {
+    const darkTheme = PageConfig.getOption('darkTheme');
+    if (darkTheme == 'true') {
+      themeManager.setTheme('JupyterLab Dark');
+    } else {
+      themeManager.setTheme('JupyterLab Light');
+    }
+  }
+};
+
+/**
  * Export the plugins as default.
  */
 const plugins: JupyterFrontEndPlugin<any>[] = [
   menus,
-  opener
+  opener,
+  theme
 ];
 
 export default plugins;
