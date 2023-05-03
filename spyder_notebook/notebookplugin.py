@@ -145,7 +145,7 @@ class NotebookPlugin(SpyderDockablePlugin):
         corresponds to this plugin, then ignore it. Otherwise, switch to
         selected item in notebook plugin and hide the switcher.
         """
-        if item.get_section() != self.get_title():
+        if item.get_section() != self.get_name():
             return
 
         client = item.get_data()
