@@ -210,8 +210,9 @@ class ServerManager(QObject):
                      f'--notebook-dir={nbdir}',
                      '--ServerApp.password=',
                      f'--KernelSpecManager.kernel_spec_class={KERNELSPEC}']
+        if self.dark_theme:
+            arguments.append('--dark')
 
-        # TODO: Add support for dark theme
         logger.debug('Arguments: %s', repr(arguments))
 
         if DEV:

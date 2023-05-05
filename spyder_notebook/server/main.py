@@ -4,17 +4,28 @@
 """Entry point for server rendering notebooks for Spyder."""
 
 import os
-from notebook.app import aliases, JupyterNotebookApp, NotebookBaseHandler
+from notebook.app import (
+    aliases, flags, JupyterNotebookApp, NotebookBaseHandler)
 from tornado import web
-from traitlets import default, Unicode
+from traitlets import default, Bool, Unicode
 
 HERE = os.path.dirname(__file__)
 
 aliases['info-file'] = 'SpyderNotebookApp.info_file_cmdline'
 
+flags['dark'] = (
+    {'SpyderNotebookApp': {'dark_theme': True}},
+    'Use dark theme when rendering notebooks'
+)
+
 
 class SpyderNotebookHandler(NotebookBaseHandler):
     """A notebook page handler for Spyder."""
+
+    def get_page_config(self):
+        page_config = super().get_page_config()
+        page_config['darkTheme'] = self.extensionapp.dark_theme
+        return page_config
 
     @web.authenticated
     def get(self, path=None):
@@ -30,7 +41,15 @@ class SpyderNotebookApp(JupyterNotebookApp):
     name = 'spyder_notebook'
     file_url_prefix = "/spyder-notebooks"
 
+    flags = dict(flags)
     aliases = dict(aliases)
+
+    dark_theme = Bool(
+        False, config=True,
+        help='Whether to use dark theme when rendering notebooks')
+
+    flags = flags
+
     info_file_cmdline = Unicode(
         '', config=True,
         help='Name of file in Jupyter runtime dir with connection info')
