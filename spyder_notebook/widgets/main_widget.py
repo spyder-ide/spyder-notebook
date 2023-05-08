@@ -4,7 +4,11 @@
 # Licensed under the terms of the MIT License
 # (see LICENSE.txt for details)
 
+# Standard library imports
+import os.path as osp
+
 # Third-party imports
+from jupyter_core.paths import jupyter_runtime_dir
 from qtpy.QtCore import Signal
 from qtpy.QtWidgets import QMessageBox, QVBoxLayout
 
@@ -55,8 +59,8 @@ class NotebookMainWidget(PluginMainWidget):
 
     Parameters
     -----------
-    kernel_id: str
-        Id of the kernel to open a console for.
+    connection_file: str
+        Name of the connection file for the kernel to open a console for.
     tab_name: str
         Tab name to set for the created console.
     """
@@ -317,8 +321,10 @@ class NotebookMainWidget(PluginMainWidget):
             )
             return
 
+        connection_file = f'kernel-{kernel_id}.json'
+        connection_file = osp.join(jupyter_runtime_dir(), connection_file)
         self.sig_open_console_requested.emit(
-            kernel_id,
+            connection_file,
             client.get_short_name()
         )
 
