@@ -25,6 +25,16 @@ class SpyderNotebookHandler(NotebookBaseHandler):
     def get_page_config(self):
         page_config = super().get_page_config()
         page_config['darkTheme'] = self.extensionapp.dark_theme
+        page_config['disabledExtensions'] = [
+            # Remove editor-related items from Settings menu
+            '@jupyterlab/fileeditor-extension',
+            # Remove items Open JupyterLab and File Browser from View menu
+            '@jupyter-notebook/application-extension:pages',
+            # Remove toolbar button Interface > Open With JupyterLab
+            '@jupyter-notebook/lab-extension:interface-switcher',
+            # Remove Launch Jupyter Notebook File Browser from Help menu
+            '@jupyter-notebook/lab-extension:launch-tree'
+        ]
         return page_config
 
     @web.authenticated
