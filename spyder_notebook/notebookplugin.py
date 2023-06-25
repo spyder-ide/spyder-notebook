@@ -6,6 +6,7 @@
 """Notebook plugin."""
 
 # Standard library imports
+import logging
 import os.path as osp
 
 # Spyder imports
@@ -19,6 +20,8 @@ from spyder_notebook.config import CONF_DEFAULTS, CONF_VERSION
 from spyder_notebook.confpage import NotebookConfigPage
 from spyder_notebook.widgets.main_widget import NotebookMainWidget
 from spyder_notebook.utils.localization import _
+
+logger = logging.getLogger(__name__)
 
 
 class NotebookPlugin(SpyderDockablePlugin):
@@ -94,10 +97,11 @@ class NotebookPlugin(SpyderDockablePlugin):
         self.get_widget().open_notebook(filenames)
 
     # ------ Private API ------------------------------------------------------
-    def _open_console(self, kernel_id, tab_name):
+    def _open_console(self, connection_file, tab_name):
         """Open an IPython console as requested."""
+        logger.info(f'Opening console with {connection_file=}')
         ipyconsole = self.get_plugin(Plugins.IPythonConsole)
-        ipyconsole.create_client_for_kernel(kernel_id)
+        ipyconsole.create_client_for_kernel(connection_file)
         ipyclient = ipyconsole.get_current_client()
         ipyclient.allow_rename = False
         ipyconsole.rename_client_tab(ipyclient, tab_name)
