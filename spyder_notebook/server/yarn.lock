@@ -1517,6 +1517,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jupyterlab/metadataform-extension@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "@jupyterlab/metadataform-extension@npm:4.0.2"
+  dependencies:
+    "@jupyterlab/application": ^4.0.2
+    "@jupyterlab/metadataform": ^4.0.2
+    "@jupyterlab/notebook": ^4.0.2
+    "@jupyterlab/settingregistry": ^4.0.2
+    "@jupyterlab/translation": ^4.0.2
+    "@jupyterlab/ui-components": ^4.0.2
+    "@lumino/coreutils": ^2.1.1
+  checksum: 1d6b30b1e239101ab08ea1c84032ac1136a5876896f03408af522c1972a7e302930b8740e7848d31075f7175e920c94b4349d9a2f6543ff8da472d3e1c018168
+  languageName: node
+  linkType: hard
+
 "@jupyterlab/metadataform@npm:^4.0.2":
   version: 4.0.2
   resolution: "@jupyterlab/metadataform@npm:4.0.2"
@@ -3103,6 +3118,7 @@ __metadata:
     "@jupyterlab/mainmenu-extension": ^4.0.2
     "@jupyterlab/markedparser-extension": ^4.0.2
     "@jupyterlab/mathjax-extension": ^4.0.2
+    "@jupyterlab/metadataform-extension": ^4.0.2
     "@jupyterlab/notebook-extension": ^4.0.2
     "@jupyterlab/pdf-extension": ^4.0.2
     "@jupyterlab/rendermime-extension": ^4.0.2

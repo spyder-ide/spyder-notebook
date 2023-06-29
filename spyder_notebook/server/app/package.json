@@ -52,6 +52,7 @@
     "@jupyterlab/mainmenu-extension": "~4.0.2",
     "@jupyterlab/markedparser-extension": "~4.0.2",
     "@jupyterlab/mathjax-extension": "~4.0.2",
+    "@jupyterlab/metadataform-extension": "~4.0.2",
     "@jupyterlab/notebook": "~4.0.2",
     "@jupyterlab/notebook-extension": "~4.0.2",
     "@jupyterlab/observables": "~5.0.2",
@@ -123,6 +124,7 @@
     "@jupyterlab/mainmenu-extension": "^4.0.2",
     "@jupyterlab/markedparser-extension": "^4.0.2",
     "@jupyterlab/mathjax-extension": "^4.0.2",
+    "@jupyterlab/metadataform-extension": "^4.0.2",
     "@jupyterlab/notebook-extension": "^4.0.2",
     "@jupyterlab/pdf-extension": "^4.0.2",
     "@jupyterlab/rendermime-extension": "^4.0.2",
@@ -253,11 +255,15 @@
           "@jupyterlab/debugger-extension:sidebar",
           "@jupyterlab/debugger-extension:sources"
         ],
+        "@jupyterlab/metadataform-extension": true,
         "@jupyterlab/notebook-extension": [
+          "@jupyterlab/notebook-extension:active-cell-tool",
           "@jupyterlab/notebook-extension:completer",
+          "@jupyterlab/notebook-extension:metadata-editor",
           "@jupyterlab/notebook-extension:search",
           "@jupyterlab/notebook-extension:toc",
-          "@jupyterlab/notebook-extension:tools"
+          "@jupyterlab/notebook-extension:tools",
+          "@jupyterlab/notebook-extension:update-raw-mimetype"
         ],
         "@jupyterlab/toc-extension": [
           "@jupyterlab/toc-extension:registry",
