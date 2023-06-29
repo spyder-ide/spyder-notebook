@@ -65,11 +65,11 @@ jobs:
         shell: bash -l {0}
         run: |
           python .github/scripts/generate-without-spyder.py
-          mamba install -c conda-forge/label/notebook_beta --file requirements/without-spyder.txt -y
+          mamba install -c conda-forge/label/notebook_rc --file requirements/without-spyder.txt -y
       - name: Install plugin dependencies
         if: matrix.SPYDER_SOURCE == 'conda'
         shell: bash -l {0}
-        run: mamba install -c conda-forge/label/notebook_beta --file requirements/conda.txt -y
+        run: mamba install -c conda-forge/label/notebook_rc --file requirements/conda.txt -y
       - name: Install test dependencies
         shell: bash -l {0}
         run: |
