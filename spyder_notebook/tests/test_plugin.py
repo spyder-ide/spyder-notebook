@@ -73,6 +73,7 @@ def is_kernel_up(kernel_id, sessions_url):
 class MainMock(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.switcher = Mock()
         self.main = self
         self.resize(640, 480)
 
