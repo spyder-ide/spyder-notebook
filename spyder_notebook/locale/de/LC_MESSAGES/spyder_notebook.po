@@ -1,22 +1,21 @@
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: spyder-notebook\n"
 "POT-Creation-Date: 2023-07-02 16:37+0100\n"
-"PO-Revision-Date: 2021-01-16 15:56\n"
+"PO-Revision-Date: 2023-07-03 18:25\n"
 "Last-Translator: \n"
 "Language-Team: German\n"
-"Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: pygettext.py 1.5\n"
-"X-Crowdin-File: /master/spyder_notebook/locale/spyder_notebook.pot\n"
-"X-Crowdin-File-ID: 17\n"
-"X-Crowdin-Language: de\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Crowdin-Project: spyder-notebook\n"
 "X-Crowdin-Project-ID: 381803\n"
+"X-Crowdin-Language: de\n"
+"X-Crowdin-File: /master/spyder_notebook/locale/spyder_notebook.pot\n"
+"X-Crowdin-File-ID: 17\n"
+"Language: de_DE\n"
 
 #: spyder_notebook/confpage.py:27
 msgid "Notebook theme"
@@ -24,7 +23,7 @@ msgstr "Notebook-Thema"
 
 #: spyder_notebook/confpage.py:32
 msgid "Interface"
-msgstr ""
+msgstr "Oberfläche"
 
 #: spyder_notebook/notebookplugin.py:45 spyder_notebook/widgets/main_widget.py:98
 msgid "Notebook"
@@ -32,7 +31,7 @@ msgstr "Notebook"
 
 #: spyder_notebook/notebookplugin.py:50
 msgid "Work with Jupyter notebooks inside Spyder."
-msgstr ""
+msgstr "Arbeiten Sie mit Jupyter-Notebooks in Spyder."
 
 #: spyder_notebook/widgets/client.py:195
 msgid "An error occurred while starting the kernel"
@@ -132,7 +131,7 @@ msgstr "Fehler beim Schreiben {}<p>{}"
 
 #: spyder_notebook/widgets/notebooktabwidget.py:506
 msgid "The Spyder Notebook server failed to start or it is taking too much time to do it. Please select 'Server info' in the plugin's option menu to check for errors."
-msgstr ""
+msgstr "Der Spyder Notebook Server konnte nicht gestartet werden oder es braucht zu viel Zeit, um es zu tun. Bitte wählen Sie 'Serverinformationen' im Plugin-Optionsmenü, um auf Fehler zu überprüfen."
 
 #: spyder_notebook/widgets/serverinfo.py:27
 msgid "Starting up"
@@ -178,8 +177,3 @@ msgstr "Status:"
 msgid "Refresh"
 msgstr "Aktualisieren"
 
-#~ msgid "Options"
-#~ msgstr "Optionen"
-
-#~ msgid "You are working with Qt4 and in order to use this plugin you need to have Qt5.<br><br>Please update your Qt and/or PyQt packages to meet this requirement."
-#~ msgstr "Sie arbeiten mit Qt4 und um dieses Plugin verwenden zu können, benötigen Sie Qt5. <br> <br> Bitte aktualisieren Sie Ihre Qt- und / oder PyQt Pakete, um diese Anforderung zu erfüllen."
