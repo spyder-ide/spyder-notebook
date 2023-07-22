@@ -12,6 +12,7 @@ import os.path as osp
 # Third party imports
 import pytest
 from qtpy.QtWidgets import QMessageBox
+from nbformat.reader import NotJSONError
 
 # Local imports
 from spyder_notebook.utils.servermanager import ServerManager
@@ -138,15 +139,16 @@ def test_wait_and_check_if_empty_when_not_empty(mocker, tabwidget):
     assert result is False
 
 
-def test_wait_and_check_if_empty_with_delay(mocker, tabwidget):
+@pytest.mark.parametrize('exception', [FileNotFoundError, NotJSONError])
+def test_wait_and_check_if_empty_with_delay(mocker, tabwidget, exception):
     """Test that .wait_and_check_if_empty() on an empty notebook tries to read
-    it, and when that fails because the file does not exist, it tries again to
-    read it. When the read succeeds the second time and the notebook turns out
-    to be empty, the function returns True."""
+    it, and when that fails because the file does not exist or is not JSON, it
+    tries again to read it. When the read succeeds the second time and the
+    notebook turns out to be empty, the function returns True."""
     contents = {'cells': []}
     mock_read = mocker.patch(
         'spyder_notebook.widgets.notebooktabwidget.nbformat.read',
-        side_effect=[FileNotFoundError, contents])
+        side_effect=[exception, contents])
 
     result = tabwidget.wait_and_check_if_empty('ham.ipynb')
 
