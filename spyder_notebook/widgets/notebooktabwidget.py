@@ -348,7 +348,7 @@ class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
             # Try reading the file
             try:
                 nb_contents = nbformat.read(filename, as_version=4)
-            except FileNotFoundError:
+            except (FileNotFoundError, nbformat.reader.NotJSONError):
                 continue
 
             # If empty, we are done
