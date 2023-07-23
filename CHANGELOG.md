@@ -1,3 +1,23 @@
+## Version 0.5.0 (2023/07/24)
+
+This version is based on version 7 of Jupyter Notebook and version 4 of Jupyter Lab, thus profiting of many years of progress in Jupyter.
+
+### Mew Feature
+
+* Base the plugin on Jupyter Notebook v7 ([Issue 330](https://github.com/spyder-ide/spyder-notebook/issues/330), [Issue 400](https://github.com/spyder-ide/spyder-notebook/issues/400), [Issue 401](https://github.com/spyder-ide/spyder-notebook/issues/401), [Issue 402](https://github.com/spyder-ide/spyder-notebook/issues/402), [Issue 414](https://github.com/spyder-ide/spyder-notebook/issues/414), [PR 396](https://github.com/spyder-ide/spyder-notebook/pull/396), [PR 415](https://github.com/spyder-ide/spyder-notebook/pull/415), [PR 419](https://github.com/spyder-ide/spyder-notebook/pull/419), [PR 420](https://github.com/spyder-ide/spyder-notebook/pull/420), [PR 429](https://github.com/spyder-ide/spyder-notebook/pull/429))
+
+### Bug Fixes
+
+* Handle NotJSONError when closing a notebook tab ([Issue 432](https://github.com/spyder-ide/spyder-notebook/issues/432), [PR 437](https://github.com/spyder-ide/spyder-notebook/pull/437))
+* Ensure that the precise connection file is used when opening a console ([Issue 421](https://github.com/spyder-ide/spyder-notebook/issues/421), [PR 422](https://github.com/spyder-ide/spyder-notebook/pull/422))
+
+### Maintenance
+
+* Update translations ([PR 430](https://github.com/spyder-ide/spyder-notebook/pull/430))
+* Update GitHub test action ([PR 413](https://github.com/spyder-ide/spyder-notebook/pull/413))
+* Prepare for Spyder v6 ([Issue 278](https://github.com/spyder-ide/spyder-notebook/issues/278), [Issue 423](https://github.com/spyder-ide/spyder-notebook/issues/423), [PR 417](https://github.com/spyder-ide/spyder-notebook/pull/417), [PR 438](https://github.com/spyder-ide/spyder-notebook/pull/438))
+
+
 ## Version 0.4.1 (2023/04/07)
 
 ### Bug Fixes
