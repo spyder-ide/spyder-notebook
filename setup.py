@@ -28,7 +28,7 @@ else:
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 SERVER_DIR = osp.join(HERE, 'spyder_notebook', 'server')
-BUILD_DIR = osp.join(SERVER_DIR, 'build')
+BUILD_DIR = osp.join(SERVER_DIR, 'static')
 
 
 def run(cmd, *args, **kwargs):

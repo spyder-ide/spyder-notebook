@@ -5,7 +5,7 @@ include runtests.py
 recursive-include spyder_notebook/locale *.mo
 recursive-include spyder_notebook/utils/templates *.html
 recursive-include spyder_notebook/server *.css *.html
-recursive-include spyder_notebook/server/build *.js *.eot *.woff *.woff2 *.svg *.ttf
+recursive-include spyder_notebook/server/static *.js *.eot *.woff *.woff2 *.svg *.ttf
 prune spyder_notebook/server/node_modules
 prune doc
 prune .github
