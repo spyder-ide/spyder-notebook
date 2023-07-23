@@ -15,6 +15,7 @@ from qtpy.QtWidgets import QMessageBox, QVBoxLayout
 # Spyder imports
 from spyder.api.widgets.main_widget import PluginMainWidget
 from spyder.config.gui import is_dark_interface
+from spyder.utils.switcher import shorten_paths
 
 # Local imports
 from spyder_notebook.utils.localization import _
@@ -84,6 +85,12 @@ class NotebookMainWidget(PluginMainWidget):
         layout = QVBoxLayout()
         layout.addWidget(self.tabwidget)
         self.setLayout(layout)
+
+        # Connect to switcher
+        self.switcher = plugin.main.switcher
+        self.switcher.sig_mode_selected.connect(self.handle_switcher_modes)
+        self.switcher.sig_item_selected.connect(
+            self.handle_switcher_selection)
 
     # ---- PluginMainWidget API
     # ------------------------------------------------------------------------
@@ -337,3 +344,54 @@ class NotebookMainWidget(PluginMainWidget):
         """Clear the list of recent notebooks."""
         self.recent_notebooks = []
         self.update_recent_notebooks_menu()
+
+    def handle_switcher_modes(self, mode):
+        """
+        Populate switcher with opened notebooks.
+
+        List the file names of the opened notebooks with their directories in
+        the switcher. Only handle file mode, where `mode` is empty string.
+        """
+        if mode != '':
+            return
+
+        clients = [self.tabwidget.widget(i)
+                   for i in range(self.tabwidget.count())]
+        paths = [client.get_filename() for client in clients]
+        is_unsaved = [False for client in clients]
+        short_paths = shorten_paths(paths, is_unsaved)
+        icon = self.create_icon('notebook')
+        section = self.get_title()
+
+        for path, short_path, client in zip(paths, short_paths, clients):
+            title = osp.basename(path)
+            description = osp.dirname(path)
+            if len(path) > 75:
+                description = short_path
+            is_last_item = (client == clients[-1])
+
+            self.switcher.add_item(
+                title=title,
+                description=description,
+                icon=icon,
+                section=section,
+                data=client,
+                last_item=is_last_item
+            )
+
+    def handle_switcher_selection(self, item, mode, search_text):
+        """
+        Handle user selecting item in switcher.
+
+        If the selected item is not in the section of the switcher that
+        corresponds to this plugin, then ignore it. Otherwise, switch to
+        selected item in notebook plugin and hide the switcher.
+        """
+        if item.get_section() != self.get_title():
+            return
+
+        client = item.get_data()
+        index = self.tabwidget.indexOf(client)
+        self.tabwidget.setCurrentIndex(index)
+        self._plugin.switch_to_plugin()
+        self.switcher.hide()
