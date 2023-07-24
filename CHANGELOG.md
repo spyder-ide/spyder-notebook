@@ -1,8 +1,10 @@
-## Version 0.5.0 (2023/07/24)
+## Version 0.5.1 (2023/07/24)
 
 This version is based on version 7 of Jupyter Notebook and version 4 of Jupyter Lab, thus profiting of many years of progress in Jupyter.
 
-### Mew Feature
+Version 0.5.0 was uploaded incorrectly.
+
+### New Feature
 
 * Base the plugin on Jupyter Notebook v7 ([Issue 330](https://github.com/spyder-ide/spyder-notebook/issues/330), [Issue 400](https://github.com/spyder-ide/spyder-notebook/issues/400), [Issue 401](https://github.com/spyder-ide/spyder-notebook/issues/401), [Issue 402](https://github.com/spyder-ide/spyder-notebook/issues/402), [Issue 414](https://github.com/spyder-ide/spyder-notebook/issues/414), [PR 396](https://github.com/spyder-ide/spyder-notebook/pull/396), [PR 415](https://github.com/spyder-ide/spyder-notebook/pull/415), [PR 419](https://github.com/spyder-ide/spyder-notebook/pull/419), [PR 420](https://github.com/spyder-ide/spyder-notebook/pull/420), [PR 429](https://github.com/spyder-ide/spyder-notebook/pull/429))
 
