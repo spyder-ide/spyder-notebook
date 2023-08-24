@@ -54,16 +54,6 @@ the conda environment.
 $ conda install --file requirements/conda.txt
 ```
 
-**For version 0.5.0-alpha of the plugin:** The plugin is based on
-Jupyter Notebook 7, which at the moment is only available as a beta
-release. While that is the case, you should explicitly allow the
-installation of beta releases of Jupyter Lab and Notebook as in the
-following command:
-
-```bash
-$ conda install -c conda-forge/label/notebook_beta -c conda-forge/label/jupyterlab_beta --file requirements/conda.txt
-```
-
 ### Building the notebook server
 
 The Spyder notebook plugin includes a server which serves notebooks as HTML
