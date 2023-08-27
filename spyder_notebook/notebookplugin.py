@@ -36,6 +36,9 @@ class NotebookPlugin(SpyderDockablePlugin):
     WIDGET_CLASS = NotebookMainWidget
     CONF_WIDGET_CLASS = NotebookConfigPage
 
+    # Action "Switch to notebook" gives focus to the plugin
+    RAISE_AND_FOCUS = True
+
     # ---- SpyderDockablePlugin API
     # ------------------------------------------------------------------------
     @staticmethod
