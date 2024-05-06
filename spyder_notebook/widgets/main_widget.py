@@ -103,13 +103,12 @@ class NotebookMainWidget(PluginMainWidget):
         new_notebook_toolbar_action = self.create_toolbutton(
             NotebookMainWidgetToolButtons.NewNotebook,
             icon=self.create_icon('options_more'),
+            text=_('Open a new notebook'),
             tip=_('Open a new notebook'),
             triggered=self.create_new_client
         )
 
-        self.add_corner_widget(
-            NotebookMainWidgetToolButtons.NewNotebook,
-            new_notebook_toolbar_action)
+        self.add_corner_widget(new_notebook_toolbar_action)
 
         # Menu actions
         new_notebook_action = self.create_action(
