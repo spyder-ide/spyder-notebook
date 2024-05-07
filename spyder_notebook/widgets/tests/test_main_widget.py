@@ -63,6 +63,7 @@ def main_widget(qtbot):
     mock_plugin.CONF_SECTION = 'mock conf section'
 
     main_widget = NotebookMainWidget('testwidget', mock_plugin, None)
+    main_widget._setup()
     main_widget.setup()
     main_widget.show()  # Prompt only appears if widget is displayed
     
