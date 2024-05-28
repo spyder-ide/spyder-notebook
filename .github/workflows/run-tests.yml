@@ -24,6 +24,8 @@ jobs:
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4
+        with:
+          path: spyder-notebook
       - name: Install System Packages
         if: matrix.OS == 'ubuntu'
         run: | 
@@ -32,8 +34,8 @@ jobs:
       - name: Install Conda
         uses: conda-incubator/setup-miniconda@v3
         with:
-           auto-update-conda: true
-           python-version: ${{ matrix.PYTHON_VERSION }} 
+          auto-update-conda: true
+          python-version: ${{ matrix.PYTHON_VERSION }} 
       - name: Checkout Spyder from git
         if: matrix.SPYDER_SOURCE == 'git'
         uses: actions/checkout@v4
@@ -63,26 +65,26 @@ jobs:
         if: matrix.SPYDER_SOURCE == 'git'
         shell: bash -l {0}
         run: |
-          python .github/scripts/generate-without-spyder.py
-          conda install --file requirements/without-spyder.txt -y
+          python spyder-notebook/.github/scripts/generate-without-spyder.py
+          conda install --file spyder-notebook/requirements/without-spyder.txt -y
       - name: Install plugin dependencies
         if: matrix.SPYDER_SOURCE == 'conda'
         shell: bash -l {0}
-        run: conda install --file requirements/conda.txt -y
+        run: conda install --file spyder-notebook/requirements/conda.txt -y
       - name: Install test dependencies
         shell: bash -l {0}
         run: |
           conda install nomkl -y -q
-          conda install --file requirements/tests.txt -y
+          conda install --file spyder-notebook/requirements/tests.txt -y
       - name: Build JavaScript
         shell: bash -l {0}
         run: |
-          cd spyder_notebook/server
+          cd spyder-notebook/spyder_notebook/server
           jlpm install
           jlpm build
       - name: Install plugin
         shell: bash -l {0}
-        run: pip install --no-deps -e .
+        run: pip install --no-deps -e spyder-notebook
       - name: Show environment information
         shell: bash -l {0}
         run: |
@@ -97,7 +99,7 @@ jobs:
           shell: bash
           command: |
             . ~/.profile
-            xvfb-run --auto-servernum pytest spyder_notebook --cov=spyder_notebook --cov-report=xml -vv
+            xvfb-run --auto-servernum pytest spyder-notebook/spyder_notebook -vv
       - name: Run tests (MacOS)
         if: matrix.OS == 'macos'
         uses: nick-fields/retry@v3
@@ -107,11 +109,11 @@ jobs:
           shell: bash
           command: |
             . ~/.profile
-            pytest spyder_notebook -vv
+            pytest spyder-notebook/spyder_notebook -vv
       - name: Run tests (Windows)
         if: matrix.OS == 'windows'
         uses: nick-fields/retry@v3
         with:
           timeout_minutes: 10
           max_attempts: 3
-          command: pytest spyder_notebook -vv
+          command: pytest spyder-notebook/spyder_notebook -vv

@@ -7,11 +7,15 @@
 """Script to generate requirements/without-spyder.txt"""
 
 import re
+from pathlib import Path
 
-with open('requirements/conda.txt') as infile:
-    with open('requirements/without-spyder.txt', 'w') as outfile:
+rootdir = Path(__file__).parents[2]
+input_filename = rootdir / 'requirements' / 'conda.txt'
+output_filename = rootdir / 'requirements' / 'without-spyder.txt'
+
+with open(input_filename) as infile:
+    with open(output_filename, 'w') as outfile:
         for line in infile:
             package_name = re.match('[-a-z0-9_]*', line).group(0)
             if package_name != 'spyder':
                 outfile.write(line)
-
