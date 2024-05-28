@@ -99,7 +99,8 @@ jobs:
           shell: bash
           command: |
             . ~/.profile
-            xvfb-run --auto-servernum pytest spyder-notebook/spyder_notebook -vv
+            cd spyder-notebook
+            xvfb-run --auto-servernum pytest spyder_notebook -vv
       - name: Run tests (MacOS)
         if: matrix.OS == 'macos'
         uses: nick-fields/retry@v3
@@ -109,11 +110,14 @@ jobs:
           shell: bash
           command: |
             . ~/.profile
-            pytest spyder-notebook/spyder_notebook -vv
+            cd spyder-notebook
+            pytest spyder_notebook -vv
       - name: Run tests (Windows)
         if: matrix.OS == 'windows'
         uses: nick-fields/retry@v3
         with:
           timeout_minutes: 10
           max_attempts: 3
-          command: pytest spyder-notebook/spyder_notebook -vv
+          command: |
+            cd spyder-notebook
+            pytest spyder_notebook -vv
