@@ -16,12 +16,12 @@
     "build": "tsc -b"
   },
   "dependencies": {
-    "@jupyterlab/application": "^4.0.3",
-    "@jupyterlab/docmanager": "^4.0.3",
-    "@jupyterlab/mainmenu": "^4.0.3"
+    "@jupyterlab/application": "~4.2.0",
+    "@jupyterlab/docmanager": "~4.2.0",
+    "@jupyterlab/mainmenu": "~4.2.0"
   },
   "devDependencies": {
-    "typescript": "5.0.2"
+    "typescript": "~5.0.2"
   },
   "publishConfig": {
     "access": "public"

@@ -13,8 +13,8 @@
     "deduplicate": "jlpm dlx yarn-berry-deduplicate -s fewerHighest && jlpm install"
   },
   "devDependencies": {
-    "@jupyterlab/buildutils": "^4.0.3",
-    "lerna": "^6.5.1",
-    "typescript": "5.0.2"
+    "@jupyterlab/buildutils": "~4.2.0",
+    "lerna": "^6.6.2",
+    "typescript": "~5.0.2"
   }
 }
