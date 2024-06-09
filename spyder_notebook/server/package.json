@@ -9,7 +9,8 @@
     ]
   },
   "scripts": {
-    "build": "lerna run build"
+    "build": "lerna run build",
+    "deduplicate": "jlpm dlx yarn-berry-deduplicate -s fewerHighest && jlpm install"
   },
   "devDependencies": {
     "@jupyterlab/buildutils": "^4.0.3",
