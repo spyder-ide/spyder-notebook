@@ -1,4 +1,4 @@
-spyder >=5.4.3,<6
+spyder >=6.0.0.dev0,<7
 jupyter_core
 jupyter_server
 nbformat

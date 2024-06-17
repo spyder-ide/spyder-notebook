@@ -63,6 +63,7 @@ def main_widget(qtbot):
     mock_plugin.CONF_SECTION = 'mock conf section'
 
     main_widget = NotebookMainWidget('testwidget', mock_plugin, None)
+    main_widget._setup()
     main_widget.setup()
     main_widget.show()  # Prompt only appears if widget is displayed
     
@@ -202,6 +203,34 @@ def test_shutdown_notebook_kernel(main_widget, qtbot):
 
     # Assert that the kernel is down for the closed client
     assert not is_kernel_up(kernel_id, sessions_url)
+
+
+@flaky
+def test_open_console_when_no_kernel(main_widget, qtbot, mocker):
+    """Test that open_console() handles the case when there is no kernel."""
+    # Create mock QMessageBox
+    MockMessageBox = mocker.patch(
+        'spyder_notebook.widgets.main_widget.QMessageBox')
+
+    # Create new notebook tab and wait for prompt
+    main_widget.create_new_client()
+    client = main_widget.tabwidget.currentWidget()
+    nbwidget = client.notebookwidget
+    qtbot.waitUntil(lambda: prompt_present(nbwidget, qtbot),
+                    timeout=NOTEBOOK_UP)
+
+    # Shut the kernel down and check that this is successful
+    kernel_id = client.get_kernel_id()
+    sessions_url = client.get_session_url()
+    client.shutdown_kernel()
+    assert not is_kernel_up(kernel_id, sessions_url)
+
+    # Try opening a console and check corresponding signal is not emitted
+    with qtbot.assertNotEmitted(main_widget.sig_open_console_requested):
+        main_widget.open_console(client)
+
+    # Assert that a dialog is displayed and no console was opened
+    MockMessageBox.critical.assert_called()
 
 
 def test_file_in_temp_dir_deleted_after_notebook_closed(main_widget, qtbot):

@@ -29,7 +29,7 @@ from spyder.config.base import get_module_source_path
 from spyder.utils import sourcecode
 from spyder.utils.image_path_manager import get_image_path
 from spyder.utils.qthelpers import add_actions
-from spyder.utils.palette import QStylePalette
+from spyder.utils.palette import SpyderPalette
 from spyder.widgets.findreplace import FindReplace
 
 # Local imports
@@ -127,7 +127,7 @@ class NotebookWidget(DOMWidget):
 
         # Set default background color.
         self.page().setBackgroundColor(
-            QColor(QStylePalette.COLOR_BACKGROUND_1)
+            QColor(SpyderPalette.COLOR_BACKGROUND_1)
         )
 
     def contextMenuEvent(self, event):
@@ -446,9 +446,9 @@ class NotebookClient(QFrame):
     def _apply_stylesheet(self, focus=False):
         """Apply stylesheet according to the current focus."""
         if focus:
-            border_color = QStylePalette.COLOR_ACCENT_3
+            border_color = SpyderPalette.COLOR_ACCENT_3
         else:
-            border_color = QStylePalette.COLOR_BACKGROUND_4
+            border_color = SpyderPalette.COLOR_BACKGROUND_4
 
         css = qstylizer.style.StyleSheet()
         css.QFrame.setValues(

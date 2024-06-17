@@ -119,35 +119,6 @@ def plugin_no_server(mocker, qtbot):
 # =============================================================================
 # Tests
 # =============================================================================
-# Teardown sometimes fails on Mac with Python 3.8 due to NoProcessException
-# in shutdown_server() in notebookapp.py in external notebook library
-@flaky
-def test_open_console_when_no_kernel(notebook, qtbot, mocker):
-    """Test that open_console() handles the case when there is no kernel."""
-    # Create mock IPython console plugin and QMessageBox
-    MockMessageBox = mocker.patch(
-        'spyder_notebook.widgets.main_widget.QMessageBox')
-
-    # Wait for prompt
-    nbwidget = notebook.get_widget().tabwidget.currentWidget().notebookwidget
-    qtbot.waitUntil(lambda: prompt_present(nbwidget, qtbot),
-                    timeout=NOTEBOOK_UP)
-
-    # Shut the kernel down and check that this is successful
-    client = notebook.get_widget().tabwidget.currentWidget()
-    kernel_id = client.get_kernel_id()
-    sessions_url = client.get_session_url()
-    client.shutdown_kernel()
-    assert not is_kernel_up(kernel_id, sessions_url)
-
-    # Try opening a console
-    notebook.get_widget().open_console(client)
-
-    # Assert that a dialog is displayed and no console was opened
-    MockMessageBox.critical.assert_called()
-    ipyconsole = notebook.get_plugin(Plugins.IPythonConsole)
-    ipyconsole._create_client_for_kernel.assert_not_called()
-
 
 def test_on_mainwindow_visible_with_opened_notebooks(plugin_no_server):
     """

@@ -4,29 +4,32 @@
 # Licensed under the terms of the MIT License
 #
 
-"""Tests for config.py"""
+"""Tests for plugin config dialog."""
 
-# Third-party library imports
+from unittest.mock import MagicMock
+
+# Test library imports
 import pytest
-
-# Spyder imports
-from spyder.plugins.preferences.widgets.configdialog import ConfigDialog
+from qtpy.QtWidgets import QMainWindow
 
 # Local imports
-from spyder_notebook.confpage import NotebookConfigPage
-from spyder_notebook.tests.test_plugin import plugin_no_server
+from spyder_notebook.notebookplugin import NotebookPlugin
 
 
-def test_config(plugin_no_server, qtbot):
-    """Test that config page can be created and shown."""
-    dlg = ConfigDialog()
-    page = NotebookConfigPage(plugin_no_server, parent=plugin_no_server.main)
-    page.initialize()
-    dlg.add_page(page)
-    dlg.show()
-    qtbot.addWidget(dlg)
-    # no assert, just check that the config page can be created
+class MainWindowMock(QMainWindow):
+    register_shortcut = MagicMock()
+    editor = MagicMock()
+
+    def __getattr__(self, attr):
+        return MagicMock()
 
 
-if __name__ == "__main__":
-    pytest.main()
+@pytest.mark.parametrize(
+    'config_dialog',
+    # [[MainWindowMock, [ConfigPlugins], [Plugins]]]
+    [[MainWindowMock, [], [NotebookPlugin]]],
+    indirect=True)
+def test_config_dialog(config_dialog):
+    configpage = config_dialog.get_page()
+    assert configpage
+    configpage.save_to_conf()
