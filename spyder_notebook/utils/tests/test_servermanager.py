@@ -244,6 +244,6 @@ def test_handle_finished(mocker, qtbot):
     server = ServerProcess(mocker.Mock(spec=QProcess), '', '', '')
     serverManager = ServerManager()
 
-    serverManager.handle_finished(server, mocker.Mock(), mocker.Mock())
+    serverManager.handle_finished(server, 42, mocker.Mock())
 
     assert server.state == ServerState.FINISHED
