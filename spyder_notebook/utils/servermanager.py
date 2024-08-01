@@ -16,6 +16,7 @@ import sys
 
 # Qt imports
 from qtpy.QtCore import QObject, QProcess, QProcessEnvironment, QTimer, Signal
+from qtpy.QtWebEngineWidgets import QWebEngineProfile
 
 # Third-party imports
 from jupyter_core.paths import jupyter_runtime_dir
@@ -123,6 +124,10 @@ class ServerManager(QObject):
         """
         Construct a ServerManager.
 
+        This constructor also clears Qt WebEngine's HTTP cache, because for
+        unknown reasons WebEngine seems to use out-of-date code after the
+        JavaScript bundle is replaced.
+
         Parameters
         ----------
         dark_theme : bool, optional
@@ -132,6 +137,7 @@ class ServerManager(QObject):
         super().__init__()
         self.dark_theme = dark_theme
         self.servers = []
+        QWebEngineProfile.defaultProfile().clearHttpCache()
 
     def get_server(self, filename, interpreter, start=True):
         """
