@@ -219,10 +219,13 @@ module.exports = [
       },
       filename: 'bundle.js',
     },
+    resolve: {
+      fallback: { util: false },
+    },
     plugins: [
       new WPPlugin.JSONLicenseWebpackPlugin({
         excludedPackageTest: (packageName) =>
-          packageName === '@jupyter-notebook/app',
+          packageName === '@spyder-notebook/app',  // Spyder: change name
       }),
       new ModuleFederationPlugin({
         library: {
