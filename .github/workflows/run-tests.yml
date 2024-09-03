@@ -34,6 +34,7 @@ jobs:
       - name: Install Conda
         uses: conda-incubator/setup-miniconda@v3
         with:
+          miniforge-version: latest
           auto-update-conda: true
           python-version: ${{ matrix.PYTHON_VERSION }} 
       - name: Checkout Spyder from git
