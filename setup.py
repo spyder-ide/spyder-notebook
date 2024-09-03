@@ -71,7 +71,7 @@ if any([arg == 'bdist_wheel' for arg in sys.argv]):
 
 
 REQUIREMENTS = [
-    'spyder>=5.4.3,<6',
+    'spyder>=6,<7',
     'nbformat',
     'notebook>=7.2,<8',
     'qtpy',
