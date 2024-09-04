@@ -45,13 +45,15 @@ class NotebookPlugin(SpyderDockablePlugin):
         title = _('Notebook')
         return title
 
-    def get_description(self):
+    @staticmethod
+    def get_description():
         """Return the plugin description."""
         return _("Work with Jupyter notebooks inside Spyder.")
 
-    def get_icon(self):
+    @classmethod
+    def get_icon(cls):
         """Return plugin icon."""
-        return self.create_icon('notebook')
+        return cls.create_icon('notebook')
 
     def on_initialize(self):
         """Set up the plugin; does nothing."""
