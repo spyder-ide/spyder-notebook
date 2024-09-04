@@ -1,5 +1,14 @@
 # History of changes
 
+## Version 0.6.1 (2024/09/04)
+
+This release fixes a critical bug in version 0.6.0.
+
+### Bug fix
+
+* Opening Spyder's preferences no longer leads to an error ([Issue 470](https://github.com/spyder-ide/spyder-notebook/issues/470), [PR 471](https://github.com/spyder-ide/spyder-notebook/pull/471))
+
+
 ## Version 0.6.0 (2024/09/03)
 
 This release updates the plugin to be used with Spyder 6.
@@ -8,7 +17,7 @@ It also includes a minor update of Jupyter Notebook.
 ### Maintenance
 
 * Make plugin compatible with Spyder 6 ([Issue 446](https://github.com/spyder-ide/spyder-notebook/issues/446), [Issue 456](https://github.com/spyder-ide/spyder-notebook/issues/456), [PR 457](https://github.com/spyder-ide/spyder-notebook/pull/457), [PR 469](https://github.com/spyder-ide/spyder-notebook/pull/469))
-* Include Jupyter Notebook version 7.2.1 ([Issue 464](https://github.com/spyder-ide/spyder-notebook/issues/464), [PR 462](https://github.com/spyder-ide/spyder-notebook/pull/462)
+* Include Jupyter Notebook version 7.2.1 ([Issue 464](https://github.com/spyder-ide/spyder-notebook/issues/464), [PR 462](https://github.com/spyder-ide/spyder-notebook/pull/462))
 
 
 ## Version 0.5.1 (2023/07/24)
