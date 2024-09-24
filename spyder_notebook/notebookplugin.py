@@ -8,6 +8,7 @@
 # Standard library imports
 import logging
 import os.path as osp
+from typing import Optional
 
 # Spyder imports
 from spyder.api.plugins import Plugins, SpyderDockablePlugin
@@ -39,6 +40,9 @@ class NotebookPlugin(SpyderDockablePlugin):
 
     # This plugin hooks into File menu actions
     CAN_HANDLE_FILE_ACTIONS = True
+
+    # This plugin opens files with the .ipynb exetension
+    FILE_EXTENSIONS = ['.ipynb']
 
     # Action "Switch to notebook" gives focus to the plugin
     RAISE_AND_FOCUS = True
@@ -103,15 +107,36 @@ class NotebookPlugin(SpyderDockablePlugin):
     def on_mainwindow_visible(self):
         self.get_widget().open_previous_session()
 
-    # ------ Public API -------------------------------------------------------
-    def open_notebook(self, filenames=None):
-        self.get_widget().open_notebook(filenames)
-
     def create_new_file(self) -> None:
         """
         Create a new notebook.
         """
         self.get_widget().create_new_client()
+
+    def open_file(self, filename: str) -> None:
+        """
+        Open file inside plugin.
+
+        This method will be called if the user wants to open a notebook.
+
+        Parameters
+        ----------
+        filename: str
+            The name of the file to be opened.
+        """
+        self.get_widget().open_notebook([filename])
+
+    def get_current_filename(self) -> Optional[str]:
+        """
+        Return file name of the notebook that is currently displayed.
+        """
+        return self.get_widget().get_current_filename()
+
+    def current_file_is_temporary(self) -> bool:
+        """
+        Return whether currently displayed file is a temporary file.
+        """
+        return self.get_widget().current_file_is_temporary()
 
     # ------ Private API ------------------------------------------------------
     def _open_console(self, connection_file, tab_name):

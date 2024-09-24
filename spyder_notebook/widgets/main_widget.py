@@ -6,6 +6,7 @@
 
 # Standard library imports
 import os.path as osp
+from typing import Optional
 
 # Third-party imports
 from jupyter_core.paths import jupyter_runtime_dir
@@ -178,6 +179,7 @@ class NotebookMainWidget(PluginMainWidget):
         # Register shortcuts for file actions defined in Applications plugin
         for action_id in [
             'New file',
+            'Open file'
         ]:
             action = self.get_action(action_id, plugin=Plugins.Application)
             self.register_shortcut_for_widget(
@@ -348,3 +350,20 @@ class NotebookMainWidget(PluginMainWidget):
         """Clear the list of recent notebooks."""
         self.recent_notebooks = []
         self.update_recent_notebooks_menu()
+
+    def get_current_filename(self) -> Optional[str]:
+        """
+        Get file name of currently displayed notebook.
+        """
+        client = self.tabwidget.currentWidget()
+        if self.tabwidget.is_welcome_client(client):
+            return None
+        else:
+            return client.get_filename()
+
+    def current_file_is_temporary(self) -> bool:
+        """
+        Return whether currently displayed file is a temporary file.
+        """
+        client = self.tabwidget.currentWidget()
+        return self.tabwidget.is_newly_created(client)
