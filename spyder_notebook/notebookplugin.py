@@ -28,7 +28,7 @@ class NotebookPlugin(SpyderDockablePlugin):
     """Spyder Notebook plugin."""
 
     NAME = 'notebook'
-    REQUIRES = [Plugins.Preferences]
+    REQUIRES = [Plugins.Application, Plugins.Preferences]
     OPTIONAL = [Plugins.IPythonConsole, Plugins.Switcher]
     TABIFY = [Plugins.Editor]
     CONF_SECTION = NAME
@@ -36,6 +36,9 @@ class NotebookPlugin(SpyderDockablePlugin):
     CONF_VERSION = CONF_VERSION
     WIDGET_CLASS = NotebookMainWidget
     CONF_WIDGET_CLASS = NotebookConfigPage
+
+    # This plugin hooks into File menu actions
+    CAN_HANDLE_FILE_ACTIONS = True
 
     # Action "Switch to notebook" gives focus to the plugin
     RAISE_AND_FOCUS = True
@@ -103,6 +106,12 @@ class NotebookPlugin(SpyderDockablePlugin):
     # ------ Public API -------------------------------------------------------
     def open_notebook(self, filenames=None):
         self.get_widget().open_notebook(filenames)
+
+    def create_new_file(self) -> None:
+        """
+        Create a new notebook.
+        """
+        self.get_widget().create_new_client()
 
     # ------ Private API ------------------------------------------------------
     def _open_console(self, connection_file, tab_name):

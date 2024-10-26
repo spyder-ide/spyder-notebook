@@ -79,8 +79,9 @@ class MainWindowMock(QMainWindow):
 class ConfigDialogTester(QWidget):
     def __init__(self, parent, main_class,
                  general_config_plugins, plugins):
-        # This import assumes that an QApplication is already running,
+        # These imports assumes that an QApplication is already running,
         # so we can not put it at the top of the file
+        from spyder.plugins.application.plugin import Application
         from spyder.plugins.preferences.plugin import Preferences
 
         super().__init__(parent)
@@ -107,6 +108,7 @@ class ConfigDialogTester(QWidget):
 
         PLUGIN_REGISTRY.reset()
         PLUGIN_REGISTRY.sig_plugin_ready.connect(self._main.register_plugin)
+        PLUGIN_REGISTRY.register_plugin(self._main, Application)
         PLUGIN_REGISTRY.register_plugin(self._main, Preferences)
 
         if plugins:

@@ -13,6 +13,7 @@ from qtpy.QtCore import Signal
 from qtpy.QtWidgets import QMessageBox, QVBoxLayout
 
 # Spyder imports
+from spyder.api.plugins import Plugins
 from spyder.api.widgets.main_widget import PluginMainWidget
 from spyder.config.gui import is_dark_interface
 
@@ -173,6 +174,17 @@ class NotebookMainWidget(PluginMainWidget):
 
         # Context menu for notebooks
         self.tabwidget.actions = [new_notebook_action, open_notebook_action]
+
+        # Register shortcuts for file actions defined in Applications plugin
+        for action_id in [
+            'New file',
+        ]:
+            action = self.get_action(action_id, plugin=Plugins.Application)
+            self.register_shortcut_for_widget(
+                name=action_id,
+                triggered=action.trigger,
+                context='main'
+            )
 
     def update_actions(self):
         """Update actions of the options menu."""
