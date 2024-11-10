@@ -126,6 +126,12 @@ class NotebookPlugin(SpyderDockablePlugin):
         """
         self.get_widget().open_notebook([filename])
 
+    def open_last_closed_file(self) -> None:
+        """
+        Reopens the notebook in the last closed tab.
+        """
+        self.get_widget().open_last_closed_notebook()
+
     def get_current_filename(self) -> Optional[str]:
         """
         Return file name of the notebook that is currently displayed.

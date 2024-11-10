@@ -94,7 +94,7 @@ setup(
     version=get_version(),
     cmdclass={'sdist': my_sdist},
     keywords='spyder jupyter notebook',
-    python_requires='>=3.8',
+    python_requires='>=3.9',
     url='https://github.com/spyder-ide/spyder-notebook',
     license='MIT',
     author='Spyder Development Team',

@@ -179,7 +179,8 @@ class NotebookMainWidget(PluginMainWidget):
         # Register shortcuts for file actions defined in Applications plugin
         for action_id in [
             'New file',
-            'Open file'
+            'Open file',
+            'Open last closed'
         ]:
             action = self.get_action(action_id, plugin=Plugins.Application)
             self.register_shortcut_for_widget(
@@ -298,6 +299,12 @@ class NotebookMainWidget(PluginMainWidget):
         for filename in filenames:
             self.add_to_recent(filename)
         self.update_recent_notebooks_menu()
+
+    def open_last_closed_notebook(self) -> None:
+        """
+        Reopens the notebook in the last closed tab.
+        """
+        self.tabwidget.open_last_closed_notebook()
 
     def create_new_client(self, filename=None):
         """Create a new notebook or load a pre-existing one."""

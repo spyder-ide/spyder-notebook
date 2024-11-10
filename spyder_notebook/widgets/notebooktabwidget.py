@@ -98,6 +98,9 @@ class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
         Whether to display notebooks in a dark theme. The default is False.
     untitled_num : int
         Number used in file name of newly created notebooks.
+    last_closed_files : list[str]
+        File names of notebooks that have been closed by the user, with the
+        most recently closed one listed last.
     """
 
     def __init__(self, parent, server_manager, actions=None, menu=None,
@@ -123,6 +126,7 @@ class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
         self.actions = actions
         self.dark_theme = dark_theme
         self.untitled_num = 0
+        self.last_closed_files: list[str] = []
 
         self.server_manager = server_manager
         self.server_manager.sig_server_started.connect(
@@ -162,6 +166,16 @@ class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
             for filename in filenames:
                 self.create_new_client(filename=filename)
         return filenames
+
+    def open_last_closed_notebook(self) -> None:
+        """
+        Reopens the notebook in the last closed tab.
+        """
+        if not self.last_closed_files:
+            return
+        else:
+            filename = self.last_closed_files.pop()
+            self.create_new_client(filename)
 
     def create_new_client(self, filename=None):
         """
@@ -276,9 +290,14 @@ class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
             client.shutdown_kernel()
         client.close()
 
-        # Delete notebook file if it is in temporary directory
+        # Delete notebook file if it is in temporary directory.
+        # Otherwise, store the file name for the "Open last closed" action.
         if filename.startswith(get_temp_dir()):
             remove_file_retry_if_in_use(filename)
+        else:
+            if filename in self.last_closed_files:
+                self.last_closed_files.remove(filename)
+            self.last_closed_files.append(filename)
 
         # Note: notebook index may have changed after closing related widgets
         self.removeTab(self.indexOf(client))
