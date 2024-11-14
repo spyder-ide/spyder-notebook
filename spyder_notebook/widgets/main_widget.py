@@ -55,6 +55,17 @@ class NotebookMainWidgetRecentNotebooksMenuSections:
 
 class NotebookMainWidget(PluginMainWidget):
 
+    sig_new_recent_file = Signal(str)
+    """
+    This signal is emitted when a file is opened or got a new name.
+
+    Parameters
+    ----------
+    filename: str
+        The name of the opened file. If the file is renamed, then this should
+        be the new name.
+    """
+
     sig_open_console_requested = Signal(str, str)
     """
     Request to open an IPython console associated to a notebook.
@@ -71,7 +82,6 @@ class NotebookMainWidget(PluginMainWidget):
         """Widget constructor."""
         super().__init__(name, plugin, parent)
 
-        self.recent_notebooks = self.get_conf('recent_notebooks', default=[])
         self.server_manager = ServerManager(self.dark_theme)
 
         # Tab widget
@@ -143,22 +153,10 @@ class NotebookMainWidget(PluginMainWidget):
             icon=self.create_icon('log'),
             triggered=self.view_servers
         )
-        self.clear_recent_notebooks_action = self.create_action(
-            NotebookMainWidgetActions.ClearRecentNotebooks,
-            text=_("Clear this list"),
-            triggered=self.clear_recent_notebooks
-        )
-
-        # Submenu
-        self.recent_notebooks_menu = self.create_menu(
-            NotebookMainWidgetMenus.RecentNotebooks,
-            _("Open recent")
-        )
 
         # Options menu
         options_menu = self.get_options_menu()
-        for item in [new_notebook_action, open_notebook_action,
-                     self.recent_notebooks_menu]:
+        for item in [new_notebook_action, open_notebook_action]:
             self.add_item_to_menu(
                 item,
                 menu=options_menu,
@@ -219,7 +217,6 @@ class NotebookMainWidget(PluginMainWidget):
                 opened_notebooks.append(client.filename)
             client.close()
 
-        self.set_conf('recent_notebooks', self.recent_notebooks)
         self.set_conf('opened_notebooks', opened_notebooks)
         self.server_manager.shutdown_all_servers()
 
@@ -249,40 +246,6 @@ class NotebookMainWidget(PluginMainWidget):
         else:
             nb = None
 
-    def update_recent_notebooks_menu(self):
-        """Update the recent notebooks menu actions."""
-        self.recent_notebooks_menu.clear_actions()
-        if self.recent_notebooks:
-            for notebook in self.recent_notebooks:
-                # Create notebook action
-                name = notebook
-                action = self.create_action(
-                    NotebookMainWidgetActions.RecentNotebook,
-                    text=name,
-                    icon=self.create_icon('notebook'),
-                    register_action=False,
-                    triggered=lambda v, path=notebook:
-                        self.create_new_client(filename=path)
-                )
-
-                # Add action to menu
-                self.add_item_to_menu(
-                    action,
-                    menu=self.recent_notebooks_menu,
-                    section=NotebookMainWidgetRecentNotebooksMenuSections.Notebooks,
-                )
-
-        self.add_item_to_menu(
-            self.clear_recent_notebooks_action,
-            menu=self.recent_notebooks_menu,
-            section=NotebookMainWidgetRecentNotebooksMenuSections.Clear,
-        )
-
-        if self.recent_notebooks:
-            self.clear_recent_notebooks_action.setEnabled(True)
-        else:
-            self.clear_recent_notebooks_action.setEnabled(False)
-
     def open_previous_session(self):
         """Open notebooks left open in the previous session."""
         filenames = self.get_conf('opened_notebooks')
@@ -297,8 +260,7 @@ class NotebookMainWidget(PluginMainWidget):
         """Open a notebook from file."""
         filenames = self.tabwidget.open_notebook(filenames)
         for filename in filenames:
-            self.add_to_recent(filename)
-        self.update_recent_notebooks_menu()
+            self.sig_new_recent_file.emit(filename)
 
     def open_last_closed_notebook(self) -> None:
         """
@@ -310,22 +272,14 @@ class NotebookMainWidget(PluginMainWidget):
         """Create a new notebook or load a pre-existing one."""
         client = self.tabwidget.create_new_client(filename)
         if not self.tabwidget.is_newly_created(client):
-            self.add_to_recent(filename)
-            self.update_recent_notebooks_menu()
-
-    def add_to_recent(self, notebook):
-        """
-        Add an entry to recent notebooks.
-
-        We only maintain the list of the 20 most recent notebooks.
-        """
-        if notebook not in self.recent_notebooks:
-            self.recent_notebooks.insert(0, notebook)
-            self.recent_notebooks = self.recent_notebooks[:20]
+            self.sig_new_recent_file.emit(filename)
 
     def save_as(self):
         """Save current notebook to different file."""
-        self.tabwidget.save_as()
+        old_filename = self.tabwidget.currentWidget()
+        new_filename = self.tabwidget.save_as()
+        if old_filename != new_filename:
+            self.sig_new_recent_file.emit(new_filename)
 
     def open_console(self, client=None):
         """Open an IPython console for the given client or the current one."""
@@ -352,11 +306,6 @@ class NotebookMainWidget(PluginMainWidget):
         """Display server info."""
         dialog = ServerInfoDialog(self.server_manager.servers, parent=self)
         dialog.show()
-
-    def clear_recent_notebooks(self):
-        """Clear the list of recent notebooks."""
-        self.recent_notebooks = []
-        self.update_recent_notebooks_menu()
 
     def get_current_filename(self) -> Optional[str]:
         """
