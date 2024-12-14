@@ -150,6 +150,12 @@ class NotebookPlugin(SpyderDockablePlugin):
         """
         self.get_widget().save_notebook()
 
+    def save_all(self) -> None:
+        """
+        Save all opened notebooks.
+        """
+        self.get_widget().save_all()
+
     def get_current_filename(self) -> Optional[str]:
         """
         Return file name of the notebook that is currently displayed.

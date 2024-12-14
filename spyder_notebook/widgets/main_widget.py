@@ -179,7 +179,8 @@ class NotebookMainWidget(PluginMainWidget):
             'New file',
             'Open file',
             'Open last closed',
-            'Save file'
+            'Save file',
+            'Save all'
         ]:
             action = self.get_action(action_id, plugin=Plugins.Application)
             self.register_shortcut_for_widget(
@@ -281,6 +282,14 @@ class NotebookMainWidget(PluginMainWidget):
         """
         client = self.tabwidget.currentWidget()
         self.tabwidget.save_notebook(client)
+
+    def save_all(self) -> None:
+        """
+        Save all opened notebooks.
+        """
+        for client_index in range(self.tabwidget.count()):
+            client = self.tabwidget.widget(client_index)
+            self.tabwidget.save_notebook(client)
 
     def save_as(self):
         """Save current notebook to different file."""
