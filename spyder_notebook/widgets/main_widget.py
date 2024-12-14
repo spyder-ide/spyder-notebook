@@ -180,7 +180,8 @@ class NotebookMainWidget(PluginMainWidget):
             'Open file',
             'Open last closed',
             'Save file',
-            'Save all'
+            'Save all',
+            'Save as'
         ]:
             action = self.get_action(action_id, plugin=Plugins.Application)
             self.register_shortcut_for_widget(

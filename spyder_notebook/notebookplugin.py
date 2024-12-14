@@ -150,6 +150,12 @@ class NotebookPlugin(SpyderDockablePlugin):
         """
         self.get_widget().save_notebook()
 
+    def save_file_as(self) -> None:
+        """
+        Save the current notebook under a different name.
+        """
+        self.get_widget().save_as()
+
     def save_all(self) -> None:
         """
         Save all opened notebooks.
