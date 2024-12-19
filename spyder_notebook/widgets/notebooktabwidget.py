@@ -381,7 +381,7 @@ class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
             # Just return True and hope for the best
             return True
 
-    def save_as(self, name=None, reopen_after_save=True):
+    def save_as(self, name=None, reopen_after_save=True, close_after_save=True):
         """
         Save current notebook under a different file name.
 
@@ -389,8 +389,8 @@ class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
         for a new file name (if `name` is not set), and return if no new name
         is given. Then, read the contents of the notebook that was just saved
         and write them under the new file name. If `reopen_after_save` is
-        True, then close the original tab and open a new tab with the
-        notebook loaded from the new file name.
+        True, then open a new tab with the notebook loaded from the new file
+        name. If `close_after_save` is True, then close the original tab.
 
         Parameters
         ----------
@@ -398,8 +398,11 @@ class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
             File name under which the notebook is to be saved. The default is
             None, meaning that the user should be asked for the file name.
         reopen_after_save : bool, optional
-            Whether to close the original tab and re-open it under the new
-            file name after saving the notebook. The default is True.
+            Whether open a tab under the new file name after saving the
+            notebook. The default is True.
+        close_after_save : bool, optional
+            Whether to close the original tab after saving the notebook. The
+            default is True.
 
         Returns
         -------
@@ -431,8 +434,9 @@ class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
                    .format(filename, str(error)))
             QMessageBox.critical(self, _("File Error"), txt)
             return original_path
-        if reopen_after_save:
+        if close_after_save:
             self.close_client(save_before_close=False)
+        if reopen_after_save:
             self.create_new_client(filename=filename)
         return filename
 

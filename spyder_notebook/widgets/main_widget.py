@@ -292,10 +292,18 @@ class NotebookMainWidget(PluginMainWidget):
             client = self.tabwidget.widget(client_index)
             self.tabwidget.save_notebook(client)
 
-    def save_as(self):
-        """Save current notebook to different file."""
+    def save_as(self, close_after_save=True):
+        """
+        Save current notebook to different file.
+
+        If `close_after_save` is True (the default), then close the current
+        tab and open a new tab under the new name. Otherwise, open a new tab
+        while leaving the current tab open (the "Save copy as" action).
+        """
         old_filename = self.tabwidget.currentWidget()
-        new_filename = self.tabwidget.save_as()
+        new_filename = self.tabwidget.save_as(
+            close_after_save=close_after_save
+        )
         if old_filename != new_filename:
             self.sig_new_recent_file.emit(new_filename)
 
