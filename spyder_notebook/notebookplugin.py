@@ -14,6 +14,7 @@ from typing import Optional
 from spyder.api.plugins import Plugins, SpyderDockablePlugin
 from spyder.api.plugin_registration.decorators import (
     on_plugin_available, on_plugin_teardown)
+from spyder.plugins.application.api import ApplicationActions
 from spyder.plugins.switcher.utils import shorten_paths
 
 # Local imports
@@ -75,6 +76,9 @@ class NotebookPlugin(SpyderDockablePlugin):
     @on_plugin_available(plugin=Plugins.Application)
     def on_application_available(self) -> None:
         application = self.get_plugin(Plugins.Application)
+        application.enable_file_action(
+            ApplicationActions.RevertFile, False, self
+        )
         widget = self.get_widget()
         widget.sig_new_recent_file.connect(application.add_recent_file)
 
