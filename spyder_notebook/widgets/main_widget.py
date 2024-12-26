@@ -175,17 +175,26 @@ class NotebookMainWidget(PluginMainWidget):
         self.tabwidget.actions = [new_notebook_action, open_notebook_action]
 
         # Register shortcuts for file actions defined in Applications plugin
-        for action_id in [
+        for shortcut_name in [
             'New file',
             'Open file',
             'Open last closed',
             'Save file',
             'Save all',
-            'Save as'
+            'Save as',
+            'Close file 1',
+            'Close file 2'
         ]:
+            # The shortcut has the same name as the action, except for
+            # "Close file" which has two shortcuts associated to it
+            if shortcut_name.startswith('Close file'):
+                action_id = 'Close file'
+            else:
+                action_id = shortcut_name
+
             action = self.get_action(action_id, plugin=Plugins.Application)
             self.register_shortcut_for_widget(
-                name=action_id,
+                name=shortcut_name,
                 triggered=action.trigger,
                 context='main'
             )
@@ -306,6 +315,12 @@ class NotebookMainWidget(PluginMainWidget):
         )
         if old_filename != new_filename:
             self.sig_new_recent_file.emit(new_filename)
+
+    def close_notebook(self) -> None:
+        """
+        Close current notebook.
+        """
+        self.tabwidget.close_client()
 
     def open_console(self, client=None):
         """Open an IPython console for the given client or the current one."""
