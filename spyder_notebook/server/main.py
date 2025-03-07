@@ -4,8 +4,11 @@
 """Entry point for server rendering notebooks for Spyder."""
 
 import os
+from jupyter_client.kernelspec import KernelSpecManager
+from jupyter_server.serverapp import ServerApp
 from notebook.app import (
     aliases, flags, JupyterNotebookApp, NotebookBaseHandler)
+from spyder.plugins.ipythonconsole.utils.kernelspec import SpyderKernelSpec
 from tornado import web
 from traitlets import default, Bool, Unicode
 
@@ -45,11 +48,29 @@ class SpyderNotebookHandler(NotebookBaseHandler):
         return self.write(tpl)
 
 
+class SpyderKernelSpecManager(KernelSpecManager):
+    """Variant of Jupyter's KernelSpecManager"""
+    kernel_spec_class = SpyderKernelSpec
+
+
+class SpyderServerApp(ServerApp):
+    """Variant of Jupyter's ServerApp"""
+    kernel_spec_manager_class = SpyderKernelSpecManager
+
+
 class SpyderNotebookApp(JupyterNotebookApp):
     """The Spyder notebook server extension app."""
 
     name = 'spyder_notebook'
+    app_name = "Spyder/Jupyter Notebook"
+    description = "Spyder/Jupyter Notebook - A variant of Jupyter Notebook to be used inside Spyder"
     file_url_prefix = "/spyder-notebooks"
+
+    # Replace Jupyter's ServerApp with our own
+    serverapp_class = SpyderServerApp
+
+    # Do not open web browser when starting app
+    open_browser = False
 
     flags = dict(flags)
     aliases = dict(aliases)
@@ -57,8 +78,6 @@ class SpyderNotebookApp(JupyterNotebookApp):
     dark_theme = Bool(
         False, config=True,
         help='Whether to use dark theme when rendering notebooks')
-
-    flags = flags
 
     info_file_cmdline = Unicode(
         '', config=True,
