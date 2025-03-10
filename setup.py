@@ -7,10 +7,10 @@
 
 # Standard library imports
 import ast
-import distutils
+import logging
 import os
 import os.path as osp
-import pipes
+import shlex
 import subprocess
 import sys
 
@@ -23,17 +23,19 @@ if sys.platform == 'win32':
 else:
     def list2cmdline(cmd_list):
         """Convert list of arguments to a command line string."""
-        return ' '.join(map(pipes.quote, cmd_list))
+        return ' '.join(map(shlex.quote, cmd_list))
 
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 SERVER_DIR = osp.join(HERE, 'spyder_notebook', 'server')
 BUILD_DIR = osp.join(SERVER_DIR, 'static')
 
+logging.basicConfig(format='%(message)s')
 
 def run(cmd, *args, **kwargs):
     """Echo a command before running it."""
-    distutils.log.info('> ' + list2cmdline(cmd))
+    logger = logging.getLogger()
+    logger.info('> ' + list2cmdline(cmd))
     kwargs['shell'] = (sys.platform == 'win32')
     return subprocess.check_call(cmd, *args, **kwargs)
 
