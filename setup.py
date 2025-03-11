@@ -113,5 +113,9 @@ setup(
         "spyder.plugins": [
             "notebook = spyder_notebook.notebookplugin:NotebookPlugin"
         ],
+        "jupyter_client.kernel_provisioners": [
+            "spyder-local-provisioner ="
+            " spyder_notebook.server.main:SpyderLocalProvisioner"
+        ],
     }
 )
