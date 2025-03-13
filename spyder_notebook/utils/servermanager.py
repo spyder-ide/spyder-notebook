@@ -27,9 +27,6 @@ from tornado.httpclient import HTTPClientError
 from spyder.config.base import DEV, get_home_dir, get_module_path
 
 
-# Kernel specification to use in notebook server
-KERNELSPEC = 'spyder.plugins.ipythonconsole.utils.kernelspec.SpyderKernelSpec'
-
 # Delay we wait to check whether server is up (in ms)
 CHECK_SERVER_UP_DELAY = 250
 
@@ -211,11 +208,9 @@ class ServerManager(QObject):
         my_pid = os.getpid()
         server_index = len(self.servers) + 1
         info_file = f'spynbserver-{my_pid}-{server_index}.json'
-        arguments = ['-m', 'spyder_notebook.server', '--no-browser',
+        arguments = ['-m', 'spyder_notebook.server',
                      f'--info-file={info_file}',
-                     f'--notebook-dir={nbdir}',
-                     '--ServerApp.password=',
-                     f'--KernelSpecManager.kernel_spec_class={KERNELSPEC}']
+                     f'--notebook-dir={nbdir}']
         if self.dark_theme:
             arguments.append('--dark')
 
