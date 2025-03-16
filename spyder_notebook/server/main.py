@@ -64,25 +64,29 @@ class SpyderLocalProvisioner(LocalProvisioner):
         Send signal to kernel.
 
         For Jupyter Python kernels, the PID in self.pid is the Python process.
-        However, Spyder kernels use `conda run` to start the Pyhon process in
-        the correct environment, so self.pid is the PID of the `conda run`
-        process. The `conda run` command starts a shell which in turn starts
-        the conda process.
+        However, Spyder kernels may use `conda run` to start the Pyhon process
+        in the correct environment. In that case, self.pid is the PID of the
+        `conda run` process. The `conda run` command starts a shell which in
+        turn starts the kernel process.
 
         When the user wants to interrupt the kernel, Jupyter wants to send
-        SIGINT to self.pid, but for Spyder kernels we need to send it to the
-        grandchild of self.pid.
+        SIGINT to self.pid, but for Spyder kernels started with `conda run`
+        we need to send SIGINT to the grandchild of self.pid.
         """
         if signum == signal.SIGINT and sys.platform != "win32":
             # Windows is handled differently in LocalProvisioner
             try:
-                # Send SIGINT to grandchild
                 process = psutil.Process(self.pid)
-                grandchild_pid = process.children()[0].children()[0].pid
-                self.log.info(f'Sending signal to PID {grandchild_pid} '
-                              f'instead of process group of PID {self.pid}')
-                os.kill(grandchild_pid, signum)
-                return
+                cmdline = process.cmdline()
+                if len(cmdline) > 2 and cmdline[2] == 'run':
+                    # If second word on command line is 'run', then assume
+                    # kernel is started with 'conda run' and therefore
+                    # send SIGINT to grandchild.
+                    grandchild_pid = process.children()[0].children()[0].pid
+                    self.log.info(f'Sending signal to PID {grandchild_pid} '
+                                  f'instead of process group of PID {self.pid}')
+                    os.kill(grandchild_pid, signum)
+                    return
             except (psutil.AccessDenied, psutil.NoSuchProcess, IndexError, OSError):
                 # Ignore errors and fall back to code in LocalProvisioner
                 pass
