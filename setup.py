@@ -74,6 +74,7 @@ REQUIREMENTS = [
     'spyder>=6,<7',
     'nbformat',
     'notebook>=7.2,<8',
+    'psutil',
     'qtpy',
     'qdarkstyle',
     'requests',
