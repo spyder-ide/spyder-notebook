@@ -13,6 +13,8 @@
     "@jupyter-notebook/help-extension": "~7.3.3",
     "@jupyter-notebook/notebook-extension": "~7.3.3",
     "@jupyter-notebook/ui-components": "~7.3.3",
+    "@jupyter/react-components": "^0.16.6",
+    "@jupyter/web-components": "^0.16.6",
     "@jupyter/ydoc": "~3.0.0",
     "@jupyterlab/application": "~4.3.6",
     "@jupyterlab/application-extension": "~4.3.6",
@@ -279,6 +281,8 @@
       }
     },
     "singletonPackages": [
+      "@jupyter/react-components",
+      "@jupyter/web-components",
       "@jupyter/ydoc",
       "@jupyterlab/application",
       "@jupyterlab/apputils",
