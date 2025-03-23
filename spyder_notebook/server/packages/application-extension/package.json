@@ -16,9 +16,9 @@
     "build": "tsc -b"
   },
   "dependencies": {
-    "@jupyterlab/application": "~4.2.0",
-    "@jupyterlab/docmanager": "~4.2.0",
-    "@jupyterlab/mainmenu": "~4.2.0"
+    "@jupyterlab/application": "~4.3.6",
+    "@jupyterlab/docmanager": "~4.3.6",
+    "@jupyterlab/mainmenu": "~4.3.6"
   },
   "devDependencies": {
     "typescript": "~5.0.2"
