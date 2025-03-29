@@ -3,11 +3,22 @@
 
 """Entry point for server rendering notebooks for Spyder."""
 
+# Standard library imports
 import os
+import signal
+import sys
+
+# Third-party imports
+from jupyter_client.kernelspec import KernelSpecManager
+from jupyter_client.provisioning.local_provisioner import LocalProvisioner
+from jupyter_server.serverapp import ServerApp
 from notebook.app import (
     aliases, flags, JupyterNotebookApp, NotebookBaseHandler)
+import psutil
+from spyder.plugins.ipythonconsole.utils.kernelspec import SpyderKernelSpec
 from tornado import web
 from traitlets import default, Bool, Unicode
+
 
 HERE = os.path.dirname(__file__)
 
@@ -45,11 +56,74 @@ class SpyderNotebookHandler(NotebookBaseHandler):
         return self.write(tpl)
 
 
+class SpyderLocalProvisioner(LocalProvisioner):
+    """Variant of Jupyter's LocalProvisioner for Spyder kernels"""
+
+    async def send_signal(self, signum):
+        """
+        Send signal to kernel.
+
+        For Jupyter Python kernels, the PID in self.pid is the Python process.
+        However, Spyder kernels may use `conda run` to start the Pyhon process
+        in the correct environment. In that case, self.pid is the PID of the
+        `conda run` process. The `conda run` command starts a shell which in
+        turn starts the kernel process.
+
+        When the user wants to interrupt the kernel, Jupyter wants to send
+        SIGINT to self.pid, but for Spyder kernels started with `conda run`
+        we need to send SIGINT to the grandchild of self.pid.
+        """
+        if signum == signal.SIGINT and sys.platform != "win32":
+            # Windows is handled differently in LocalProvisioner
+            try:
+                process = psutil.Process(self.pid)
+                cmdline = process.cmdline()
+                if len(cmdline) > 2 and cmdline[2] == 'run':
+                    # If second word on command line is 'run', then assume
+                    # kernel is started with 'conda run' and therefore
+                    # send SIGINT to grandchild.
+                    grandchild_pid = process.children()[0].children()[0].pid
+                    self.log.info(f'Sending signal to PID {grandchild_pid} '
+                                  f'instead of process group of PID {self.pid}')
+                    os.kill(grandchild_pid, signum)
+                    return
+            except (psutil.AccessDenied, psutil.NoSuchProcess, IndexError, OSError):
+                # Ignore errors and fall back to code in LocalProvisioner
+                pass
+
+        await super().send_signal(signum)
+
+
+class SpyderNotebookKernelSpec(SpyderKernelSpec):
+    """Variant of SpyderKernelSpec which specifies our provisioner"""
+    metadata = {
+        'kernel_provisioner': {'provisioner_name': 'spyder-local-provisioner'}
+    }
+
+
+class SpyderKernelSpecManager(KernelSpecManager):
+    """Variant of Jupyter's KernelSpecManager"""
+    kernel_spec_class = SpyderNotebookKernelSpec
+
+
+class SpyderServerApp(ServerApp):
+    """Variant of Jupyter's ServerApp"""
+    kernel_spec_manager_class = SpyderKernelSpecManager
+
+
 class SpyderNotebookApp(JupyterNotebookApp):
     """The Spyder notebook server extension app."""
 
     name = 'spyder_notebook'
+    app_name = "Spyder/Jupyter Notebook"
+    description = "Spyder/Jupyter Notebook - A variant of Jupyter Notebook to be used inside Spyder"
     file_url_prefix = "/spyder-notebooks"
+
+    # Replace Jupyter's ServerApp with our own
+    serverapp_class = SpyderServerApp
+
+    # Do not open web browser when starting app
+    open_browser = False
 
     flags = dict(flags)
     aliases = dict(aliases)
@@ -57,8 +131,6 @@ class SpyderNotebookApp(JupyterNotebookApp):
     dark_theme = Bool(
         False, config=True,
         help='Whether to use dark theme when rendering notebooks')
-
-    flags = flags
 
     info_file_cmdline = Unicode(
         '', config=True,

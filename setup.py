@@ -76,6 +76,7 @@ REQUIREMENTS = [
     'spyder>=6,<7',
     'nbformat',
     'notebook>=7.2,<8',
+    'psutil',
     'qtpy',
     'qdarkstyle',
     'requests',
@@ -114,6 +115,10 @@ setup(
     entry_points={
         "spyder.plugins": [
             "notebook = spyder_notebook.notebookplugin:NotebookPlugin"
+        ],
+        "jupyter_client.kernel_provisioners": [
+            "spyder-local-provisioner ="
+            " spyder_notebook.server.main:SpyderLocalProvisioner"
         ],
     }
 )
