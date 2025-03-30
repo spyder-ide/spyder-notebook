@@ -103,6 +103,10 @@ class SpyderNotebookKernelSpec(SpyderKernelSpec):
 
 class SpyderKernelSpecManager(KernelSpecManager):
     """Variant of Jupyter's KernelSpecManager"""
+    # Ensure that there is only one kernel spec, the default one
+    allowed_kernelspecs = 'python3'
+
+    # Ensure that default kernel spec is our own kernel spec
     kernel_spec_class = SpyderNotebookKernelSpec
 
 
