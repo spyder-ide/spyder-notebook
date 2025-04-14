@@ -1,5 +1,22 @@
 # History of changes
 
+## Version 0.6.2 (2025/04/14)
+
+This is a bug-fix and maintenance release.
+
+### Bug fixes
+
+* Interrupting the kernel no longer leads to a complete restart, losing all variables ([Issue 478](https://github.com/spyder-ide/spyder-notebook/issues/478), ([PR 482](https://github.com/spyder-ide/spyder-notebook/pull/482))
+* When changing kernels, list the Spyder kernel only once ([Issue 475](https://github.com/spyder-ide/spyder-notebook/issues/475), [PR 484](https://github.com/spyder-ide/spyder-notebook/pull/484))
+* Give focus to plugin when switching to it ([PR 440](https://github.com/spyder-ide/spyder-notebook/pull/440))
+
+### Maintenance
+
+* Update to Jupyter notebook 7.3 ([Issue 486](https://github.com/spyder-ide/spyder-notebook/issues/486), [PR 483](https://github.com/spyder-ide/spyder-notebook/pull/483))
+* Support Python 3.12+ in installation scripts, by [@s-t-e-v-e-n-k](https://github.com/s-t-e-v-e-n-k) ([PR 481](https://github.com/spyder-ide/spyder-notebook/pull/481))
+* Add test checking that Plugins config page works with notebook plugin ([472](https://github.com/spyder-ide/spyder-notebook/issues/472), [PR 473](https://github.com/spyder-ide/spyder-notebook/pull/473))
+
+
 ## Version 0.6.1 (2024/09/04)
 
 This release fixes a critical bug in version 0.6.0.
