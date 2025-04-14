@@ -3302,8 +3302,8 @@ __metadata:
     "@jupyterlab/translation-extension": ~4.3.6
     "@jupyterlab/ui-components-extension": ~4.3.6
     "@jupyterlab/vega5-extension": ~4.3.6
-    "@spyder-notebook/application": ^0.6.2-dev.0
-    "@spyder-notebook/application-extension": ^0.6.2-dev.0
+    "@spyder-notebook/application": ^0.6.2
+    "@spyder-notebook/application-extension": ^0.6.2
     css-loader: ~5.0.1
     fs-extra: ^8.1.0
     glob: ~7.1.6
@@ -3320,7 +3320,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@spyder-notebook/application-extension@^0.6.2-dev.0, @spyder-notebook/application-extension@workspace:packages/application-extension":
+"@spyder-notebook/application-extension@^0.6.2, @spyder-notebook/application-extension@workspace:packages/application-extension":
   version: 0.0.0-use.local
   resolution: "@spyder-notebook/application-extension@workspace:packages/application-extension"
   dependencies:
@@ -3331,7 +3331,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@spyder-notebook/application@^0.6.2-dev.0, @spyder-notebook/application@workspace:packages/application":
+"@spyder-notebook/application@^0.6.2, @spyder-notebook/application@workspace:packages/application":
   version: 0.0.0-use.local
   resolution: "@spyder-notebook/application@workspace:packages/application"
   dependencies:

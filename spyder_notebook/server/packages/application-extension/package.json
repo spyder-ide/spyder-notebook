@@ -1,6 +1,6 @@
 {
   "name": "@spyder-notebook/application-extension",
-  "version": "0.6.2-dev.0",
+  "version": "0.6.2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "directories": {
