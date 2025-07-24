@@ -14,7 +14,6 @@ import sys
 from unittest.mock import MagicMock
 
 # Third-party library imports
-from flaky import flaky
 import pytest
 from qtpy.QtCore import Qt, QTimer
 from qtpy.QtWidgets import QFileDialog, QApplication, QLineEdit
@@ -75,7 +74,7 @@ def main_widget(qtbot):
 # =============================================================================
 # Tests
 # =============================================================================
-@flaky(max_runs=3)
+@pytest.mark.flaky(max_runs=3)
 def test_new_notebook(main_widget, qtbot):
     """Test that a new client is really a notebook."""
     # Create new notebook tab and check that there is a prompt
@@ -85,7 +84,7 @@ def test_new_notebook(main_widget, qtbot):
                     timeout=NOTEBOOK_UP)
 
 
-@flaky(max_runs=3)
+@pytest.mark.flaky(max_runs=3)
 @pytest.mark.skipif(sys.platform == 'darwin', reason='Prompt never comes up')
 def test_open_notebook_in_non_ascii_dir(main_widget, qtbot, tmpdir):
     """Test that a notebook can be opened from a non-ascii directory."""
@@ -110,7 +109,7 @@ def test_open_notebook_in_non_ascii_dir(main_widget, qtbot, tmpdir):
     assert client.get_short_name() == "test"
 
 
-@flaky(max_runs=3)
+@pytest.mark.flaky(max_runs=3)
 @pytest.mark.skipif(not sys.platform.startswith('linux'),
                     reason='Test hangs on CI on Windows and MacOS')
 def test_save_notebook(main_widget, qtbot, tmpdir):
@@ -152,7 +151,7 @@ def test_save_notebook(main_widget, qtbot, tmpdir):
     assert client.get_short_name() == "save"
 
 
-@flaky(max_runs=3)
+@pytest.mark.flaky(max_runs=3)
 @pytest.mark.skipif(os.name == 'nt',
                     reason='Test hangs often on CI on Windows')
 def test_save_notebook_as_with_error(main_widget, mocker, qtbot, tmpdir):
@@ -179,7 +178,7 @@ def test_save_notebook_as_with_error(main_widget, mocker, qtbot, tmpdir):
     assert mock_critical.called
 
 
-@flaky(max_runs=5)
+@pytest.mark.flaky(max_runs=5)
 def test_shutdown_notebook_kernel(main_widget, qtbot):
     """Test that kernel is shut down when closing a notebook."""
     # Create new notebook tab and wait for prompt
@@ -205,7 +204,7 @@ def test_shutdown_notebook_kernel(main_widget, qtbot):
     assert not is_kernel_up(kernel_id, sessions_url)
 
 
-@flaky
+@pytest.mark.flaky
 def test_open_console_when_no_kernel(main_widget, qtbot, mocker):
     """Test that open_console() handles the case when there is no kernel."""
     # Create mock QMessageBox
@@ -253,7 +252,7 @@ def test_file_in_temp_dir_deleted_after_notebook_closed(main_widget, qtbot):
     assert not osp.exists(filename)
 
 
-@flaky(max_runs=3)
+@pytest.mark.flaky(max_runs=3)
 def test_close_nonexisting_notebook(main_widget, qtbot, tmpdir):
     """Test that we can close a tab if the notebook file does not exist.
     Regression test for spyder-ide/spyder-notebook#187."""

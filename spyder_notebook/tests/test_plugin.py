@@ -14,7 +14,6 @@ import os.path as osp
 from unittest.mock import Mock
 
 # Third-party library imports
-from flaky import flaky
 import pytest
 from qtpy.QtWebEngineWidgets import WEBENGINE
 from qtpy.QtWidgets import QMainWindow
