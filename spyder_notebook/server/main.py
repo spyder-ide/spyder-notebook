@@ -15,9 +15,8 @@ from jupyter_server.serverapp import ServerApp
 from notebook.app import (
     aliases, flags, JupyterNotebookApp, NotebookBaseHandler)
 import psutil
-from spyder.plugins.ipythonconsole.utils.kernelspec import SpyderKernelSpec
 from tornado import web
-from traitlets import default, Bool, Unicode
+from traitlets import default, Bool, Type, Unicode
 
 
 HERE = os.path.dirname(__file__)
@@ -94,20 +93,16 @@ class SpyderLocalProvisioner(LocalProvisioner):
         await super().send_signal(signum)
 
 
-class SpyderNotebookKernelSpec(SpyderKernelSpec):
-    """Variant of SpyderKernelSpec which specifies our provisioner"""
-    metadata = {
-        'kernel_provisioner': {'provisioner_name': 'spyder-local-provisioner'}
-    }
-
-
 class SpyderKernelSpecManager(KernelSpecManager):
     """Variant of Jupyter's KernelSpecManager"""
     # Ensure that there is only one kernel spec, the default one
     allowed_kernelspecs = 'python3'
 
-    # Ensure that default kernel spec is our own kernel spec
-    kernel_spec_class = SpyderNotebookKernelSpec
+    # Ensure that default kernel spec is our own kernel spec.
+    # This is given as a string to defer the import.
+    kernel_spec_class = Type(
+        'spyder_notebook.server.kernelspec.SpyderNotebookKernelSpec'
+    )
 
 
 class SpyderServerApp(ServerApp):
