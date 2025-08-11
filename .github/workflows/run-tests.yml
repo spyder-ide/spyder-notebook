@@ -15,7 +15,7 @@ jobs:
       matrix:
         OS: ['ubuntu', 'macos', 'windows']
         PYTHON_VERSION: ['3.9', '3.11', '3.12']
-        SPYDER_SOURCE: ['conda', 'git']
+        SPYDER_SOURCE: ['git']
     name: ${{ matrix.OS }} py${{ matrix.PYTHON_VERSION }} spyder-from-${{ matrix.SPYDER_SOURCE }}
     runs-on: ${{ matrix.OS }}-latest
     env:
