@@ -40,6 +40,9 @@ class NotebookPlugin(SpyderDockablePlugin):
     # Action "Switch to notebook" gives focus to the plugin
     RAISE_AND_FOCUS = True
 
+    # This plugin requires Qt Web Widgets to function
+    REQUIRE_WEB_WIDGETS = True
+
     # ---- SpyderDockablePlugin API
     # ------------------------------------------------------------------------
     @staticmethod
