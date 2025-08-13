@@ -9,6 +9,7 @@
 # Standard library imports
 import datetime
 import os.path as osp
+from unittest.mock import ANY
 
 # Third party imports
 import pytest
@@ -207,7 +208,7 @@ def test_shutdown_all_servers(mocker):
 
     serverManager.shutdown_all_servers()
 
-    assert mock_shutdown.called_once_with(server1.server_info)
+    mock_shutdown.assert_called_once_with(server1.server_info, log=ANY)
     assert server1.state == ServerState.FINISHED
     assert server2.state == ServerState.ERROR
 
