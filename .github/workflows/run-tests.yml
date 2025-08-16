@@ -14,7 +14,7 @@ jobs:
       fail-fast: false 
       matrix:
         OS: ['ubuntu', 'macos', 'windows']
-        PYTHON_VERSION: ['3.9', '3.10', '3.11']
+        PYTHON_VERSION: ['3.9', '3.11', '3.12']
         SPYDER_SOURCE: ['conda', 'git']
     name: ${{ matrix.OS }} py${{ matrix.PYTHON_VERSION }} spyder-from-${{ matrix.SPYDER_SOURCE }}
     runs-on: ${{ matrix.OS }}-latest
