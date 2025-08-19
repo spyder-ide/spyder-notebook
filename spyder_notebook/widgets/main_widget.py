@@ -322,6 +322,19 @@ class NotebookMainWidget(PluginMainWidget):
         """
         self.tabwidget.close_client()
 
+    def close_all(self) -> None:
+        """
+        Close all notebooks.
+
+        Go through all tabs, skip any tabs with the welcome message and close
+        all other tabs. The tabs are traversed in reverse order so that the
+        index does not change when tabs are removed.
+        """
+        for client_index in reversed(range(self.tabwidget.count())):
+            client = self.tabwidget.widget(client_index)
+            if not self.tabwidget.is_welcome_client(client):
+                self.tabwidget.close_client(client_index)
+
     def open_console(self, client=None):
         """Open an IPython console for the given client or the current one."""
         if not client:

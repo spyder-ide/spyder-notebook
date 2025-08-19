@@ -178,6 +178,12 @@ class NotebookPlugin(SpyderDockablePlugin):
         """
         self.get_widget().close_notebook()
 
+    def close_all(self) -> None:
+        """
+        Close all notebook.
+        """
+        self.get_widget().close_all()
+
     def get_current_filename(self) -> Optional[str]:
         """
         Return file name of the notebook that is currently displayed.
