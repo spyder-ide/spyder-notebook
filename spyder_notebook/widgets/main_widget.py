@@ -44,8 +44,7 @@ class NotebookMainWidgetMenus:
 
 
 class NotebookMainWidgetOptionsMenuSections:
-    Open = 'Open'
-    Other = 'Other'
+    Main = 'Main'
 
 
 class NotebookMainWidgetRecentNotebooksMenuSections:
@@ -111,36 +110,6 @@ class NotebookMainWidget(PluginMainWidget):
 
     def setup(self):
         """Perform the setup of plugin's main menu and signals."""
-        # Corner widgets
-        new_notebook_toolbar_action = self.create_toolbutton(
-            NotebookMainWidgetToolButtons.NewNotebook,
-            icon=self.create_icon('options_more'),
-            text=_('Open a new notebook'),
-            tip=_('Open a new notebook'),
-            triggered=self.create_new_client
-        )
-
-        self.add_corner_widget(new_notebook_toolbar_action)
-
-        # Menu actions
-        new_notebook_action = self.create_action(
-            NotebookMainWidgetActions.NewNotebook,
-            text=_("New notebook"),
-            icon=self.create_icon('filenew'),
-            triggered=self.create_new_client
-        )
-        open_notebook_action = self.create_action(
-            NotebookMainWidgetActions.Open,
-            text=_("Open..."),
-            icon=self.create_icon('fileopen'),
-            triggered=self.open_notebook
-        )
-        self.save_as_action = self.create_action(
-            NotebookMainWidgetActions.SaveAs,
-            text=_("Save as..."),
-            icon=self.create_icon('filesaveas'),
-            triggered=self.save_as
-        )
         self.open_console_action = self.create_action(
             NotebookMainWidgetActions.OpenConsole,
             text=_("Open console"),
@@ -156,23 +125,12 @@ class NotebookMainWidget(PluginMainWidget):
 
         # Options menu
         options_menu = self.get_options_menu()
-        for item in [new_notebook_action, open_notebook_action]:
+        for item in [self.open_console_action, self.server_info_action]:
             self.add_item_to_menu(
                 item,
                 menu=options_menu,
-                section=NotebookMainWidgetOptionsMenuSections.Open,
+                section=NotebookMainWidgetOptionsMenuSections.Main,
             )
-
-        for item in [self.save_as_action, self.open_console_action,
-                     self.server_info_action]:
-            self.add_item_to_menu(
-                item,
-                menu=options_menu,
-                section=NotebookMainWidgetOptionsMenuSections.Other,
-            )
-
-        # Context menu for notebooks
-        self.tabwidget.actions = [new_notebook_action, open_notebook_action]
 
         # Register shortcuts for file actions defined in Applications plugin
         for shortcut_name in [
@@ -207,10 +165,8 @@ class NotebookMainWidget(PluginMainWidget):
             client = None
 
         if client and not self.tabwidget.is_welcome_client(client):
-            self.save_as_action.setEnabled(True)
             self.open_console_action.setEnabled(True)
         else:
-            self.save_as_action.setEnabled(False)
             self.open_console_action.setEnabled(False)
 
     def on_close(self):
