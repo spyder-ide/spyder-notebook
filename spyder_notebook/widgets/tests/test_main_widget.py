@@ -11,7 +11,7 @@ import os
 import os.path as osp
 import shutil
 import sys
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 # Third-party library imports
 from flaky import flaky
@@ -64,7 +64,8 @@ def main_widget(qtbot):
 
     main_widget = NotebookMainWidget('testwidget', mock_plugin, None)
     main_widget._setup()
-    main_widget.setup()
+    with patch.object(main_widget, 'get_action'):
+        main_widget.setup()
     main_widget.show()  # Prompt only appears if widget is displayed
     
     yield main_widget
