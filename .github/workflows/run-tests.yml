@@ -122,3 +122,10 @@ jobs:
           command: |
             cd spyder-notebook
             pytest spyder_notebook -vv
+      - name: Kill Python (Windows)
+        if: matrix.OS == 'windows'
+        shell: bash -l {0}
+        run: |
+          # This prevents hangs in Post Install Conda
+          tasklist | grep python
+          taskkill //im python.exe //f || true
