@@ -36,6 +36,7 @@ jobs:
         with:
           miniforge-version: latest
           auto-update-conda: true
+          conda-remove-defaults: "true"
           python-version: ${{ matrix.PYTHON_VERSION }} 
       - name: Checkout Spyder from git
         if: matrix.SPYDER_SOURCE == 'git'
