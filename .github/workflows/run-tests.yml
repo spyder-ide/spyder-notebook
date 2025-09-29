@@ -128,5 +128,5 @@ jobs:
         shell: bash -l {0}
         run: |
           # This prevents hangs in Post Install Conda
-          tasklist | grep python
+          tasklist | grep python || true
           taskkill //im python.exe //f || true
