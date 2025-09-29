@@ -20,7 +20,6 @@ from qtpy.QtWidgets import QMainWindow
 import requests
 
 # Spyder imports
-from spyder.api.plugins import Plugins
 from spyder.config.manager import CONF
 
 # Local imports
@@ -155,11 +154,10 @@ def test_on_mainwindow_visible_with_opened_notebooks_empty(plugin_no_server):
 
 def test_closing_main_widget(mocker, plugin_no_server):
     """Close the main widget with a welcome tab, a new notebooks and a notebook
-    opened from a file. Check that config variables `recent_notebooks` and
-    `opened_notebook` are correctly set."""
+    opened from a file. Check that config variable `opened_notebook` is
+    correctly set."""
     plugin = plugin_no_server
     main_widget = plugin.get_widget()
-    main_widget.clear_recent_notebooks()
     mock_set_option = mocker.patch.object(main_widget, 'set_conf')
     main_widget.tabwidget.maybe_create_welcome_client()
     main_widget.create_new_client()
@@ -167,8 +165,7 @@ def test_closing_main_widget(mocker, plugin_no_server):
 
     plugin.get_widget().close()
 
-    expected = [mocker.call('recent_notebooks', ['ham.ipynb']),
-                mocker.call('opened_notebooks', ['ham.ipynb'])]
+    expected = [mocker.call('opened_notebooks', ['ham.ipynb'])]
     assert mock_set_option.call_args_list == expected
 
 

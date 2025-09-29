@@ -15,7 +15,7 @@ jobs:
       matrix:
         OS: ['ubuntu', 'macos', 'windows']
         PYTHON_VERSION: ['3.9', '3.11', '3.12']
-        SPYDER_SOURCE: ['conda', 'git']
+        SPYDER_SOURCE: ['git']
     name: ${{ matrix.OS }} py${{ matrix.PYTHON_VERSION }} spyder-from-${{ matrix.SPYDER_SOURCE }}
     runs-on: ${{ matrix.OS }}-latest
     env:
@@ -36,6 +36,7 @@ jobs:
         with:
           miniforge-version: latest
           auto-update-conda: true
+          conda-remove-defaults: "true"
           python-version: ${{ matrix.PYTHON_VERSION }} 
       - name: Checkout Spyder from git
         if: matrix.SPYDER_SOURCE == 'git'
@@ -122,3 +123,10 @@ jobs:
           command: |
             cd spyder-notebook
             pytest spyder_notebook -vv
+      - name: Kill Python (Windows)
+        if: matrix.OS == 'windows'
+        shell: bash -l {0}
+        run: |
+          # This prevents hangs in Post Install Conda
+          tasklist | grep python || true
+          taskkill //im python.exe //f || true

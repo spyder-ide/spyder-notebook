@@ -6,6 +6,7 @@
 
 # Standard library imports
 import os.path as osp
+from typing import Optional
 
 # Third-party imports
 from jupyter_core.paths import jupyter_runtime_dir
@@ -13,6 +14,7 @@ from qtpy.QtCore import Signal
 from qtpy.QtWidgets import QMessageBox, QVBoxLayout
 
 # Spyder imports
+from spyder.api.plugins import Plugins
 from spyder.api.widgets.main_widget import PluginMainWidget
 from spyder.config.gui import is_dark_interface
 
@@ -42,8 +44,7 @@ class NotebookMainWidgetMenus:
 
 
 class NotebookMainWidgetOptionsMenuSections:
-    Open = 'Open'
-    Other = 'Other'
+    Main = 'Main'
 
 
 class NotebookMainWidgetRecentNotebooksMenuSections:
@@ -52,6 +53,17 @@ class NotebookMainWidgetRecentNotebooksMenuSections:
 
 
 class NotebookMainWidget(PluginMainWidget):
+
+    sig_new_recent_file = Signal(str)
+    """
+    This signal is emitted when a file is opened or got a new name.
+
+    Parameters
+    ----------
+    filename: str
+        The name of the opened file. If the file is renamed, then this should
+        be the new name.
+    """
 
     sig_open_console_requested = Signal(str, str)
     """
@@ -69,7 +81,6 @@ class NotebookMainWidget(PluginMainWidget):
         """Widget constructor."""
         super().__init__(name, plugin, parent)
 
-        self.recent_notebooks = self.get_conf('recent_notebooks', default=[])
         self.server_manager = ServerManager(self.dark_theme)
 
         # Tab widget
@@ -99,36 +110,6 @@ class NotebookMainWidget(PluginMainWidget):
 
     def setup(self):
         """Perform the setup of plugin's main menu and signals."""
-        # Corner widgets
-        new_notebook_toolbar_action = self.create_toolbutton(
-            NotebookMainWidgetToolButtons.NewNotebook,
-            icon=self.create_icon('options_more'),
-            text=_('Open a new notebook'),
-            tip=_('Open a new notebook'),
-            triggered=self.create_new_client
-        )
-
-        self.add_corner_widget(new_notebook_toolbar_action)
-
-        # Menu actions
-        new_notebook_action = self.create_action(
-            NotebookMainWidgetActions.NewNotebook,
-            text=_("New notebook"),
-            icon=self.create_icon('filenew'),
-            triggered=self.create_new_client
-        )
-        open_notebook_action = self.create_action(
-            NotebookMainWidgetActions.Open,
-            text=_("Open..."),
-            icon=self.create_icon('fileopen'),
-            triggered=self.open_notebook
-        )
-        self.save_as_action = self.create_action(
-            NotebookMainWidgetActions.SaveAs,
-            text=_("Save as..."),
-            icon=self.create_icon('filesaveas'),
-            triggered=self.save_as
-        )
         self.open_console_action = self.create_action(
             NotebookMainWidgetActions.OpenConsole,
             text=_("Open console"),
@@ -141,38 +122,40 @@ class NotebookMainWidget(PluginMainWidget):
             icon=self.create_icon('log'),
             triggered=self.view_servers
         )
-        self.clear_recent_notebooks_action = self.create_action(
-            NotebookMainWidgetActions.ClearRecentNotebooks,
-            text=_("Clear this list"),
-            triggered=self.clear_recent_notebooks
-        )
-
-        # Submenu
-        self.recent_notebooks_menu = self.create_menu(
-            NotebookMainWidgetMenus.RecentNotebooks,
-            _("Open recent")
-        )
 
         # Options menu
         options_menu = self.get_options_menu()
-        for item in [new_notebook_action, open_notebook_action,
-                     self.recent_notebooks_menu]:
+        for item in [self.open_console_action, self.server_info_action]:
             self.add_item_to_menu(
                 item,
                 menu=options_menu,
-                section=NotebookMainWidgetOptionsMenuSections.Open,
+                section=NotebookMainWidgetOptionsMenuSections.Main,
             )
 
-        for item in [self.save_as_action, self.open_console_action,
-                     self.server_info_action]:
-            self.add_item_to_menu(
-                item,
-                menu=options_menu,
-                section=NotebookMainWidgetOptionsMenuSections.Other,
-            )
+        # Register shortcuts for file actions defined in Applications plugin
+        for shortcut_name in [
+            'New file',
+            'Open file',
+            'Open last closed',
+            'Save file',
+            'Save all',
+            'Save as',
+            'Close file 1',
+            'Close file 2'
+        ]:
+            # The shortcut has the same name as the action, except for
+            # "Close file" which has two shortcuts associated to it
+            if shortcut_name.startswith('Close file'):
+                action_id = 'Close file'
+            else:
+                action_id = shortcut_name
 
-        # Context menu for notebooks
-        self.tabwidget.actions = [new_notebook_action, open_notebook_action]
+            action = self.get_action(action_id, plugin=Plugins.Application)
+            self.register_shortcut_for_widget(
+                name=shortcut_name,
+                triggered=action.trigger,
+                context='main'
+            )
 
     def update_actions(self):
         """Update actions of the options menu."""
@@ -182,10 +165,8 @@ class NotebookMainWidget(PluginMainWidget):
             client = None
 
         if client and not self.tabwidget.is_welcome_client(client):
-            self.save_as_action.setEnabled(True)
             self.open_console_action.setEnabled(True)
         else:
-            self.save_as_action.setEnabled(False)
             self.open_console_action.setEnabled(False)
 
     def on_close(self):
@@ -204,7 +185,6 @@ class NotebookMainWidget(PluginMainWidget):
                 opened_notebooks.append(client.filename)
             client.close()
 
-        self.set_conf('recent_notebooks', self.recent_notebooks)
         self.set_conf('opened_notebooks', opened_notebooks)
         self.server_manager.shutdown_all_servers()
 
@@ -234,40 +214,6 @@ class NotebookMainWidget(PluginMainWidget):
         else:
             nb = None
 
-    def update_recent_notebooks_menu(self):
-        """Update the recent notebooks menu actions."""
-        self.recent_notebooks_menu.clear_actions()
-        if self.recent_notebooks:
-            for notebook in self.recent_notebooks:
-                # Create notebook action
-                name = notebook
-                action = self.create_action(
-                    NotebookMainWidgetActions.RecentNotebook,
-                    text=name,
-                    icon=self.create_icon('notebook'),
-                    register_action=False,
-                    triggered=lambda v, path=notebook:
-                        self.create_new_client(filename=path)
-                )
-
-                # Add action to menu
-                self.add_item_to_menu(
-                    action,
-                    menu=self.recent_notebooks_menu,
-                    section=NotebookMainWidgetRecentNotebooksMenuSections.Notebooks,
-                )
-
-        self.add_item_to_menu(
-            self.clear_recent_notebooks_action,
-            menu=self.recent_notebooks_menu,
-            section=NotebookMainWidgetRecentNotebooksMenuSections.Clear,
-        )
-
-        if self.recent_notebooks:
-            self.clear_recent_notebooks_action.setEnabled(True)
-        else:
-            self.clear_recent_notebooks_action.setEnabled(False)
-
     def open_previous_session(self):
         """Open notebooks left open in the previous session."""
         filenames = self.get_conf('opened_notebooks')
@@ -282,29 +228,68 @@ class NotebookMainWidget(PluginMainWidget):
         """Open a notebook from file."""
         filenames = self.tabwidget.open_notebook(filenames)
         for filename in filenames:
-            self.add_to_recent(filename)
-        self.update_recent_notebooks_menu()
+            self.sig_new_recent_file.emit(filename)
+
+    def open_last_closed_notebook(self) -> None:
+        """
+        Reopens the notebook in the last closed tab.
+        """
+        self.tabwidget.open_last_closed_notebook()
 
     def create_new_client(self, filename=None):
         """Create a new notebook or load a pre-existing one."""
         client = self.tabwidget.create_new_client(filename)
         if not self.tabwidget.is_newly_created(client):
-            self.add_to_recent(filename)
-            self.update_recent_notebooks_menu()
+            self.sig_new_recent_file.emit(filename)
 
-    def add_to_recent(self, notebook):
+    def save_notebook(self) -> None:
         """
-        Add an entry to recent notebooks.
-
-        We only maintain the list of the 20 most recent notebooks.
+        Save current notebook.
         """
-        if notebook not in self.recent_notebooks:
-            self.recent_notebooks.insert(0, notebook)
-            self.recent_notebooks = self.recent_notebooks[:20]
+        client = self.tabwidget.currentWidget()
+        self.tabwidget.save_notebook(client)
 
-    def save_as(self):
-        """Save current notebook to different file."""
-        self.tabwidget.save_as()
+    def save_all(self) -> None:
+        """
+        Save all opened notebooks.
+        """
+        for client_index in range(self.tabwidget.count()):
+            client = self.tabwidget.widget(client_index)
+            self.tabwidget.save_notebook(client)
+
+    def save_as(self, close_after_save=True):
+        """
+        Save current notebook to different file.
+
+        If `close_after_save` is True (the default), then close the current
+        tab and open a new tab under the new name. Otherwise, open a new tab
+        while leaving the current tab open (the "Save copy as" action).
+        """
+        old_filename = self.tabwidget.currentWidget()
+        new_filename = self.tabwidget.save_as(
+            close_after_save=close_after_save
+        )
+        if old_filename != new_filename:
+            self.sig_new_recent_file.emit(new_filename)
+
+    def close_notebook(self) -> None:
+        """
+        Close current notebook.
+        """
+        self.tabwidget.close_client()
+
+    def close_all(self) -> None:
+        """
+        Close all notebooks.
+
+        Go through all tabs, skip any tabs with the welcome message and close
+        all other tabs. The tabs are traversed in reverse order so that the
+        index does not change when tabs are removed.
+        """
+        for client_index in reversed(range(self.tabwidget.count())):
+            client = self.tabwidget.widget(client_index)
+            if not self.tabwidget.is_welcome_client(client):
+                self.tabwidget.close_client(client_index)
 
     def open_console(self, client=None):
         """Open an IPython console for the given client or the current one."""
@@ -332,7 +317,19 @@ class NotebookMainWidget(PluginMainWidget):
         dialog = ServerInfoDialog(self.server_manager.servers, parent=self)
         dialog.show()
 
-    def clear_recent_notebooks(self):
-        """Clear the list of recent notebooks."""
-        self.recent_notebooks = []
-        self.update_recent_notebooks_menu()
+    def get_current_filename(self) -> Optional[str]:
+        """
+        Get file name of currently displayed notebook.
+        """
+        client = self.tabwidget.currentWidget()
+        if self.tabwidget.is_welcome_client(client):
+            return None
+        else:
+            return client.get_filename()
+
+    def current_file_is_temporary(self) -> bool:
+        """
+        Return whether currently displayed file is a temporary file.
+        """
+        client = self.tabwidget.currentWidget()
+        return self.tabwidget.is_newly_created(client)

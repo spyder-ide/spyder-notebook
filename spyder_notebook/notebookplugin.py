@@ -8,6 +8,7 @@
 # Standard library imports
 import logging
 import os.path as osp
+from typing import Optional
 
 # Spyder imports
 from spyder.api.plugins import Plugins, SpyderDockablePlugin
@@ -28,7 +29,7 @@ class NotebookPlugin(SpyderDockablePlugin):
     """Spyder Notebook plugin."""
 
     NAME = 'notebook'
-    REQUIRES = [Plugins.Preferences]
+    REQUIRES = [Plugins.Application, Plugins.Preferences]
     OPTIONAL = [Plugins.IPythonConsole, Plugins.Switcher]
     TABIFY = [Plugins.Editor]
     CONF_SECTION = NAME
@@ -37,8 +38,17 @@ class NotebookPlugin(SpyderDockablePlugin):
     WIDGET_CLASS = NotebookMainWidget
     CONF_WIDGET_CLASS = NotebookConfigPage
 
+    # This plugin hooks into File menu actions
+    CAN_HANDLE_FILE_ACTIONS = True
+
+    # This plugin opens files with the .ipynb exetension
+    FILE_EXTENSIONS = ['.ipynb']
+
     # Action "Switch to notebook" gives focus to the plugin
     RAISE_AND_FOCUS = True
+
+    # This plugin requires Qt Web Widgets to function
+    REQUIRE_WEB_WIDGETS = True
 
     # ---- SpyderDockablePlugin API
     # ------------------------------------------------------------------------
@@ -62,6 +72,19 @@ class NotebookPlugin(SpyderDockablePlugin):
         """Set up the plugin; does nothing."""
         pass
 
+    @on_plugin_available(plugin=Plugins.Application)
+    def on_application_available(self) -> None:
+        # Moving this import to the top of the file somehow interferes with
+        # the tests in test_main_window.py
+        from spyder.plugins.application.api import ApplicationActions
+
+        application = self.get_plugin(Plugins.Application)
+        application.enable_file_action(
+            ApplicationActions.RevertFile, False, self
+        )
+        widget = self.get_widget()
+        widget.sig_new_recent_file.connect(application.add_recent_file)
+
     @on_plugin_available(plugin=Plugins.Preferences)
     def on_preferences_available(self):
         preferences = self.get_plugin(Plugins.Preferences)
@@ -77,6 +100,12 @@ class NotebookPlugin(SpyderDockablePlugin):
         switcher = self.get_plugin(Plugins.Switcher)
         switcher.sig_mode_selected.connect(self._handle_switcher_modes)
         switcher.sig_item_selected.connect(self._handle_switcher_selection)
+
+    @on_plugin_teardown(plugin=Plugins.Application)
+    def on_application_teardown(self) -> None:
+        application = self.get_plugin(Plugins.Application)
+        widget = self.get_widget()
+        widget.sig_new_recent_file.disconnect(application.add_recent_file)
 
     @on_plugin_teardown(plugin=Plugins.Preferences)
     def on_preferences_teardown(self):
@@ -97,9 +126,78 @@ class NotebookPlugin(SpyderDockablePlugin):
     def on_mainwindow_visible(self):
         self.get_widget().open_previous_session()
 
-    # ------ Public API -------------------------------------------------------
-    def open_notebook(self, filenames=None):
-        self.get_widget().open_notebook(filenames)
+    def create_new_file(self) -> None:
+        """
+        Create a new notebook.
+        """
+        self.get_widget().create_new_client()
+
+    def open_file(self, filename: str) -> None:
+        """
+        Open file inside plugin.
+
+        This method will be called if the user wants to open a notebook.
+
+        Parameters
+        ----------
+        filename: str
+            The name of the file to be opened.
+        """
+        self.get_widget().open_notebook([filename])
+
+    def open_last_closed_file(self) -> None:
+        """
+        Reopens the notebook in the last closed tab.
+        """
+        self.get_widget().open_last_closed_notebook()
+
+    def save_file(self) -> None:
+        """
+        Save the current notebook.
+        """
+        self.get_widget().save_notebook()
+
+    def save_file_as(self) -> None:
+        """
+        Save the current notebook under a different name.
+        """
+        self.get_widget().save_as()
+
+    def save_copy_as(self) -> None:
+        """
+        Save a copy of the current notebook under a different name.
+        """
+        self.get_widget().save_as(close_after_save=False)
+
+    def save_all(self) -> None:
+        """
+        Save all opened notebooks.
+        """
+        self.get_widget().save_all()
+
+    def close_file(self) -> None:
+        """
+        Close the current notebook.
+        """
+        self.get_widget().close_notebook()
+
+    def close_all(self) -> None:
+        """
+        Close all notebook.
+        """
+        self.get_widget().close_all()
+
+    def get_current_filename(self) -> Optional[str]:
+        """
+        Return file name of the notebook that is currently displayed.
+        """
+        return self.get_widget().get_current_filename()
+
+    def current_file_is_temporary(self) -> bool:
+        """
+        Return whether currently displayed file is a temporary file.
+        """
+        return self.get_widget().current_file_is_temporary()
 
     # ------ Private API ------------------------------------------------------
     def _open_console(self, connection_file, tab_name):
