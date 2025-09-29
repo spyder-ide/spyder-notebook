@@ -1995,6 +1995,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jupyterlab/services-extension@npm:~4.4.9":
+  version: 4.4.9
+  resolution: "@jupyterlab/services-extension@npm:4.4.9"
+  dependencies:
+    "@jupyterlab/services": ^7.4.9
+    "@lumino/coreutils": ^2.2.1
+  checksum: a3abeb6c2617300afbd67125e2f0c369cd3c3e120f669e379acc5f312342bbb548efb16886dd02d513752cb2b954c1cee6f35376b9942c5412363e5be6dfa542
+  languageName: node
+  linkType: hard
+
 "@jupyterlab/services@npm:^7.4.9, @jupyterlab/services@npm:~7.4.9":
   version: 7.4.9
   resolution: "@jupyterlab/services@npm:7.4.9"
@@ -2552,7 +2562,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lumino/coreutils@npm:^1.11.0 || ^2.0.0, @lumino/coreutils@npm:^1.11.0 || ^2.2.1, @lumino/coreutils@npm:^2.2.1":
+"@lumino/coreutils@npm:^1.11.0 || ^2.0.0, @lumino/coreutils@npm:^1.11.0 || ^2.2.1, @lumino/coreutils@npm:^2.2.1, @lumino/coreutils@npm:~2.2.1":
   version: 2.2.1
   resolution: "@lumino/coreutils@npm:2.2.1"
   dependencies:
@@ -3272,6 +3282,7 @@ __metadata:
     "@jupyterlab/metadataform-extension": ~4.4.9
     "@jupyterlab/notebook-extension": ~4.4.9
     "@jupyterlab/pdf-extension": ~4.4.9
+    "@jupyterlab/services-extension": ~4.4.9
     "@jupyterlab/shortcuts-extension": ~5.2.6
     "@jupyterlab/theme-dark-extension": ~4.4.9
     "@jupyterlab/theme-light-extension": ~4.4.9
@@ -3280,6 +3291,7 @@ __metadata:
     "@jupyterlab/translation-extension": ~4.4.9
     "@jupyterlab/ui-components-extension": ~4.4.9
     "@jupyterlab/vega5-extension": ~4.4.9
+    "@lumino/coreutils": ~2.2.1
     "@spyder-notebook/application": ^0.6.3-dev.0
     "@spyder-notebook/application-extension": ^0.6.3-dev.0
     css-loader: ~5.0.1

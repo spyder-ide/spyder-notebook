@@ -63,6 +63,7 @@
     "@jupyterlab/rendermime": "~4.4.9",
     "@jupyterlab/rendermime-interfaces": "~3.12.9",
     "@jupyterlab/services": "~7.4.9",
+    "@jupyterlab/services-extension": "~4.4.9",
     "@jupyterlab/settingregistry": "~4.4.9",
     "@jupyterlab/shortcuts-extension": "~5.2.9",
     "@jupyterlab/statedb": "~4.4.9",
@@ -128,6 +129,7 @@
     "@jupyterlab/metadataform-extension": "~4.4.9",
     "@jupyterlab/notebook-extension": "~4.4.9",
     "@jupyterlab/pdf-extension": "~4.4.9",
+    "@jupyterlab/services-extension": "~4.4.9",
     "@jupyterlab/shortcuts-extension": "~5.2.6",
     "@jupyterlab/theme-dark-extension": "~4.4.9",
     "@jupyterlab/theme-light-extension": "~4.4.9",
@@ -136,6 +138,7 @@
     "@jupyterlab/translation-extension": "~4.4.9",
     "@jupyterlab/ui-components-extension": "~4.4.9",
     "@jupyterlab/vega5-extension": "~4.4.9",
+    "@lumino/coreutils": "~2.2.1",
     "@spyder-notebook/application": "^0.7.0-dev.0",
     "@spyder-notebook/application-extension": "^0.7.0-dev.0"
   },
@@ -242,6 +245,7 @@
           "@jupyterlab/notebook-extension:tracker",
           "@jupyterlab/notebook-extension:widget-factory"
         ],
+        "@jupyterlab/services-extension": true,
         "@jupyterlab/shortcuts-extension": true,
         "@jupyterlab/theme-light-extension": true,
         "@jupyterlab/theme-dark-extension": true,
