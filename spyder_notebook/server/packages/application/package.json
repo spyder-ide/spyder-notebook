@@ -1,6 +1,6 @@
 {
   "name": "@spyder-notebook/application",
-  "version": "0.6.3-dev.0",
+  "version": "0.7.0-dev.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "directories": {
@@ -15,10 +15,10 @@
     "build": "tsc -b"
   },
   "dependencies": {
-    "@jupyter-notebook/application": "~7.3.3"
+    "@jupyter-notebook/application": "~7.4.7"
   },
   "devDependencies": {
-    "typescript": "~5.0.2"
+    "typescript": "~5.5.4"
   },
   "publishConfig": {
     "access": "public"

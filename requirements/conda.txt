@@ -2,7 +2,7 @@ spyder >=6.1,<6.2
 jupyter_core
 jupyter_server
 nbformat
-notebook >=7.3.3,<7.4
+notebook >=7.4.7,<7.5
 psutil
 qtpy
 qdarkstyle

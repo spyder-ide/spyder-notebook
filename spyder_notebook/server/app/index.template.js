@@ -8,6 +8,8 @@
 
 import { PageConfig, URLExt } from '@jupyterlab/coreutils';
 
+import { PluginRegistry } from '@lumino/coreutils';
+
 require('./style.js');
 require('./extraStyle.js');
 
@@ -202,9 +204,19 @@ async function main() {
   // plugin even if the debugger is only loaded on the notebook page.
   PageConfig.setOption('allPlugins', '{{{ json notebook_plugins }}}');
 
+  const pluginRegistry = new PluginRegistry;
+
   // Spyder: Use our own app class
   const NotebookApp = require('@spyder-notebook/application').SpyderNotebookApp;
-  const app = new NotebookApp({ mimeExtensions });
+  pluginRegistry.registerPlugins(mods);
+  const IServiceManager = require('@jupyterlab/services').IServiceManager;
+  const serviceManager = await pluginRegistry.resolveRequiredService(IServiceManager);
+
+  const app = new NotebookApp({
+    pluginRegistry,
+    serviceManager,
+    mimeExtensions
+  });
 
   app.registerPluginModules(mods);
 
