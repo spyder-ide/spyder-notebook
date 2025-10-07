@@ -1,5 +1,21 @@
 # History of changes
 
+## Version 0.7.0 (2025/10/07)
+
+This release requires Spyder 6.1 to implement the new feature described below.
+
+### New feature
+
+* You can now use the standard menu items and toolbar buttons in Spyder to create new notebooks, open existing notebooks and save and close opened notebooks. ([Issue 134](https://github.com/spyder-ide/spyder-notebook/issues/134), [PR 488](https://github.com/spyder-ide/spyder-notebook/pull/488))
+
+### Maintenance
+
+* Update to Jupyter notebook 7.4 ([Issue 492](https://github.com/spyder-ide/spyder-notebook/issues/492), [PR 493](https://github.com/spyder-ide/spyder-notebook/pull/493))
+* Defer import of SpyderKernelSpec ([PR 491](https://github.com/spyder-ide/spyder-notebook/pull/491))
+* Replace `@flaky.flaky` decorator with pytest marker ([PR 487](https://github.com/spyder-ide/spyder-notebook/pull/487) by [@mgorny](https://github.com/mgorny))
+* Run CI tests against Python 3.12 ([PR 489](https://github.com/spyder-ide/spyder-notebook/pull/489))
+
+
 ## Version 0.6.2 (2025/04/14)
 
 This is a bug-fix and maintenance release.
