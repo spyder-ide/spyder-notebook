@@ -6,6 +6,10 @@
 
 // Inspired by: https://github.com/jupyterlab/jupyterlab/blob/master/dev_mode/index.js
 
+// Spyder: Added below import to polyfill Array.at()
+// so that we can use Qt5's WebEngine.
+import 'core-js/es/array/at';
+
 import { PageConfig, URLExt } from '@jupyterlab/coreutils';
 
 import { PluginRegistry } from '@lumino/coreutils';

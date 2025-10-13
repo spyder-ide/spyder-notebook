@@ -3294,6 +3294,7 @@ __metadata:
     "@lumino/coreutils": ~2.2.1
     "@spyder-notebook/application": ^0.7.1-dev.0
     "@spyder-notebook/application-extension": ^0.7.1-dev.0
+    core-js: ^3.17.0
     css-loader: ~5.0.1
     fs-extra: ^8.1.0
     glob: ~7.1.6
@@ -5746,7 +5747,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-js@npm:3.37.1":
+"core-js@npm:3.37.1, core-js@npm:^3.17.0":
   version: 3.37.1
   resolution: "core-js@npm:3.37.1"
   checksum: 2d58a5c599f05c3e04abc8bc5e64b88eb17d914c0f552f670fb800afa74ec54b4fcc7f231ad6bd45badaf62c0fb0ce30e6fe89cedb6bb6d54e6f19115c3c17ff
