@@ -1,5 +1,14 @@
 # History of changes
 
+## Version 0.7.1 (2025/10/15)
+
+This release fixes a major bug.
+
+### Bug fix
+
+* Properly display markdown cells by adding a polyfill for Array.at() ([Issue 500](https://github.com/spyder-ide/spyder-notebook/issues/500), [PR 501](https://github.com/spyder-ide/spyder-notebook/pull/501))
+
+
 ## Version 0.7.0 (2025/10/07)
 
 This release requires Spyder 6.1 to implement the new feature described below.
