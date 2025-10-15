@@ -13,9 +13,9 @@
     "@jupyter-notebook/help-extension": "~7.4.7",
     "@jupyter-notebook/notebook-extension": "~7.4.7",
     "@jupyter-notebook/ui-components": "~7.4.7",
-    "@jupyter/react-components": "^0.16.6",
-    "@jupyter/web-components": "^0.16.6",
-    "@jupyter/ydoc": "~3.0.0",
+    "@jupyter/react-components": "~0.16.7",
+    "@jupyter/web-components": "~0.16.7",
+    "@jupyter/ydoc": "~3.1.0",
     "@jupyterlab/application": "~4.4.9",
     "@jupyterlab/application-extension": "~4.4.9",
     "@jupyterlab/apputils": "~4.5.9",
@@ -140,7 +140,8 @@
     "@jupyterlab/vega5-extension": "~4.4.9",
     "@lumino/coreutils": "~2.2.1",
     "@spyder-notebook/application": "^0.7.1-dev.0",
-    "@spyder-notebook/application-extension": "^0.7.1-dev.0"
+    "@spyder-notebook/application-extension": "^0.7.1-dev.0",
+    "core-js": "^3.17.0"
   },
   "devDependencies": {
     "@jupyterlab/builder": "~4.4.9",
