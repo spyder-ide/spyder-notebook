@@ -25,6 +25,27 @@ class DOMWidget(WebView):
         else:
             self.dom = self.page().mainFrame()
 
+    def setPage(self, page):
+        """
+        Change the web page of the web view.
+
+        Overrides the function in QWebEngineView in order to update self.dom.
+
+        Parameters
+        ----------
+        page : QWebEnginePage
+            The new web page.
+
+        Returns
+        -------
+        None.
+        """
+        super().setPage(page)
+        if WEBENGINE:
+            self.dom = self.page()
+        else:
+            self.dom = self.page().mainFrame()
+
     def evaluate(self, script):
         """
         Evaluate script in page frame.

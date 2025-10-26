@@ -11,11 +11,21 @@ import {
 
 import { IThemeManager } from '@jupyterlab/apputils';
 
-import { PageConfig } from '@jupyterlab/coreutils';
+import {
+  IChangedArgs,
+  PageConfig
+} from '@jupyterlab/coreutils';
 
 import { IDocumentManager } from '@jupyterlab/docmanager';
 
 import { IMainMenu } from '@jupyterlab/mainmenu';
+
+import {
+  INotebookModel,
+  NotebookPanel
+} from '@jupyterlab/notebook';
+
+import { INotebookShell } from '@jupyter-notebook/application';
 
 /**
  * A regular expression to match path to notebooks and documents
@@ -105,12 +115,51 @@ const theme: JupyterFrontEndPlugin<void> = {
 };
 
 /**
+ * Send message to Spyder if notebook becomes dirty or non-dirty
+ */
+const monitorDirty: JupyterFrontEndPlugin<void> = {
+  id: '@spyder-notebook/application-extension:monitor-dirty',
+  description:
+    'Send message to Spyder if notebook becomes dirty or non-dirty.',
+  autoStart: true,
+  requires: [INotebookShell],
+  activate: (
+    app: JupyterFrontEnd,
+    notebookShell: INotebookShell
+  ) => {
+    const onNotebookModelStateChange = (
+      model: INotebookModel,
+      args: IChangedArgs<any>
+    ): void => {
+      if (args.name == 'dirty') {
+        alert(':SpyderComm:dirty:' + args.newValue)
+      };
+    };
+
+    const onNotebookShellChange = async () => {
+      const current = notebookShell.currentWidget;
+      if (!(current instanceof NotebookPanel)) {
+        return;
+      }
+
+      const notebook = current.content;
+      await current.context.ready;
+
+      notebook.model?.stateChanged.connect(onNotebookModelStateChange);
+    };
+
+    notebookShell.currentChanged.connect(onNotebookShellChange);
+  },
+};
+
+/**
  * Export the plugins as default.
  */
 const plugins: JupyterFrontEndPlugin<any>[] = [
   menus,
   opener,
-  theme
+  theme,
+  monitorDirty
 ];
 
 export default plugins;
