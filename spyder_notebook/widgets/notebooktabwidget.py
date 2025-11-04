@@ -207,6 +207,7 @@ class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
 
         client = NotebookClient(self, filename, self.actions)
         self.add_tab(client)
+        client.sig_dirty_changed.connect(self.handle_dirty_changed)
         interpreter = self.get_interpreter()
         server_info = self.server_manager.get_server(
             filename, interpreter, start=True)
@@ -489,6 +490,27 @@ class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
         index = self.addTab(widget, widget.get_short_name())
         self.setCurrentIndex(index)
         self.setTabToolTip(index, widget.get_filename())
+
+    def handle_dirty_changed(self, new_value: bool) -> None:
+        """
+        Handle signal that a notebook became dirty or not.
+
+        Append a `*` to the filename of the notebook in the tab title if the
+        notebook is dirty.
+
+        Parameters
+        ----------
+        new_value : bool
+            Whether the notebook is now dirty.
+        """
+        notebook_client = self.sender()
+        index = self.indexOf(notebook_client)
+        if index == -1:
+            logger.warn('handle_dirty_changed: Client not found!')
+        else:
+            suffix = '*' if new_value else ''
+            self.setTabText(index, notebook_client.get_short_name() + suffix)
+            self.setTabToolTip(index, notebook_client.get_filename() + suffix)
 
     def handle_server_started(self, process):
         """

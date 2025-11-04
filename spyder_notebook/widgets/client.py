@@ -322,6 +322,16 @@ class NotebookClient(QFrame):
 
     CONF_SECTION = CONF_SECTION
 
+    sig_dirty_changed = Signal(bool)
+    """
+    This signal is emitted when the notebook becomes dirty or non-dirty.
+
+    Parameters
+    ----------
+    new_value : bool
+        Whether the notebook is now dirty.
+    """
+
     def __init__(self, parent, filename, actions=None, ini_message=None):
         """
         Constructor.
@@ -349,6 +359,7 @@ class NotebookClient(QFrame):
         self.file_url = None
         self.server_url = None
         self.path = None
+        self.dirty = False
 
         self.notebookwidget = NotebookWidget(self, actions)
         if ini_message:
@@ -358,6 +369,8 @@ class NotebookClient(QFrame):
             self.notebookwidget.show_blank()
             self.static = False
 
+        self.notebookwidget.sig_dirty_changed.connect(
+            self._handle_dirty_changed)
         self.notebookwidget.sig_focus_in_event.connect(
             lambda: self._apply_stylesheet(focus=True))
         self.notebookwidget.sig_focus_out_event.connect(
@@ -527,6 +540,14 @@ class NotebookClient(QFrame):
 
         self.setStyleSheet(css.toString())
 
+    def _handle_dirty_changed(self, new_value: bool) -> None:
+        """
+        Handle signal that a notebook became dirty or not.
+
+        Store the new value and emit the signal again.
+        """
+        self.dirty = new_value
+        self.sig_dirty_changed.emit(new_value)
 
 # -----------------------------------------------------------------------------
 # Tests
