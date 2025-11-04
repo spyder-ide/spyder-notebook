@@ -14,7 +14,7 @@ import time
 
 # Qt imports
 from qtpy.compat import getopenfilenames, getsavefilename
-from qtpy.QtCore import QEventLoop, QTimer
+from qtpy.QtCore import QEventLoop, QTimer, Signal
 from qtpy.QtWidgets import QMessageBox
 
 # Third-party imports
@@ -101,6 +101,11 @@ class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
     last_closed_files : list[str]
         File names of notebooks that have been closed by the user, with the
         most recently closed one listed last.
+    """
+
+    sig_refresh_save_actions_requested = Signal()
+    """
+    This signal is emitted when the save actions should be refreshed.
     """
 
     def __init__(self, parent, server_manager, actions=None, menu=None,
@@ -478,6 +483,25 @@ class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
         """
         return client.get_filename() in [WELCOME, WELCOME_DARK]
 
+    @classmethod
+    def can_save_client(cls, client: NotebookClient) -> bool:
+        """
+        Return whether some client can be saved.
+
+        A client can be saved if it contains a notebook (i.e., it is not a
+        welcome client) and it is dirty.
+
+        Parameters
+        ----------
+        client : NotebookClient
+            Client under consideration.
+
+        Returns
+        -------
+        True if `client` can be saved, False otherwise.
+        """
+        return not cls.is_welcome_client(client) and client.dirty
+
     def add_tab(self, widget):
         """
         Add tab containing some notebook widget to the tabbed widget.
@@ -496,7 +520,8 @@ class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
         Handle signal that a notebook became dirty or not.
 
         Append a `*` to the filename of the notebook in the tab title if the
-        notebook is dirty.
+        notebook is dirty. Then signal that the save actions should be
+        refreshed.
 
         Parameters
         ----------
@@ -511,6 +536,7 @@ class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
             suffix = '*' if new_value else ''
             self.setTabText(index, notebook_client.get_short_name() + suffix)
             self.setTabToolTip(index, notebook_client.get_filename() + suffix)
+        self.sig_refresh_save_actions_requested.emit()
 
     def handle_server_started(self, process):
         """

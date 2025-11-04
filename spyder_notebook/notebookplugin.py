@@ -84,6 +84,7 @@ class NotebookPlugin(SpyderDockablePlugin):
         )
         widget = self.get_widget()
         widget.sig_new_recent_file.connect(application.add_recent_file)
+        widget.sig_enable_save_requested.connect(self._enable_save_actions)
 
     @on_plugin_available(plugin=Plugins.Preferences)
     def on_preferences_available(self):
@@ -106,6 +107,7 @@ class NotebookPlugin(SpyderDockablePlugin):
         application = self.get_plugin(Plugins.Application)
         widget = self.get_widget()
         widget.sig_new_recent_file.disconnect(application.add_recent_file)
+        widget.sig_file_action_enabled.connect(self._enable_file_action)
 
     @on_plugin_teardown(plugin=Plugins.Preferences)
     def on_preferences_teardown(self):
@@ -261,3 +263,28 @@ class NotebookPlugin(SpyderDockablePlugin):
         self.switch_to_plugin()
         switcher = self.get_plugin(Plugins.Switcher)
         switcher.hide()
+
+    def _enable_save_actions(
+            self,
+            save_enabled: bool,
+            save_all_enabled: bool
+        ) -> None:
+        """
+        Enable or disable file action for this plugin.
+        """
+        # Moving this import to the top of the file interferes with the
+        # async loop in Jupyter
+        from spyder.plugins.application.api import ApplicationActions
+
+        application = self.get_plugin(Plugins.Application, error=False)
+        if application:
+            application.enable_file_action(
+                ApplicationActions.SaveFile,
+                save_enabled,
+                self.NAME
+            )
+            application.enable_file_action(
+                ApplicationActions.SaveAll,
+                save_all_enabled,
+                self.NAME
+            )
