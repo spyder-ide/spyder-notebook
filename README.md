@@ -53,7 +53,7 @@ You can ask your questions at the [Spyder group](https://groups.google.com/forum
 or create a issue in this repo. We will be more than glad to answer.
 
 ## Overview
-![example](https://raw.githubusercontent.com/spyder-ide/spyder-notebook/master/doc/example.gif)
+![Screen shot](https://raw.githubusercontent.com/spyder-ide/spyder-notebook/master/doc/screenshot.png)
 
 ## Sponsors
 
