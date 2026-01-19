@@ -65,7 +65,7 @@ jobs:
         run: pip install --no-deps -e spyder
       - name: Install node.js
         shell: bash -l {0}
-        run: conda install nodejs -y
+        run: conda install "nodejs >20" -y
       - name: Install plugin dependencies (without Spyder)
         if: matrix.SPYDER_SOURCE == 'git'
         shell: bash -l {0}
