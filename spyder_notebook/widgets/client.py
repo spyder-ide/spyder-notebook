@@ -30,6 +30,7 @@ from spyder.utils import sourcecode
 from spyder.utils.image_path_manager import get_image_path
 from spyder.utils.qthelpers import add_actions
 from spyder.utils.palette import SpyderPalette
+from spyder.widgets.browser import WebPage
 from spyder.widgets.findreplace import FindReplace
 
 # Local imports
@@ -90,6 +91,43 @@ class WebViewInBrowser(QWebEngineView):
         self.close()
 
 
+class NotebookWebPage(WebPage):
+    """
+    Object to view and edit notebooks rendered as web pages.
+
+    Spyder notebooks communicate with Spyder itself with the JavaScript
+    alert() function where the message starts with a special prefix.
+    This class raises a signal if such a message is received.
+    """
+
+    SPYDER_COMM_PREFIX = ':SpyderComm:'
+    """
+    Prefix for alert() messages used to communicate with Spyder.
+    """
+
+    sig_message_received = Signal(str)
+    """
+    This signal is emitted when a Spyder comms message is received.
+    """
+
+    def javaScriptAlert(self, securityOrigin, msg: str) -> None:
+        """
+        Called whenever the JavaScript function alert() is called.
+
+        If the message starts with `SPYDER_COMM_PREFIX`, then this is a
+        message to communicate to Spyder so emit `sig_message_received`.
+        Otherwise, this is a standard JavaScript alert() to communicate to
+        the user, so let the base class handle it.
+
+        Overloads the function in QWebEnginePage.
+        """
+        if msg.startswith(self.SPYDER_COMM_PREFIX):
+            msg = msg.removeprefix(self.SPYDER_COMM_PREFIX)
+            self.sig_message_received.emit(msg)
+        else:
+            super().javaScriptAlert(securityOrigin, msg)
+
+
 class NotebookWidget(DOMWidget):
     """WebView widget for notebooks."""
 
@@ -101,6 +139,16 @@ class NotebookWidget(DOMWidget):
     sig_focus_out_event = Signal()
     """
     This signal is emitted when the widget loses focus.
+    """
+
+    sig_dirty_changed = Signal(bool)
+    """
+    This signal is emitted when the notebook becomes dirty or non-dirty.
+
+    Parameters
+    ----------
+    new_value : bool
+        Whether the notebook is now dirty.
     """
 
     def __init__(self, parent, actions=None):
@@ -117,6 +165,12 @@ class NotebookWidget(DOMWidget):
             will be added.
         """
         super().__init__(parent)
+
+        # Use our subclass of QtWebEnginePage to view notebooks
+        web_page = NotebookWebPage(self)
+        web_page.sig_message_received.connect(self.on_message_received)
+        self.setPage(web_page)
+
         self.CONTEXT_NAME = str(id(self))
         self.setup()
         self.actions = actions
@@ -175,6 +229,19 @@ class NotebookWidget(DOMWidget):
     def _set_info(self, html):
         """Set informational html with css from local path."""
         self.setHtml(html, QUrl.fromLocalFile(self.css_path))
+
+    def on_message_received(self, msg: str) -> None:
+        """
+        Handle messages from notebooks communicated with alert().
+
+        The only message implemented at the moment indicates that a notebook
+        has become dirty or non-dirty.
+        """
+        msg_class, msg_args = msg.split(':', 2)
+        if msg_class == 'dirty':
+            self.sig_dirty_changed.emit(msg_args == 'true')
+        else:
+            logger.warning(f'Unknown message class from notebook, {msg = }')
 
     def show_blank(self):
         """Show a blank page."""
@@ -255,6 +322,16 @@ class NotebookClient(QFrame):
 
     CONF_SECTION = CONF_SECTION
 
+    sig_dirty_changed = Signal(bool)
+    """
+    This signal is emitted when the notebook becomes dirty or non-dirty.
+
+    Parameters
+    ----------
+    new_value : bool
+        Whether the notebook is now dirty.
+    """
+
     def __init__(self, parent, filename, actions=None, ini_message=None):
         """
         Constructor.
@@ -282,6 +359,7 @@ class NotebookClient(QFrame):
         self.file_url = None
         self.server_url = None
         self.path = None
+        self.dirty = False
 
         self.notebookwidget = NotebookWidget(self, actions)
         if ini_message:
@@ -291,6 +369,8 @@ class NotebookClient(QFrame):
             self.notebookwidget.show_blank()
             self.static = False
 
+        self.notebookwidget.sig_dirty_changed.connect(
+            self._handle_dirty_changed)
         self.notebookwidget.sig_focus_in_event.connect(
             lambda: self._apply_stylesheet(focus=True))
         self.notebookwidget.sig_focus_out_event.connect(
@@ -460,6 +540,14 @@ class NotebookClient(QFrame):
 
         self.setStyleSheet(css.toString())
 
+    def _handle_dirty_changed(self, new_value: bool) -> None:
+        """
+        Handle signal that a notebook became dirty or not.
+
+        Store the new value and emit the signal again.
+        """
+        self.dirty = new_value
+        self.sig_dirty_changed.emit(new_value)
 
 # -----------------------------------------------------------------------------
 # Tests

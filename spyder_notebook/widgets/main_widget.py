@@ -54,6 +54,19 @@ class NotebookMainWidgetRecentNotebooksMenuSections:
 
 class NotebookMainWidget(PluginMainWidget):
 
+    sig_enable_save_requested = Signal(bool, bool)
+    """
+    Request to enable or disable the Save and Save All actions.
+
+    Parameters
+    ----------
+    save_enabled: bool
+        True if the Save action should be enabled, False if it should disabled.
+    save_all_enabled: bool
+        True if the Save All action should be enabled, False if it should
+        disabled.
+    """
+
     sig_new_recent_file = Signal(str)
     """
     This signal is emitted when a file is opened or got a new name.
@@ -90,6 +103,9 @@ class NotebookMainWidget(PluginMainWidget):
             dark_theme=self.dark_theme
         )
         self.tabwidget.currentChanged.connect(self.refresh_plugin)
+        self.tabwidget.sig_refresh_save_actions_requested.connect(
+            self.refresh_save_actions
+        )
 
         # Widget layout
         layout = QVBoxLayout()
@@ -223,6 +239,7 @@ class NotebookMainWidget(PluginMainWidget):
             self.tabwidget.maybe_create_welcome_client()
             self.create_new_client()
             self.tabwidget.setCurrentIndex(0)  # bring welcome tab to top
+        self.refresh_save_actions()
 
     def open_notebook(self, filenames=None):
         """Open a notebook from file."""
@@ -255,7 +272,8 @@ class NotebookMainWidget(PluginMainWidget):
         """
         for client_index in range(self.tabwidget.count()):
             client = self.tabwidget.widget(client_index)
-            self.tabwidget.save_notebook(client)
+            if self.tabwidget.can_save_client(client):
+                self.tabwidget.save_notebook(client)
 
     def save_as(self, close_after_save=True):
         """
@@ -271,6 +289,22 @@ class NotebookMainWidget(PluginMainWidget):
         )
         if old_filename != new_filename:
             self.sig_new_recent_file.emit(new_filename)
+
+    def refresh_save_actions(self):
+        """
+        Enable or disable 'Save' and 'Save All' actions.
+
+        The 'Save' action is enabled if the current notebook can be saved.
+        The 'Save all' action is enabled if any notebook can be saved.
+        """
+        current_index = self.tabwidget.currentIndex()
+        current_client = self.tabwidget.widget(current_index)
+        save_enabled = self.tabwidget.can_save_client(current_client)
+        save_all_enabled = any(
+            self.tabwidget.can_save_client(self.tabwidget.widget(index))
+            for index in range(self.tabwidget.count())
+        )
+        self.sig_enable_save_requested.emit(save_enabled, save_all_enabled)
 
     def close_notebook(self) -> None:
         """

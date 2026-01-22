@@ -3280,6 +3280,7 @@ __metadata:
     "@jupyterlab/markedparser-extension": ~4.4.9
     "@jupyterlab/mathjax-extension": ~4.4.9
     "@jupyterlab/metadataform-extension": ~4.4.9
+    "@jupyterlab/notebook": ~4.4.9
     "@jupyterlab/notebook-extension": ~4.4.9
     "@jupyterlab/pdf-extension": ~4.4.9
     "@jupyterlab/services-extension": ~4.4.9
@@ -3315,9 +3316,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@spyder-notebook/application-extension@workspace:packages/application-extension"
   dependencies:
+    "@jupyter-notebook/application": ~7.4.7
     "@jupyterlab/application": ~4.4.9
     "@jupyterlab/docmanager": ~4.4.9
     "@jupyterlab/mainmenu": ~4.4.9
+    "@jupyterlab/notebook": ~4.4.9
     typescript: ~5.5.4
   languageName: unknown
   linkType: soft

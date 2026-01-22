@@ -14,7 +14,7 @@ import time
 
 # Qt imports
 from qtpy.compat import getopenfilenames, getsavefilename
-from qtpy.QtCore import QEventLoop, QTimer
+from qtpy.QtCore import QEventLoop, QTimer, Signal
 from qtpy.QtWidgets import QMessageBox
 
 # Third-party imports
@@ -101,6 +101,11 @@ class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
     last_closed_files : list[str]
         File names of notebooks that have been closed by the user, with the
         most recently closed one listed last.
+    """
+
+    sig_refresh_save_actions_requested = Signal()
+    """
+    This signal is emitted when the save actions should be refreshed.
     """
 
     def __init__(self, parent, server_manager, actions=None, menu=None,
@@ -207,6 +212,7 @@ class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
 
         client = NotebookClient(self, filename, self.actions)
         self.add_tab(client)
+        client.sig_dirty_changed.connect(self.handle_dirty_changed)
         interpreter = self.get_interpreter()
         server_info = self.server_manager.get_server(
             filename, interpreter, start=True)
@@ -477,6 +483,25 @@ class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
         """
         return client.get_filename() in [WELCOME, WELCOME_DARK]
 
+    @classmethod
+    def can_save_client(cls, client: NotebookClient) -> bool:
+        """
+        Return whether some client can be saved.
+
+        A client can be saved if it contains a notebook (i.e., it is not a
+        welcome client) and it is dirty.
+
+        Parameters
+        ----------
+        client : NotebookClient
+            Client under consideration.
+
+        Returns
+        -------
+        True if `client` can be saved, False otherwise.
+        """
+        return not cls.is_welcome_client(client) and client.dirty
+
     def add_tab(self, widget):
         """
         Add tab containing some notebook widget to the tabbed widget.
@@ -489,6 +514,29 @@ class NotebookTabWidget(Tabs, SpyderConfigurationAccessor):
         index = self.addTab(widget, widget.get_short_name())
         self.setCurrentIndex(index)
         self.setTabToolTip(index, widget.get_filename())
+
+    def handle_dirty_changed(self, new_value: bool) -> None:
+        """
+        Handle signal that a notebook became dirty or not.
+
+        Append a `*` to the filename of the notebook in the tab title if the
+        notebook is dirty. Then signal that the save actions should be
+        refreshed.
+
+        Parameters
+        ----------
+        new_value : bool
+            Whether the notebook is now dirty.
+        """
+        notebook_client = self.sender()
+        index = self.indexOf(notebook_client)
+        if index == -1:
+            logger.warn('handle_dirty_changed: Client not found!')
+        else:
+            suffix = '*' if new_value else ''
+            self.setTabText(index, notebook_client.get_short_name() + suffix)
+            self.setTabToolTip(index, notebook_client.get_filename() + suffix)
+        self.sig_refresh_save_actions_requested.emit()
 
     def handle_server_started(self, process):
         """
