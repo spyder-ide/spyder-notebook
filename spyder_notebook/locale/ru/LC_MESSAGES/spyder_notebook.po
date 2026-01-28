@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: spyder-notebook\n"
 "POT-Creation-Date: 2023-07-02 16:37+0100\n"
-"PO-Revision-Date: 2023-07-02 16:21\n"
+"PO-Revision-Date: 2024-08-20 18:14\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -123,7 +123,7 @@ msgstr ""
 
 #: spyder_notebook/widgets/notebooktabwidget.py:406 spyder_notebook/widgets/notebooktabwidget.py:413
 msgid "File Error"
-msgstr ""
+msgstr "Ошибка файла"
 
 #: spyder_notebook/widgets/notebooktabwidget.py:411
 msgid "Error while writing {}<p>{}"
@@ -171,9 +171,9 @@ msgstr ""
 
 #: spyder_notebook/widgets/serverinfo.py:72
 msgid "State:"
-msgstr ""
+msgstr "Состояние:"
 
 #: spyder_notebook/widgets/serverinfo.py:80
 msgid "Refresh"
-msgstr ""
+msgstr "Обновить"
 
